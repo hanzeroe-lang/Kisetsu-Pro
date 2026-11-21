@@ -4135,6 +4135,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                         onPinTap = openHomePin,
                                         onOpenSpotify = { showSpotify = true },
                                         onOpenSettings = { showSettings = true },
+                                        accountPhotoUrl = account?.thumbnailUrl,
                                         onOpenPlaylist = { playlist ->
                                             viewModel.openDetail(
                                                 browseId = SPOTIFY_PAGE_PREFIX + playlist.id,
@@ -4789,6 +4790,12 @@ val filteredPicks by remember(kisetsuPicks) {
                     }
                 }
 
+                val showTopBar = !(spotifyHome && selectedTab == TAB_HOME && detail == null &&
+                    !showSpotify && !showReplay && !showHistory && !showFlow && !showDiscord &&
+                    libraryShowAll == null && !showSettings && !showAccountScrobbling &&
+                    !showSources && !showListenTogether && !showEqualizer &&
+                    selectedMoodGenre == null && detailActiveShelf == null && settingsSubScreen == null)
+                if (showTopBar) {
                 FrostedTopBar(
                     title = when {
                         showSpotify && detail == null -> stringResource(R.string.spotify)
@@ -5135,6 +5142,7 @@ val filteredPicks by remember(kisetsuPicks) {
                         }
                     },
                 )
+                }
 
                 // Drawn before the bars so their own glass reads on top of it.
                 if (!isPremiumMain) {

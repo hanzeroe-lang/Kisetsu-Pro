@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -5890,6 +5891,8 @@ fun SpotifyHomeScreen(
     onOpenSpotify: () -> Unit = {},
     /** Opens Settings. */
     onOpenSettings: () -> Unit = {},
+    /** Google account avatar shown in the top-left header. */
+    accountPhotoUrl: String? = null,
     /** Opens a Spotify playlist as a detail page. */
     onOpenPlaylist: (com.music.bitchord.data.spotify.SpotifyPlaylist) -> Unit = {},
     /** A strip pinned above the feed - the phone's limited-edition banner. */
@@ -6037,29 +6040,59 @@ fun SpotifyHomeScreen(
         }
     }
 
+    val recentItems = remember(shelves) {
+        shelves.asSequence().flatMap { it.items.asSequence() }.distinctBy { it.videoId ?: it.browseId ?: it.title }.take(8).toList()
+    }
     LazyColumn(
         state = listState,
         modifier = modifier
             .fillMaxSize()
             .background(SpotifyBg()),
-        contentPadding = contentPadding,
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-            item(key = "home-header") {
-                Column(Modifier.padding(top = 0.dp, bottom = 4.dp)) {
+            stickyHeader(key = "home-topbar") {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(SpotifyBg())
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .padding(top = 4.dp, bottom = 8.dp),
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 8.dp, end = 16.dp),
+                            .padding(start = 12.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        IconButton(onClick = onOpenSettings) {
-                            Icon(
-                                imageVector = Icons.Rounded.Settings,
-                                contentDescription = "Settings",
-                                tint = SpotifyOnBg(),
-                            )
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(SpotifyFill(0.12f))
+                                .clickable { onOpenSettings() },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (!accountPhotoUrl.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = accountPhotoUrl,
+                                    contentDescription = "Account",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Rounded.Settings,
+                                    contentDescription = "Settings",
+                                    tint = SpotifyOnBg(),
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
                         }
+                        Spacer(Modifier.width(10.dp))
                         LazyRow(
                             modifier = Modifier.weight(1f),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -6073,37 +6106,33 @@ fun SpotifyHomeScreen(
                             }
                         }
                     }
-                    Spacer(Modifier.height(12.dp))
-                    // Iconic Spotify quick grid at top.
-                    val recentItems = remember(shelves) {
-                        shelves.asSequence().flatMap { it.items.asSequence() }.distinctBy { it.videoId ?: it.browseId ?: it.title }.take(8).toList()
-                    }
-                    if (selectedPill == "All" && recentItems.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            recentItems.chunked(2).forEach { rowItems ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                ) {
-                                    rowItems.forEach { item ->
-                                        SpotifyHomeGridCard(
-                                            item = item,
-                                            onClick = { onItemClick(item, "") },
-                                            modifier = Modifier.weight(1f),
-                                        )
-                                    }
-                                    if (rowItems.size == 1) {
-                                        Spacer(Modifier.weight(1f))
-                                    }
+                }
+            }
+            item(key = "home-grid") {
+                if (selectedPill == "All" && recentItems.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        recentItems.chunked(2).forEach { rowItems ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                rowItems.forEach { item ->
+                                    SpotifyHomeGridCard(
+                                        item = item,
+                                        onClick = { onItemClick(item, "") },
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                                if (rowItems.size == 1) {
+                                    Spacer(Modifier.weight(1f))
                                 }
                             }
                         }
-                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
@@ -6207,6 +6236,20 @@ fun SpotifyHomeScreen(
                         val cleanTitle: (String) -> String = { t ->
                             t.replace(Regex("(?i)\\s*[\\[(]?beta[])]?\\s*"), " ").replace(Regex("\\s+"), " ").trim()
                         }
+                        val displayTitle: (String) -> String = { raw ->
+                            val t = cleanTitle(raw)
+                            val l = t.lowercase()
+                            when {
+                                l.startsWith("more like") || l.startsWith("for fans of") -> t
+                                l.contains("quick picks") -> "Recommended for today"
+                                l.contains("listen again") -> "Made for you based on recent listening"
+                                l.contains("mixed for you") || l == "made for you" -> "Made for you"
+                                l.contains("top mix") -> "Your top mixes"
+                                l.contains("favourite artists") || l.contains("favorite artists") -> "Your favorite artists"
+                                l.contains("recommended for you") -> "Recommended for today"
+                                else -> t
+                            }
+                        }
                         val isAllowed: (String) -> Boolean = { raw ->
                             val t = cleanTitle(raw).lowercase()
                             t.contains("made for you") || t.contains("mixed for you") ||
@@ -6236,7 +6279,7 @@ fun SpotifyHomeScreen(
                                 shownShelves,
                                 key = { index, shelf -> "shelf-$index-${shelf.title}" },
                             ) { _, shelf ->
-                                val cleaned = shelf.copy(title = cleanTitle(shelf.title))
+                                val cleaned = shelf.copy(title = displayTitle(shelf.title))
                                 SpotifyHomeShelf(
                                     shelf = cleaned,
                                     onItemClick = { item -> onItemClick(item, cleaned.title) },
