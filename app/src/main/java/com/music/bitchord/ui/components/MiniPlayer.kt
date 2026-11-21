@@ -464,20 +464,20 @@ fun MiniPlayer(
                 ExplicitSongTitle(
                     song = song,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    badgeColor = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    badgeColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     fadeOverflow = true,
                 )
                 FadingLine(
                     text = song.artist,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (isLoading) {
                 Box(Modifier.size(GLYPH_SLOT), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(SPINNER_SIZE),
                     )
@@ -498,7 +498,7 @@ fun MiniPlayer(
                         playPainter = rememberVectorPainter(Icons.Rounded.PlayArrow),
                         pausePainter = rememberVectorPainter(Icons.Rounded.Pause),
                         contentDescription = stringResource(if (isPlaying) R.string.pause else R.string.play),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(GLYPH_SIZE),
                     )
                 }
@@ -517,7 +517,7 @@ fun MiniPlayer(
             ) {
                 MiniPlayerNextGlyph(
                     motion = nextMotion,
-                    tint = Color.White.copy(alpha = if (controlsLocked) 0.3f else 1f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (controlsLocked) 0.3f else 1f),
                 )
             }
         }
