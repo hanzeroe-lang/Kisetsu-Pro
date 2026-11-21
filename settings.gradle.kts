@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BitChord"
+rootProject.name = "KisetsuPro"
 include(":shared")
 include(":sharedUi")
 
