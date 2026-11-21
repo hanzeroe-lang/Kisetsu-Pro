@@ -293,8 +293,6 @@ private val VERSION_PILL_ART_INSET = 12.dp
  */
 private const val HERO_FADE_FRACTION = 0.42f
 /** Kept transparent so the cover remains edge-to-edge, while aiding icon contrast. */
-/** A modest floor while a subview replaces the hero with its blurred artwork backdrop. */
-private const val SUBVIEW_STATUS_SCRIM_MIN_ALPHA = 0.40f
 
 /**
  * How often the legacy mesh re-reads the colours of a playing Canvas clip.
@@ -2978,33 +2976,7 @@ fun NowPlayingScreen(
                     }
                 }
 
-                // This transparent top gradient is always present while the modal
-                // player owns the system bar. Its opacity follows the actual top-band
-                // artwork, rather than changing the status-bar glyph colour per cover.
-                // A subview replaces that hero with the blurred artwork backdrop, so it gets
-                // only a modest floor rather than an opaque status-bar surface.
-                val playerSubviewOpen = lyricsOpen || queueOpen || lyricsOffsetOpen ||
-                    showAudioPipeline || showCast || showAudioOutput || showVideoQuality || showLyricsProviders ||
-                    lyricsShare != null
-                val topGradientAlpha = if (playerSubviewOpen) {
-                    maxOf(artworkStatusScrimAlpha, SUBVIEW_STATUS_SCRIM_MIN_ALPHA)
-                } else {
-                    artworkStatusScrimAlpha
-                }
-
-                val steps = 8
-                val gradientColors = remember(topGradientAlpha) {
-                    List(steps) { index ->
-                        val progress = index / (steps - 1).toFloat()
-                        val shifted = ((progress - 0.2f) / 0.8f).coerceIn(0f, 1f)
-                        val factor = (1f - shifted).toDouble().pow(1.5).toFloat()
-                        Color.Black.copy(alpha = topGradientAlpha * factor)
-                    }
-                }
-                val topScrimBrush = remember(gradientColors) {
-                    Brush.verticalGradient(gradientColors)
-                }
-                // Painted by the handle strip rather than laid out here — see there.
+                // Top status-bar scrim removed for a cleaner player top edge.
 
                 if (artworkMeshBackdrop && clipPortrait && canvasAspect < PORTRAIT_SCRIM_MAX_ASPECT) {
                     // A clip tall enough to run on under the controls stays visible
@@ -3141,18 +3113,7 @@ fun NowPlayingScreen(
                         modifier = Modifier
                             .zIndex(1f)
                             .fillMaxWidth()
-                            .height(topStrip)
-                            .drawBehind {
-                                // Translated rather than offset: the gradient is laid
-                                // out from the canvas origin, not from the rect's.
-                                val above = statusBarTop.toPx()
-                                translate(top = -above) {
-                                    drawRect(
-                                        brush = topScrimBrush,
-                                        size = Size(size.width, size.height + above),
-                                    )
-                                }
-                            },
+                            .height(topStrip),
                         contentAlignment = Alignment.Center,
                     ) {
                         // While the origin caption is present the handle belongs at
@@ -3172,7 +3133,7 @@ fun NowPlayingScreen(
                                         ).roundToPx(),
                                     )
                                 }
-                                .width(38.dp)
+                                .width(44.dp)
                                 .height(5.dp)
                                 .graphicsLayer { alpha = spotifyChromeAlpha }
                                 .shadow(2.dp, RoundedCornerShape(3.dp), clip = false)
@@ -4561,7 +4522,7 @@ fun NowPlayingScreen(
                     // (sung line → loading line) grew the deck and shrank the sleeve.
 
                     val transitionWindow by PlayerSettings.smartTransitionWindow.collectAsStateWithLifecycle()
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(4.dp))
                     PlayerScrubber(
                         shown = shown,
                         durationMs = durationMs,
@@ -4609,9 +4570,9 @@ fun NowPlayingScreen(
                         // as one. Both of its own gaps take half the spread, so on a
                         // tall screen it holds the centre rather than drifting up
                         // under the seek bar.
-                        Spacer(Modifier.height(8.dp + controlSpread / 2))
+                        Spacer(Modifier.height(6.dp + controlSpread / 2))
                         transport()
-                        Spacer(Modifier.height(12.dp + controlSpread / 2))
+                        Spacer(Modifier.height(10.dp + controlSpread / 2))
                         VolumeRow(
                             value = { volume.level.value },
                             onValueChange = onVolumeChange,
@@ -4619,7 +4580,7 @@ fun NowPlayingScreen(
                         )
                         // The volume slider already has 13dp below its drawn track.
                         // Balance that invisible inset with the caption gap below the icons.
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(4.dp))
                     } else {
                         // No volume bar: the transport centres itself in the whole run
                         // between the scrubber and the bottom row instead. The run is
@@ -4628,7 +4589,7 @@ fun NowPlayingScreen(
                         // The scrubber draws its times 9dp above their slot, which
                         // leaves that much more visible room above; half of it moves
                         // from the top gap to the bottom one.
-                        val run = 8.dp + 12.dp + 6.dp + controlSpread + VOLUME_ROW_HEIGHT
+                        val run = 6.dp + 10.dp + 4.dp + controlSpread + VOLUME_ROW_HEIGHT
                         val lift = SCRUBBER_LABEL_LIFT / 2
                         Spacer(Modifier.height(run / 2 - lift))
                         transport()
@@ -4636,7 +4597,7 @@ fun NowPlayingScreen(
                     }
 
                     playerActions()
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(14.dp))
                     }
                     }
                     }
