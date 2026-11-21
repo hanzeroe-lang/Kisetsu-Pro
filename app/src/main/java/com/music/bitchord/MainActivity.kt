@@ -4157,6 +4157,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                         onPodcastRestart = { bookmark -> resumePodcast(bookmark.copy(positionMs = 0L)) },
                                         onPinTap = openHomePin,
                                         onOpenSpotify = { showSpotify = true },
+                                        onOpenSettings = { showSettings = true },
                                         onOpenPlaylist = { playlist ->
                                             viewModel.openDetail(
                                                 browseId = SPOTIFY_PAGE_PREFIX + playlist.id,
@@ -4873,7 +4874,7 @@ val filteredPicks by remember(kisetsuPicks) {
                         detail != null && detailActiveShelf != null -> detailActiveShelf?.title.orEmpty()
                         detail != null -> detail.title
                         selectedMoodGenre != null -> selectedMoodGenre?.title.orEmpty()
-                        else -> if (spotifyHome && selectedTab == TAB_HOME) "Good evening" else tabs[selectedTab].let {
+                        else -> if (spotifyHome && selectedTab == TAB_HOME) "" else tabs[selectedTab].let {
                             if (it.label == "Play") stringResource(R.string.listen_now) else it.label
                         }
                     },
@@ -4925,26 +4926,7 @@ val filteredPicks by remember(kisetsuPicks) {
                         else -> null
                     },
                     modifier = Modifier.align(Alignment.TopCenter),
-                    // Spotify home leads with a time-of-day greeting instead
-                    // of a back button, in line with the account button.
-                    leading = if (detail == null && spotifyHome && selectedTab == TAB_HOME && !showSpotify) {
-                        {
-                            val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-                            val greeting = when (hour) {
-                                in 5..11 -> "Good morning"
-                                in 12..17 -> "Good afternoon"
-                                else -> "Good evening"
-                            }
-                            Text(
-                                text = greeting,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    } else null,
+                    leading = null,
                     // Only on the Search tab itself, not on anything pushed over it.
                     accessory = if (
                         !useFoldingNav &&
@@ -5207,12 +5189,17 @@ val filteredPicks by remember(kisetsuPicks) {
                             // itself rather than being told.
                             TopBarDownloadButton(onClick = { showDownloadManager = true })
                             // Account button back in the top right, like it used to be.
-                            IconButton(onClick = { showSettings = true }) {
-                                Icon(
-                                    Icons.Rounded.AccountCircle,
-                                    contentDescription = "Account",
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                )
+                            val onSpotifyHome = spotifyHome && selectedTab == TAB_HOME && detail == null &&
+                                !showSpotify && !showReplay && !showHistory && !showFlow && !showDiscord &&
+                                libraryShowAll == null && selectedMoodGenre == null
+                            if (!onSpotifyHome) {
+                                IconButton(onClick = { showSettings = true }) {
+                                    Icon(
+                                        Icons.Rounded.AccountCircle,
+                                        contentDescription = "Account",
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
                             }
                         }
                     },

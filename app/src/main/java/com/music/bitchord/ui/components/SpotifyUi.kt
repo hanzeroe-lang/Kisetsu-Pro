@@ -92,6 +92,7 @@ import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Replay10
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Share
@@ -5887,6 +5888,8 @@ fun SpotifyHomeScreen(
     onPinTap: (com.music.bitchord.data.settings.HomePin) -> Unit = {},
     /** Opens the full Spotify library screen. */
     onOpenSpotify: () -> Unit = {},
+    /** Opens Settings. */
+    onOpenSettings: () -> Unit = {},
     /** Opens a Spotify playlist as a detail page. */
     onOpenPlaylist: (com.music.bitchord.data.spotify.SpotifyPlaylist) -> Unit = {},
     /** A strip pinned above the feed - the phone's limited-edition banner. */
@@ -6049,42 +6052,36 @@ fun SpotifyHomeScreen(
             }
             item(key = "home-header") {
                 Column(Modifier.padding(top = 0.dp, bottom = 4.dp)) {
-                    if (!slopless && homeCommandCenter && selectedPill == "All") {
-                        SpotifyHomeCommandCenter(
-                            resume = podcastResumes.firstOrNull(),
-                            onResume = { podcastResumes.firstOrNull()?.let(onPodcastResume) },
-                            onQuickAction = { action ->
-                                when (action) {
-                                    "episodes" -> selectedPill = if ("Episodes" in pills) "Episodes" else if ("Podcasts" in pills) "Podcasts" else "All"
-                                    "radio" -> selectedPill = if ("Radio" in pills) "Radio" else "All"
-                                    "music" -> selectedPill = if ("Music" in pills) "Music" else "All"
-                                    "downloads", "liked" -> selectedPill = "All"
-                                }
-                            },
-                            timeOfDay = homeTimeOfDay,
-                        )
-                        Spacer(Modifier.height(10.dp))
-                    }
-
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        items(pills) { pill ->
-                            SpotifyHomePill(
-                                label = pill,
-                                selected = pill == selectedPill,
-                                onClick = { selectedPill = pill },
+                        IconButton(onClick = onOpenSettings) {
+                            Icon(
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = "Settings",
+                                tint = SpotifyOnBg(),
                             )
                         }
+                        LazyRow(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(pills) { pill ->
+                                SpotifyHomePill(
+                                    label = pill,
+                                    selected = pill == selectedPill,
+                                    onClick = { selectedPill = pill },
+                                )
+                            }
+                        }
                     }
-                    Spacer(Modifier.height(8.dp))
-                    // 8-rectangle grid of recent playlists (2 per line, small).
-                    // Only the All tab wears it - a focused tab (Music,
-                    // Podcasts, Radio, Episodes) shows just its own shelves.
+                    Spacer(Modifier.height(12.dp))
+                    // Iconic Spotify quick grid at top.
                     val recentItems = remember(shelves) {
-                        shelves.flatMap { it.items }.take(8)
+                        shelves.asSequence().flatMap { it.items.asSequence() }.distinctBy { it.videoId ?: it.browseId ?: it.title }.take(8).toList()
                     }
                     if (selectedPill == "All" && recentItems.isNotEmpty()) {
                         Column(
@@ -6111,119 +6108,11 @@ fun SpotifyHomeScreen(
                                 }
                             }
                         }
-                        Spacer(Modifier.height(14.dp))
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
 
-            if (!slopless) {
-                item(key = "home-spotify") {
-                    SpotifyHomeSection(
-                        onOpenSpotify = onOpenSpotify,
-                        onOpenPlaylist = onOpenPlaylist,
-                    )
-                }
-            }
-
-            if (!slopless && selectedPill == "All") {
-                item(key = "home-big-redesigns") {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
-                        if (homeMoodLaunchpad) {
-                            SpotifyHomeMoodLaunchpad(onMood = { selectedPill = if ("Radio" in pills) "Radio" else "All" })
-                        }
-                        if (homeBentoStoryRail) {
-                            SpotifyHomeBentoStoryRail(shelves = shelves, onItemClick = { onItemClick(it, "") })
-                        }
-                        if (homeNowLaterExplore) {
-                            SpotifyHomeNowLaterExplore(
-                                resumes = podcastResumes,
-                                downloadedCount = homeDownloadedCount,
-                                onResume = { podcastResumes.firstOrNull()?.let(onPodcastResume) },
-                                onSelect = { selectedPill = it },
-                            )
-                        }
-                        if (homeDailyDigest) {
-                            SpotifyHomeDailyDigest(
-                                resume = podcastResumes.firstOrNull(),
-                                downloadedCount = homeDownloadedCount,
-                                onResume = { podcastResumes.firstOrNull()?.let(onPodcastResume) },
-                                onOpenRadio = { selectedPill = if ("Radio" in pills) "Radio" else "All" },
-                            )
-                        }
-                        if (homeOfflineMode) {
-                            SpotifyHomeOfflineModeBanner(downloadedCount = homeDownloadedCount)
-                        }
-                        if (homeShowsHub && podcastResumes.isNotEmpty()) {
-                            SpotifyHomeShowsHub(resumes = podcastResumes.take(6), onResume = onPodcastResume)
-                        }
-                        if (homeHighlightsRecap) {
-                            SpotifyHomeHighlightsRecap(summary = homeHighlightsSummary)
-                        }
-                        if (homeCustomizableSections) {
-                            SpotifyHomeCustomizableSectionsBlock()
-                        }
-                    }
-                }
-            }
-
-            if (!slopless && selectedPill == "All" && homeNowHub) {
-                item(key = "home-now-hub") {
-                    SpotifyHomeNowHub(
-                        onPodcastResume = onPodcastResume,
-                        onItemClick = onItemClick,
-                    )
-                }
-            }
-
-            // The Quick launch panel and the podcast "Jump back in" row sit
-            // directly under the grid - the shortcut row and the half-heard
-            // episodes Spotify puts right at the top of the home feed. The
-            // shortcuts stay on every tab (the listener's own pins are always
-            // relevant); the half-heard episodes follow the podcast tabs.
-            item(key = "quick-launch") {
-                if (!slopless && homeQuickLaunchEnhanced) {
-                    Column(Modifier.fillMaxWidth().padding(top = 2.dp)) {
-                        Text(
-                            "Quick launch . Dashboard",
-                            color = SpotifyMuted(0.78f),
-                            fontSize = 12.5.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
-                        )
-                        SpotifyQuickLaunch(onPinTap = onPinTap)
-                    }
-                } else {
-                    SpotifyQuickLaunch(onPinTap = onPinTap)
-                }
-            }
-            if (!slopless && homeTimeline && selectedPill == "All") {
-                item(key = "home-timeline") {
-                    SpotifyHomeTimeline(
-                        onPodcastResume = onPodcastResume,
-                        onItemClick = onItemClick,
-                    )
-                }
-            }
-            if (!slopless && (selectedPill == "All" || selectedPill == "Podcasts" || selectedPill == "Episodes")) {
-                item(key = "podcast-jump-back") {
-                    SpotifyPodcastJumpBackIn(onResume = onPodcastResume, onRestart = onPodcastRestart)
-                }
-            }
-            if (!slopless && homeExploreBento && selectedPill == "All") {
-                item(key = "home-explore-bento") {
-                    SpotifyHomeExploreBento(onSelectPill = { selectedPill = it })
-                }
-            }
-
-            // The "For you" shelf - most played songs, artists and albums -
-            // belongs to the All tab only. Focused tabs skip it so their own
-            // shelves sit right under the pill row.
-            if (selectedPill == "All") {
-                item(key = "jump-back-in") {
-                    SpotifyJumpBackIn(onItemClick = onItemClick, onItemLongPress = onItemLongPress)
-                }
-            }
             when (state) {
                 is UiState.Loading -> item(key = "home-loading") {
                     Box(
@@ -6320,29 +6209,40 @@ fun SpotifyHomeScreen(
                             )
                         }
                     } else {
-                        itemsIndexed(
-                            filtered,
-                            // Index in the key: shelves repeat titles - an artist
-                            // page can carry two "about" shelves (bio, fixes,
-                            // etc.), and one duplicate key crashes the whole
-                            // list the moment the second shelf is measured.
-                            key = { index, shelf -> "shelf-$index-${shelf.title}" },
-                        ) { index, shelf ->
-                            val dynamicMod = if (homeDynamicSectionColors) {
-                                val art = shelf.items.firstOrNull()?.thumbnailUrl
-                                val wash = rememberArtworkPalette(art, dark = true).wash.copy(alpha = 0.22f)
-                                Modifier.background(wash)
-                            } else Modifier
-                            Column(modifier = dynamicMod.fillMaxWidth()) {
-                                if (homeEditorialLayout && index == 0 && shelf.items.isNotEmpty()) {
-                                    SpotifyHomeEditorialSpotlight(
-                                        shelf = shelf,
-                                        onItemClick = { item -> onItemClick(item, shelf.title) },
-                                    )
-                                }
+                        val cleanTitle: (String) -> String = { t ->
+                            t.replace(Regex("(?i)\\s*[\\[(]?beta[])]?\\s*"), " ").replace(Regex("\\s+"), " ").trim()
+                        }
+                        val isAllowed: (String) -> Boolean = { raw ->
+                            val t = cleanTitle(raw).lowercase()
+                            t.contains("made for you") ||
+                                t.contains("your top mixes") ||
+                                t.contains("albums featuring") ||
+                                t.contains("recommended stations") ||
+                                t.contains("your favorite artists") ||
+                                t.contains("recommended for today") ||
+                                t.contains("based on recent listening") ||
+                                t.startsWith("more like") || t.contains(" more like") ||
+                                t.startsWith("for fans of") || t.contains(" for fans of")
+                        }
+                        val shownShelves = if (selectedPill == "All") filtered.filter { isAllowed(it.title) } else filtered
+                        if (shownShelves.isEmpty()) {
+                            item(key = "home-empty-filtered") {
+                                Text(
+                                    text = "Nothing here yet.",
+                                    color = SpotifyMuted(0.60f),
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 56.dp),
+                                )
+                            }
+                        } else {
+                            itemsIndexed(
+                                shownShelves,
+                                key = { index, shelf -> "shelf-$index-${shelf.title}" },
+                            ) { _, shelf ->
+                                val cleaned = shelf.copy(title = cleanTitle(shelf.title))
                                 SpotifyHomeShelf(
-                                    shelf = shelf,
-                                    onItemClick = { item -> onItemClick(item, shelf.title) },
+                                    shelf = cleaned,
+                                    onItemClick = { item -> onItemClick(item, cleaned.title) },
                                     onItemLongPress = onItemLongPress,
                                 )
                             }
