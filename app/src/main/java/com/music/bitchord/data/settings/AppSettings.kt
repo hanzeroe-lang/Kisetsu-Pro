@@ -497,6 +497,8 @@ object AppSettings {
 
     /** Optional Spotify-style floating gradient nav bar and mini player. */
     val spotifyNavBar = MutableStateFlow(true)
+    /** Tint the bottom navigation bar with the accent color. */
+    val coloredNavBar = MutableStateFlow(false)
 
     /** Optional Spotify-style full Now Playing screen. */
     val spotifyPlayer = MutableStateFlow(true)
@@ -542,7 +544,7 @@ object AppSettings {
     val seekForwardSeconds = MutableStateFlow(10)
 
     /** Font size scale: "small", "normal", or "big". */
-    val fontSizeScale = MutableStateFlow("small")
+    val fontSizeScale = MutableStateFlow("normal")
 
     /** Master Spotify mode: turns on all Spotify elements and sets accent to Spotify green. */
     val spotifyMode = MutableStateFlow(true)
@@ -568,6 +570,8 @@ object AppSettings {
     val homeEditorialLayout = MutableStateFlow(true)
     /** Home redesign: tabbed home modes (Music/Podcasts/Radio/Episodes focus). */
     val homeModeTabs = MutableStateFlow(true)
+    /** Show the Discover tab in the bottom navigation. */
+    val showDiscoverTab = MutableStateFlow(false)
     /** Home redesign: enhanced Quick Launch dashboard behavior/presentation. */
     val homeQuickLaunchEnhanced = MutableStateFlow(true)
     /** Home redesign: dynamic per-section album-color theming blocks. */
@@ -1472,6 +1476,7 @@ object AppSettings {
         // new switches from it once, so anyone who had it on keeps the look.
         val legacySpotify = prefs.getString(KEY_APP_UI, null) == "SPOTIFY"
         spotifyNavBar.value = prefs.getBoolean(KEY_SPOTIFY_NAV_BAR, true)
+        coloredNavBar.value = prefs.getBoolean(KEY_COLORED_NAV_BAR, false)
         spotifyPlayer.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER, true)
         spotifyPlayerCallMeApple.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER_CALL_ME_APPLE, false)
         spotifyPlayerSeekTransport.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER_SEEK_TRANSPORT, false)
@@ -1487,12 +1492,13 @@ object AppSettings {
         seekBackSeconds.value = prefs.getInt(KEY_SEEK_BACK_SECONDS, 10).coerceIn(1, 300)
         seekForwardSeconds.value = prefs.getInt(KEY_SEEK_FORWARD_SECONDS, 10).coerceIn(1, 300)
         spotifyMode.value = prefs.getBoolean(KEY_SPOTIFY_MODE, true)
-        fontSizeScale.value = prefs.getString(KEY_FONT_SIZE_SCALE, "small") ?: "small"
+        fontSizeScale.value = prefs.getString(KEY_FONT_SIZE_SCALE, "normal") ?: "normal"
         spotifyHome.value = prefs.getBoolean(KEY_SPOTIFY_HOME, true)
         spotifyAlgorithm.value = prefs.getBoolean(KEY_SPOTIFY_ALGORITHM, false)
         homeNowHub.value = prefs.getBoolean(KEY_HOME_NOW_HUB, true)
         homeEditorialLayout.value = prefs.getBoolean(KEY_HOME_EDITORIAL_LAYOUT, true)
         homeModeTabs.value = prefs.getBoolean(KEY_HOME_MODE_TABS, true)
+        showDiscoverTab.value = prefs.getBoolean(KEY_SHOW_DISCOVER_TAB, false)
         homeQuickLaunchEnhanced.value = prefs.getBoolean(KEY_HOME_QUICK_LAUNCH_ENHANCED, true)
         homeDynamicSectionColors.value = prefs.getBoolean(KEY_HOME_DYNAMIC_SECTION_COLORS, true)
         homeTimeline.value = prefs.getBoolean(KEY_HOME_TIMELINE, true)
@@ -2069,6 +2075,10 @@ object AppSettings {
         spotifyNavBar.value = value
         prefs.edit().putBoolean(KEY_SPOTIFY_NAV_BAR, value).apply()
     }
+    fun setColoredNavBar(value: Boolean) {
+        coloredNavBar.value = value
+        prefs.edit().putBoolean(KEY_COLORED_NAV_BAR, value).apply()
+    }
 
     fun setSpotifyPlayer(value: Boolean) {
         spotifyPlayer.value = value
@@ -2211,6 +2221,7 @@ object AppSettings {
     fun setHomeNowHub(value: Boolean) { homeNowHub.value = value; prefs.edit().putBoolean(KEY_HOME_NOW_HUB, value).apply() }
     fun setHomeEditorialLayout(value: Boolean) { homeEditorialLayout.value = value; prefs.edit().putBoolean(KEY_HOME_EDITORIAL_LAYOUT, value).apply() }
     fun setHomeModeTabs(value: Boolean) { homeModeTabs.value = value; prefs.edit().putBoolean(KEY_HOME_MODE_TABS, value).apply() }
+    fun setShowDiscoverTab(value: Boolean) { showDiscoverTab.value = value; prefs.edit().putBoolean(KEY_SHOW_DISCOVER_TAB, value).apply() }
     fun setHomeQuickLaunchEnhanced(value: Boolean) { homeQuickLaunchEnhanced.value = value; prefs.edit().putBoolean(KEY_HOME_QUICK_LAUNCH_ENHANCED, value).apply() }
     fun setHomeDynamicSectionColors(value: Boolean) { homeDynamicSectionColors.value = value; prefs.edit().putBoolean(KEY_HOME_DYNAMIC_SECTION_COLORS, value).apply() }
     fun setHomeTimeline(value: Boolean) { homeTimeline.value = value; prefs.edit().putBoolean(KEY_HOME_TIMELINE, value).apply() }
@@ -3268,6 +3279,7 @@ object AppSettings {
     private const val KEY_THEME = "theme_mode"
     private const val KEY_APP_UI = "app_ui"
     private const val KEY_SPOTIFY_NAV_BAR = "spotify_nav_bar"
+    private const val KEY_COLORED_NAV_BAR = "colored_nav_bar"
     private const val KEY_SPOTIFY_PLAYER = "spotify_player"
     private const val KEY_SPOTIFY_PLAYER_CALL_ME_APPLE = "spotify_player_call_me_apple"
     private const val KEY_SPOTIFY_PLAYER_SEEK_TRANSPORT = "spotify_player_seek_transport"
@@ -3289,6 +3301,7 @@ object AppSettings {
     private const val KEY_HOME_NOW_HUB = "home_now_hub"
     private const val KEY_HOME_EDITORIAL_LAYOUT = "home_editorial_layout"
     private const val KEY_HOME_MODE_TABS = "home_mode_tabs"
+    private const val KEY_SHOW_DISCOVER_TAB = "show_discover_tab"
     private const val KEY_HOME_QUICK_LAUNCH_ENHANCED = "home_quick_launch_enhanced"
     private const val KEY_HOME_DYNAMIC_SECTION_COLORS = "home_dynamic_section_colors"
     private const val KEY_HOME_TIMELINE = "home_timeline"

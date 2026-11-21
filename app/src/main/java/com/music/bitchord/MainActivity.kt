@@ -869,6 +869,7 @@ private fun BitChordApp(
     val spotifyNavBar by AppSettings.spotifyNavBar.collectAsStateWithLifecycle()
     val spotifyPlayer by AppSettings.spotifyPlayer.collectAsStateWithLifecycle()
     val spotifyHome by AppSettings.spotifyHome.collectAsStateWithLifecycle()
+    val showDiscoverTab by AppSettings.showDiscoverTab.collectAsStateWithLifecycle()
     val sloplessMode by AppSettings.sloplessMode.collectAsStateWithLifecycle()
     val homeNetflixCinematic by AppSettings.homeNetflixCinematic.collectAsStateWithLifecycle()
     val libraryNetflixCinematic by AppSettings.libraryNetflixCinematic.collectAsStateWithLifecycle()
@@ -5248,6 +5249,7 @@ val filteredPicks by remember(kisetsuPicks) {
                         dock = activeDock,
                         // Apple's glass bar pulls up to the player; Spotify stays solid.
                         pull = playerSheetMotion.takeIf { !reducePlayerMotion && !spotifyNavBar },
+                        hiddenTabIndices = if (showDiscoverTab) emptySet() else setOf(TAB_CREATE),
                     )
                 } else Column(
                     modifier = Modifier
@@ -7687,12 +7689,17 @@ private fun AppGlassNav(
     onBlockedControl: () -> Unit,
     dock: PlayerDock?,
     pull: MiniPlayerPull?,
+    hiddenTabIndices: Set<Int> = emptySet(),
 ) {
+    val visible = tabs.mapIndexedNotNull { index, tab -> if (index in hiddenTabIndices) null else index to tab }
+    val visibleTabs = visible.map { it.second }
+    val visibleSelected = visible.indexOfFirst { it.first == selectedIndex }.takeIf { it >= 0 } ?: 0
+    val mapBack: (Int) -> Unit = { vi -> visible.getOrNull(vi)?.first?.let(onTabSelected) }
     if (useFoldingNav) {
         GlassFoldingNavBar(
-            tabs = tabs,
-            selectedIndex = selectedIndex,
-            onTabSelected = onTabSelected,
+            tabs = visibleTabs,
+            selectedIndex = visibleSelected,
+            onTabSelected = mapBack,
             scrollConnection = scrollConnection,
             search = search,
             placeholder = placeholder,
@@ -7711,9 +7718,9 @@ private fun AppGlassNav(
         )
     } else {
         GlassNavBar(
-            tabs = tabs,
-            selectedIndex = selectedIndex,
-            onTabSelected = onTabSelected,
+            tabs = visibleTabs,
+            selectedIndex = visibleSelected,
+            onTabSelected = mapBack,
             scrollConnection = scrollConnection,
             song = song,
             isPlaying = isPlaying,

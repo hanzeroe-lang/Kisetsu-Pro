@@ -249,6 +249,7 @@ fun SettingsScreen(
     val translationLanguage by AppSettings.translationLanguage.collectAsStateWithLifecycle()
     val theme by AppSettings.themeMode.collectAsStateWithLifecycle()
     val spotifyNavBar by AppSettings.spotifyNavBar.collectAsStateWithLifecycle()
+    val coloredNavBar by AppSettings.coloredNavBar.collectAsStateWithLifecycle()
     val spotifyPlayer by AppSettings.spotifyPlayer.collectAsStateWithLifecycle()
     val spotifyPlayerCallMeApple by AppSettings.spotifyPlayerCallMeApple.collectAsStateWithLifecycle()
     val spotifyPlayerSeekTransport by AppSettings.spotifyPlayerSeekTransport.collectAsStateWithLifecycle()
@@ -267,6 +268,7 @@ fun SettingsScreen(
     val sloplessMode by AppSettings.sloplessMode.collectAsStateWithLifecycle()
     val spotifyAlgorithm by AppSettings.spotifyAlgorithm.collectAsStateWithLifecycle()
     val discoverModeTabs by AppSettings.discoverModeTabs.collectAsStateWithLifecycle()
+    val showDiscoverTab by AppSettings.showDiscoverTab.collectAsStateWithLifecycle()
     val discoverMoodChips by AppSettings.discoverMoodChips.collectAsStateWithLifecycle()
     val discoverSpotlightHero by AppSettings.discoverSpotlightHero.collectAsStateWithLifecycle()
     val discoverBento by AppSettings.discoverBento.collectAsStateWithLifecycle()
@@ -1201,6 +1203,24 @@ fun SettingsScreen(
                     onClick = { AppSettings.setSpotifyNavBar(!spotifyNavBar) },
                 )
             }
+            row("Colored nav bar", "navbar", "nav bar", "color", "accent", "tint") {
+                SettingsRow(
+                    icon = Icons.Rounded.Palette,
+                    title = "Colored nav bar",
+                    subtitle = "Tint the bottom navigation with the accent color.",
+                    trailing = {
+                        Switch(
+                            checked = coloredNavBar,
+                            onCheckedChange = AppSettings::setColoredNavBar,
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                checkedBorderColor = MaterialTheme.colorScheme.primary,
+                            ),
+                        )
+                    },
+                    onClick = { AppSettings.setColoredNavBar(!coloredNavBar) },
+                )
+            }
             val spotifyPlayerTitle = stringResource(R.string.spotify_player)
             row(spotifyPlayerTitle, "spotify", "player", "now playing", "interface", "full screen") {
                 SettingsRow(
@@ -1420,6 +1440,7 @@ fun SettingsScreen(
                     )
                 }
             }
+            DiscoverRedesignToggle("Show Discover tab", "Hide Discover from the bottom navigation unless enabled.", showDiscoverTab, AppSettings::setShowDiscoverTab, "show discover tab bottom navigation")
             DiscoverRedesignToggle("Discover: Mode tabs", "For you / Episodes / Radio / Podcasts tabs.", discoverModeTabs, AppSettings::setDiscoverModeTabs, "mode tabs episodes")
             DiscoverRedesignToggle("Discover: Mood chips", "Mood & moment chips above search.", discoverMoodChips, AppSettings::setDiscoverMoodChips, "mood moment chips")
             DiscoverRedesignToggle("Discover: Spotlight hero", "Large rotating spotlight card with Play.", discoverSpotlightHero, AppSettings::setDiscoverSpotlightHero, "spotlight hero play")

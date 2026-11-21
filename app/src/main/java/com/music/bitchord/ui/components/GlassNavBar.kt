@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.music.bitchord.data.settings.AppSettings
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,7 +112,8 @@ fun GlassNavBar(
     // corners on every wardrobe, frosted whichever way the glass lands.
     val pillShape = remember { RoundedCornerShape(12.dp) }
     val contentColor = glassContentColor()
-    val selectedColor = contentColor
+    val coloredNav by AppSettings.coloredNavBar.collectAsStateWithLifecycle()
+    val selectedColor = if (coloredNav) MaterialTheme.colorScheme.primary else contentColor
     val unselectedColor = contentColor.copy(alpha = 0.65f)
     val haptics = rememberHaptics()
 

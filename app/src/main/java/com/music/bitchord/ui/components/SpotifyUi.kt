@@ -6077,9 +6077,15 @@ fun SpotifyHomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(SpotifyBg())
+                        .background(
+                            Brush.verticalGradient(
+                                0f to SpotifyBg(),
+                                0.72f to SpotifyBg().copy(alpha = 0.96f),
+                                1f to Color.Transparent,
+                            )
+                        )
                         .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(top = 4.dp, bottom = 8.dp),
+                        .padding(top = 4.dp, bottom = 16.dp),
                 ) {
                     Row(
                         modifier = Modifier

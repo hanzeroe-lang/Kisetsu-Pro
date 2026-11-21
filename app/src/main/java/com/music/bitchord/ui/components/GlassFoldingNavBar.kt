@@ -38,6 +38,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.music.bitchord.data.settings.AppSettings
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -203,10 +205,8 @@ private fun GlassFoldingNavBarChrome(
     BackHandler(enabled = search.visualActive, onBack = search.onExit)
 
     val contentColor = glassContentColor()
-    // v5.1: the selected tab wears the theme's accent in glass mode too, so
-    // the Droplet recolours it the way the non-glass bar always did. The
-    // rest of the bar's content keeps the luminance-safe black/white.
-    val selectedColor = MaterialTheme.colorScheme.primary
+    val coloredNav by AppSettings.coloredNavBar.collectAsStateWithLifecycle()
+    val selectedColor = if (coloredNav) MaterialTheme.colorScheme.primary else contentColor
     val unselectedColor = contentColor.copy(alpha = 0.65f)
     val glassSurface: @Composable () -> Modifier = { Modifier.liquidGlass(shape = NavBarShape) }
     val searchIndex = tabs.lastIndex
