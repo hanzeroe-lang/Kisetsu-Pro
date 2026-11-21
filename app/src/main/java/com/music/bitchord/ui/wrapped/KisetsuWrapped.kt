@@ -553,7 +553,7 @@ private fun TopSongCard(
         modifier = Modifier
             .clip(CircleShape)
             .background(Color.White)
-            .clickable { onPlaySong(entry.song, "Kisetsu Wrapped") }
+            .clickable { onPlaySong(entry.song, "Kistify Wrapped") }
             .padding(horizontal = 18.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -740,7 +740,7 @@ private fun OutroCard(
             modifier = Modifier
                 .clip(CircleShape)
                 .background(Color.White)
-                .clickable { onPlaySong(top.song, "Kisetsu Wrapped") }
+                .clickable { onPlaySong(top.song, "Kistify Wrapped") }
                 .padding(horizontal = 18.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),

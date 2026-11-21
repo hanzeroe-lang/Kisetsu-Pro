@@ -84,8 +84,8 @@ android {
         // Haze falls back to a translucent scrim below that.
         minSdk = 26
         targetSdk = 36
-        versionCode = 231
-        versionName = "4.209"
+        versionCode = 232
+        versionName = "4.210"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -133,7 +133,7 @@ android {
         create("dev") {
             dimension = "env"
             applicationId = "com.dev.fruitjuce"
-            resValue("string", "app_name", "Fruit Juce")
+            resValue("string", "app_name", "Kistify Dev")
         }
         create("prod") {
             dimension = "env"

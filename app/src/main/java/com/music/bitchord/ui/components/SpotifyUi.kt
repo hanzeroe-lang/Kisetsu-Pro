@@ -4163,7 +4163,7 @@ private fun LazyListScope.spotifyInfoItems(
                             }
                         }
                         Spacer(Modifier.height(12.dp))
-                        SpotifyCreditRow("Kisetsu", "Player")
+                        SpotifyCreditRow("Kistify", "Player")
                     }
                 }
             }

@@ -3818,7 +3818,7 @@ val filteredPicks by remember(kisetsuPicks) {
                             } == true,
                             onSave = {
                                 flowSaveName = if (flowMood == com.music.bitchord.data.flow.FlowMood.FLOW) {
-                                    "Kisetsu Radio"
+                                    "Kistify Radio"
                                 } else {
                                     "Kisetsu Radio . ${flowMood.label}"
                                 }

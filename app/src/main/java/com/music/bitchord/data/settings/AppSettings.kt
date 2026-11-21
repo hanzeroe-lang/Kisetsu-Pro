@@ -133,7 +133,7 @@ enum class ThemeMode(val label: String) {
  * Kisetsu keeps its own colours either way.
  */
 enum class AppUi(val label: String) {
-    BITCHORD("Kisetsu"),
+    BITCHORD("Kistify"),
     CLASSIPOD("Classipod"),
 }
 
@@ -490,7 +490,7 @@ object AppSettings {
      * rather than pinning itself to black. Anyone who has already chosen a
      * theme keeps it - this is the default for a fresh install only.
      */
-    val themeMode = MutableStateFlow(ThemeMode.SYSTEM)
+    val themeMode = MutableStateFlow(ThemeMode.DARK)
 
     /** Which shell the app wears - see [AppUi]. Defaults to the modern UI. */
     val appUi = MutableStateFlow(AppUi.BITCHORD)
@@ -816,7 +816,7 @@ object AppSettings {
      * `blossom`, `spotify`, `orange`, `apple`, `white`
      * or `custom` (see [customAccentArgb]).
      */
-    val accentPreset = MutableStateFlow("white")
+    val accentPreset = MutableStateFlow("spotify")
 
     /** Whether the one-time "make Kisetsu identical to Spotify" walkthrough was completed/dismissed. */
     val spotifyIdenticalWalkthroughSeen = MutableStateFlow(false)
@@ -1463,8 +1463,8 @@ object AppSettings {
             }
         }
         themeMode.value = runCatching {
-            ThemeMode.valueOf(prefs.getString(KEY_THEME, null) ?: ThemeMode.SYSTEM.name)
-        }.getOrDefault(ThemeMode.SYSTEM)
+            ThemeMode.valueOf(prefs.getString(KEY_THEME, null) ?: ThemeMode.DARK.name)
+        }.getOrDefault(ThemeMode.DARK)
         appUi.value = runCatching {
             AppUi.valueOf(prefs.getString(KEY_APP_UI, null) ?: "BITCHORD")
         }.getOrDefault(AppUi.BITCHORD)
@@ -1601,7 +1601,7 @@ object AppSettings {
 
         appFont.value = prefs.getString(KEY_APP_FONT, "spotify_mix") ?: "spotify_mix"
         uploadedFonts.value = prefs.getStringSet(KEY_UPLOADED_FONTS, emptySet()) ?: emptySet()
-        accentPreset.value = prefs.getString(KEY_ACCENT_PRESET, "white").orEmpty()
+        accentPreset.value = prefs.getString(KEY_ACCENT_PRESET, "spotify").orEmpty()
             .ifBlank { "white" }
         customAccentArgb.value = prefs.getInt(KEY_CUSTOM_ACCENT, 0xFFE50914.toInt())
         invincibleTheme.value = prefs.getString(KEY_INVINCIBLE_THEME, "off") ?: "off"
