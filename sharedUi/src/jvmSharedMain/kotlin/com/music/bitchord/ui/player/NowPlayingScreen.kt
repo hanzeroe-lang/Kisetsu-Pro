@@ -2546,6 +2546,7 @@ fun NowPlayingScreen(
                             },
                             lyricStrip = null,
                             scrubber = {
+                                Spacer(Modifier.height(6.dp))
                                 PlayerScrubber(
                                     shown = shown,
                                     durationMs = durationMs,
@@ -4248,7 +4249,7 @@ fun NowPlayingScreen(
                                 if (signedIn || song.localUri != null) {
                                     val liked = likeStatus == LikeStatus.LIKE
                                     CircleGlyph(
-                                        icon = if (liked) BitChordIcons.Star else BitChordIcons.StarFilled,
+                                        icon = if (liked) BitChordIcons.StarFilled else BitChordIcons.Star,
                                         contentDescription = stringResource(
                                             if (liked) Res.string.remove_from_liked else Res.string.like,
                                         ),
@@ -4555,6 +4556,7 @@ fun NowPlayingScreen(
                     // (sung line → loading line) grew the deck and shrank the sleeve.
 
                     val transitionWindow by PlayerSettings.smartTransitionWindow.collectAsStateWithLifecycle()
+                    Spacer(Modifier.height(6.dp))
                     PlayerScrubber(
                         shown = shown,
                         durationMs = durationMs,

@@ -1025,13 +1025,6 @@ internal fun CircleGlyph(
             },
         contentAlignment = Alignment.Center,
     ) {
-        if (active) {
-            Box(
-                Modifier
-                    .matchParentSize()
-                    .background(Color.White, CircleShape),
-            )
-        }
         Crossfade(
             targetState = icon,
             animationSpec = tween(durationMillis = 180),
@@ -1040,7 +1033,7 @@ internal fun CircleGlyph(
             Icon(
                 imageVector = glyph,
                 contentDescription = contentDescription,
-                tint = if (active) Color.Black else Color.White,
+                tint = Color.White,
                 modifier = Modifier.size(22.dp),
             )
         }

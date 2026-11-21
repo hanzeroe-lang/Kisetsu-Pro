@@ -338,8 +338,8 @@ fun FloatingBottomBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Glass nav bar uses Apple Blue for text/icons per Kisetsu Pro branding.
-            val glassTint = Color(0xFF007AFF)
+            // Adaptive glass tint: white/black depending on background/light-dark, rare switch.
+            val glassTint = glassContentColor()
             val adaptiveTint = if (useGlass) glassTint else null
             tabs.forEachIndexed { index, tab ->
                 BottomBarItem(
