@@ -5923,6 +5923,25 @@ fun SpotifyHomeScreen(
     val homeDownloadedCount = produceState<Int>(initialValue = 0) {
         value = 0
     }.value
+    val recentSongs = produceState<List<ShelfItem>>(initialValue = emptyList()) {
+        value = runCatching {
+            val songs = com.music.bitchord.data.YtMusicRepository.recents().getOrDefault(emptyList())
+            songs.take(20).map { s ->
+                ShelfItem(s.title, s.displayArtist().ifBlank { s.artist }, s.thumbnailUrl, s.videoId, null)
+            }
+        }.getOrDefault(emptyList())
+    }.value
+    val recommendedSongs = produceState<List<ShelfItem>>(initialValue = emptyList()) {
+        value = runCatching {
+            val songs = com.music.bitchord.data.YtMusicRepository.quickPicks().getOrDefault(emptyList())
+            songs.take(20).map { s ->
+                ShelfItem(s.title, s.displayArtist().ifBlank { s.artist }, s.thumbnailUrl, s.videoId, null)
+            }
+        }.getOrDefault(emptyList())
+    }.value
+    val statsSummary = produceState<com.music.bitchord.data.stats.ReplaySummary?>(initialValue = null) {
+        value = runCatching { com.music.bitchord.data.stats.ListeningStats.summary(com.music.bitchord.data.stats.ReplayPeriod.ALL_TIME) }.getOrNull()
+    }.value
 
     val pills = if (homeModeTabs) SpotifyHomeModePills else SpotifyHomePills
     var selectedPill by rememberSaveable { mutableStateOf(pills.first()) }
@@ -6245,7 +6264,7 @@ fun SpotifyHomeScreen(
                                 l.contains("listen again") -> "Made for you based on recent listening"
                                 l.contains("mixed for you") || l == "made for you" -> "Made for you"
                                 l.contains("top mix") -> "Your top mixes"
-                                l.contains("favourite artists") || l.contains("favorite artists") -> "Your favorite artists"
+                                l.contains("favourite artists") || l.contains("favorite artists") -> "Subscribed artists"
                                 l.contains("recommended for you") -> "Recommended for today"
                                 else -> t
                             }
@@ -6263,8 +6282,26 @@ fun SpotifyHomeScreen(
                                 t.startsWith("for fans of") || t.contains(" for fans of") ||
                                 t.contains("listen again") || t.contains("quick picks")
                         }
-                        val preferred = if (selectedPill == "All") filtered.filter { isAllowed(it.title) } else filtered
-                        val shownShelves = if (preferred.isNotEmpty()) preferred else filtered
+                        val baseShelves = if (selectedPill == "All") filtered.filter { isAllowed(it.title) } else filtered
+                        val extra = mutableListOf<HomeShelf>()
+                        if (selectedPill == "All") {
+                            if (recentSongs.isNotEmpty()) extra += HomeShelf(title = "Recent songs", items = recentSongs)
+                            val artistItems = statsSummary?.artists.orEmpty().take(20).map {
+                                ShelfItem(it.title, it.subtitle ?: "Artist", it.artworkUrl, null, it.browseId)
+                            }
+                            if (artistItems.isNotEmpty()) extra += HomeShelf(title = "Subscribed artists", items = artistItems)
+                            if (recommendedSongs.isNotEmpty()) extra += HomeShelf(title = "Recommended songs", items = recommendedSongs)
+                            val albumItems = shelves.asSequence()
+                                .flatMap { it.items.asSequence() }
+                                .filter { it.browseId?.startsWith("MPREb") == true }
+                                .distinctBy { it.browseId }
+                                .take(20)
+                                .toList()
+                            if (albumItems.isNotEmpty()) extra += HomeShelf(title = "Recommended albums", items = albumItems)
+                        }
+                        val merged = (if (baseShelves.isNotEmpty()) baseShelves else filtered) + extra
+                        val seenTitles = mutableSetOf<String>()
+                        val shownShelves = merged.filter { seenTitles.add(it.title.lowercase()) }
                         if (shownShelves.isEmpty()) {
                             item(key = "home-empty-filtered") {
                                 Text(
