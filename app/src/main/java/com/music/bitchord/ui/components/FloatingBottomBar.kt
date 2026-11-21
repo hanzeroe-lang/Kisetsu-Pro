@@ -338,8 +338,8 @@ fun FloatingBottomBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Deep iOS blue for nav bar text/icons.
-            val glassTint = Color(0xFF007AFF)
+            // Lighter iOS blue for nav bar text/icons.
+            val glassTint = Color(0xFF0A84FF)
             val adaptiveTint = if (useGlass) glassTint else null
             tabs.forEachIndexed { index, tab ->
                 BottomBarItem(

@@ -446,10 +446,10 @@ internal fun shareVideoIntent(context: Context, video: File): Intent? = runCatch
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 }.getOrNull()
 
-/** Copies [video] into the device's Movies/BitChord, where a gallery will find it. */
+/** Copies [video] into the device's Movies/Kisetsu Pro, where a gallery will find it. */
 internal suspend fun saveVideoToGallery(context: Context, video: File, label: String): Boolean =
     withContext(Dispatchers.IO) {
-        val name = "bitchord-lyrics-${label.replace(' ', '-').lowercase(Locale.ROOT)}.mp4"
+        val name = "kisetsu-lyrics-${label.replace(' ', '-').lowercase(Locale.ROOT)}.mp4"
         runCatching {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val resolver = context.contentResolver
@@ -458,7 +458,7 @@ internal suspend fun saveVideoToGallery(context: Context, video: File, label: St
                 val values = ContentValues().apply {
                     put(MediaStore.Video.Media.DISPLAY_NAME, name)
                     put(MediaStore.Video.Media.MIME_TYPE, VIDEO_MIME)
-                    put(MediaStore.Video.Media.RELATIVE_PATH, "${Environment.DIRECTORY_MOVIES}/BitChord")
+                    put(MediaStore.Video.Media.RELATIVE_PATH, "${Environment.DIRECTORY_MOVIES}/Kisetsu Pro")
                     put(MediaStore.Video.Media.IS_PENDING, 1)
                 }
                 val uri: Uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
@@ -481,7 +481,7 @@ internal suspend fun saveVideoToGallery(context: Context, video: File, label: St
                 }
             } else {
                 @Suppress("DEPRECATION")
-                val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "BitChord")
+                val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "Kisetsu Pro")
                 dir.mkdirs()
                 video.copyTo(File(dir, name), overwrite = true)
             }

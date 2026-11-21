@@ -61,7 +61,7 @@ fun isGlassSupported(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= B
 
 /** Apple-matched defaults (Echo's GlassEffectConfig()), fixed rather than user sliders. */
 private const val VIBRANCY = 1f
-private const val BLUR_RADIUS_DP = 5f
+private const val BLUR_RADIUS_DP = 4f
 private const val LENS_HEIGHT = 0.55f
 private const val LENS_AMOUNT = 0.6f
 private const val LENS_MAX_DP = 48f
