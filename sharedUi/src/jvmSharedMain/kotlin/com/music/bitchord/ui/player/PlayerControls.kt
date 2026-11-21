@@ -1012,14 +1012,9 @@ internal fun CircleGlyph(
     modifier: Modifier = Modifier,
 ) {
     val haptics = rememberHaptics()
-    val discAlpha by animateFloatAsState(
-        targetValue = if (active) 0.34f else CIRCLE_DISC_ALPHA,
-        label = "glyphDisc",
-    )
-    val chrome = LocalPlayerChrome.current
     Box(
         modifier = modifier
-            .size(34.dp)
+            .size(38.dp)
             .clip(CircleShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -1030,17 +1025,6 @@ internal fun CircleGlyph(
             },
         contentAlignment = Alignment.Center,
     ) {
-        // The disc carries the blend, dodged as the bottom row's glyphs are, and
-        // the glyph sits on it in plain white. The ink is mixed in at a few times
-        // the plain disc's strength: a dodge laid on this thinly is next to nothing.
-        Box(
-            Modifier
-                .matchParentSize()
-                .vibrantChrome(chrome)
-                .background(discFill(chrome, discAlpha)),
-        )
-        // Outside the blend: the rim is light catching the edge, not ink.
-        Box(Modifier.matchParentSize().glassRim(CircleShape))
         Crossfade(
             targetState = icon,
             animationSpec = tween(durationMillis = 180),
@@ -1050,7 +1034,7 @@ internal fun CircleGlyph(
                 imageVector = glyph,
                 contentDescription = contentDescription,
                 tint = Color.White,
-                modifier = Modifier.size(19.dp),
+                modifier = Modifier.size(22.dp),
             )
         }
     }
@@ -1106,22 +1090,12 @@ internal fun Modifier.glassFrost(hazeState: HazeState?, flat: Boolean): Modifier
 @Composable
 internal fun GlassDiscPair(
     hazeState: HazeState?,
-    /** See [BestPartPill]'s, which goes flat for the same reason. */
+    /** Kept for call-site compatibility. */
     overlayOpen: () -> Boolean,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val reduceDynamicBlur by PlayerSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
-    val autoMixHold = rememberAutoMixFrostHold()
-    Box(modifier) {
-        Box(
-            Modifier
-                .matchParentSize()
-                .clip(DiscPairShape)
-                .glassFrost(hazeState, flat = reduceDynamicBlur || overlayOpen() || autoMixHold()),
-        )
-        Row(verticalAlignment = Alignment.CenterVertically, content = content)
-    }
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, content = content)
 }
 
 /**
