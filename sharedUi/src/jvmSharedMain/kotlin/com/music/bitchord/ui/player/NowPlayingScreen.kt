@@ -1280,6 +1280,7 @@ fun NowPlayingScreen(
         loadingText = lyricsLoadingText,
         haptics = haptics,
     )
+    val showLyricsActions by PlayerSettings.showLyricsActions.collectAsStateWithLifecycle()
     // The drawer holding the finished card, set the moment Share is confirmed.
     // Nothing is drawn here: the picture is a bitmap and a canvas, which is the
     // phone's to make, so the request is handed down and the sheet comes back
@@ -2615,20 +2616,24 @@ fun NowPlayingScreen(
                                 )
                             },
                             romanizationToggle = {
-                                RomanizationToggleButton(
-                                    state = lyricsTranslation.romanizationState,
-                                    showingRomanization = lyricsTranslation.showingRomanization,
-                                    enabled = !lyrics.isNullOrEmpty(),
-                                    onClick = lyricsTranslation.toggleRomanization,
-                                )
+                                if (showLyricsActions) {
+                                    RomanizationToggleButton(
+                                        state = lyricsTranslation.romanizationState,
+                                        showingRomanization = lyricsTranslation.showingRomanization,
+                                        enabled = !lyrics.isNullOrEmpty(),
+                                        onClick = lyricsTranslation.toggleRomanization,
+                                    )
+                                }
                             },
                             translationToggle = {
-                                TranslationToggleButton(
-                                    state = lyricsTranslation.translationState,
-                                    showingTranslation = lyricsTranslation.showingTranslation,
-                                    enabled = !lyrics.isNullOrEmpty(),
-                                    onClick = lyricsTranslation.toggleTranslation,
-                                )
+                                if (showLyricsActions) {
+                                    TranslationToggleButton(
+                                        state = lyricsTranslation.translationState,
+                                        showingTranslation = lyricsTranslation.showingTranslation,
+                                        enabled = !lyrics.isNullOrEmpty(),
+                                        onClick = lyricsTranslation.toggleTranslation,
+                                    )
+                                }
                             },
                         ) { panelModifier ->
                             LyricsTranslationMotion(
@@ -4202,9 +4207,9 @@ fun NowPlayingScreen(
                                             ),
                                             color = Color.White,
                                             enabled = scrolling,
-                                            // Before the title, in the artist line's
+                                            // After the title, in the artist line's
                                             // colour.
-                                            leading = if (song.isExplicit == true) {
+                                            trailing = if (song.isExplicit == true) {
                                                 { ExplicitBadge(color = artistColor) }
                                             } else {
                                                 null
@@ -4371,7 +4376,7 @@ fun NowPlayingScreen(
                                 animationSpec = tween(if (translateShown) 220 else 160),
                                 label = "translateFade",
                             )
-                            if (translateFade > 0.01f && !lyricPicker.picking) {
+                            if (showLyricsActions && translateFade > 0.01f && !lyricPicker.picking) {
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.BottomStart)

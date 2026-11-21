@@ -563,6 +563,9 @@ object AppSettings {
     /** Positive values delay synced lyrics; negative values bring them forward. */
     val lyricsOffsetMs = MutableStateFlow(0)
 
+    /** Shows translate/globe lyric action buttons in the lyrics view. */
+    val showLyricsActions = MutableStateFlow(false)
+
     /**
      * Which language the lyrics translate button translates *into*.
      *
@@ -1141,6 +1144,7 @@ object AppSettings {
         lyricsBlur.value = prefs.getBoolean(KEY_LYRICS_BLUR, true)
         lyricsOffsetMs.value = prefs.getInt(KEY_LYRICS_OFFSET_MS, 0)
             .coerceIn(MIN_LYRICS_OFFSET_MS, MAX_LYRICS_OFFSET_MS)
+        showLyricsActions.value = prefs.getBoolean(KEY_SHOW_LYRICS_ACTIONS, false)
         translationLanguage.value = prefs.getString(KEY_TRANSLATION_LANGUAGE, "").orEmpty()
         if (highPerformanceMode.value) {
             reduceAnimation.value = false
@@ -1707,6 +1711,11 @@ object AppSettings {
         if (lyricsOffsetMs.value == normalized) return
         lyricsOffsetMs.value = normalized
         prefs.edit().putInt(KEY_LYRICS_OFFSET_MS, normalized).apply()
+    }
+
+    fun setShowLyricsActions(value: Boolean) {
+        showLyricsActions.value = value
+        prefs.edit().putBoolean(KEY_SHOW_LYRICS_ACTIONS, value).apply()
     }
 
     /** Blank restores "follow the app language"; see [translationLanguage]. */
@@ -2485,6 +2494,7 @@ object AppSettings {
     private const val KEY_PROGRESSIVE_BLUR = "progressive_blur"
     private const val KEY_LYRICS_BLUR = "lyrics_blur"
     private const val KEY_LYRICS_OFFSET_MS = "lyrics_offset_ms"
+    private const val KEY_SHOW_LYRICS_ACTIONS = "show_lyrics_actions"
     private const val KEY_TRANSLATION_LANGUAGE = "translation_language"
     private const val KEY_ANIMATED_CANVAS = "animated_canvas"
     private const val KEY_CANVAS_OVER_CELLULAR = "canvas_over_cellular"

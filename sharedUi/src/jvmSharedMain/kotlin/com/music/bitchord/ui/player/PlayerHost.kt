@@ -279,6 +279,8 @@ interface PlayerSettingsSource {
     val playerTheme: StateFlow<PlayerTheme>
     val lyricsBlur: StateFlow<Boolean>
     val lyricsOffsetMs: StateFlow<Int>
+    /** Show translate/romanize action buttons in the lyrics view. */
+    val showLyricsActions: StateFlow<Boolean>
     val lyricsSourceOrder: StateFlow<List<LyricsSource>>
     val meteredConnection: StateFlow<Boolean?>
     /** A temporary cap over both ceilings, null when none applies — the watch's, on the phone. */

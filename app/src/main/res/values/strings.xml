@@ -1172,6 +1172,10 @@
 
     <string name="blur_unfocused_lyrics_subtitle">Keeps the spotlight on the current line</string>
 
+    <string name="show_lyrics_actions">Show lyrics actions</string>
+
+    <string name="show_lyrics_actions_subtitle">Show translate and romanize buttons in lyrics</string>
+
 
     <string name="lyrics_debug_logs">Lyrics debug logs</string>
 

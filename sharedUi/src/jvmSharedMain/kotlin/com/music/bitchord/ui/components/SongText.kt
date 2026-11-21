@@ -66,10 +66,6 @@ fun ExplicitSongTitle(
     fadeOverflow: Boolean = false,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        if (song.isExplicit == true) {
-            ExplicitBadge(badgeColor)
-            Spacer(Modifier.width(6.dp))
-        }
         if (fadeOverflow) {
             FadingLine(text = song.title, style = style, color = color, modifier = Modifier.weight(1f, fill = false))
         } else {
@@ -81,6 +77,10 @@ fun ExplicitSongTitle(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false),
             )
+        }
+        if (song.isExplicit == true) {
+            Spacer(Modifier.width(6.dp))
+            ExplicitBadge(badgeColor)
         }
     }
 }

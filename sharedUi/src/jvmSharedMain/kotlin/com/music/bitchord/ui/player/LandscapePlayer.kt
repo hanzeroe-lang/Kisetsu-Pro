@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.stringResource
@@ -483,8 +484,8 @@ internal fun LandscapeCredits(
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     onOverflowChange = { titleOverflowing = it },
-                    // Before the title, in the artist line's colour.
-                    leading = if (song.isExplicit == true) {
+                    // After the title, in the artist line's colour.
+                    trailing = if (song.isExplicit == true) {
                         { ExplicitBadge(artistColor) }
                     } else {
                         null
@@ -594,9 +595,10 @@ internal fun LandscapeLyricsPane(
                 .padding(top = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val showLyricsActions by PlayerSettings.showLyricsActions.collectAsStateWithLifecycle()
             // Fixed slots either side whether or not the toggles are drawn, so
             // the status line stays centred as lyrics arrive.
-            Box(Modifier.size(34.dp)) { if (hasLyrics) romanizationToggle() }
+            Box(Modifier.size(34.dp)) { if (hasLyrics && showLyricsActions) romanizationToggle() }
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -608,7 +610,7 @@ internal fun LandscapeLyricsPane(
                     onStatusClick = onStatusClick,
                 )
             }
-            Box(Modifier.size(34.dp)) { if (hasLyrics) translationToggle() }
+            Box(Modifier.size(34.dp)) { if (hasLyrics && showLyricsActions) translationToggle() }
         }
         }
     }

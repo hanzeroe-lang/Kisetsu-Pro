@@ -648,8 +648,8 @@ internal fun TransportRow(
     compact: Boolean = false,
     animationsActive: Boolean = true,
 ) {
-    val playSize = if (compact) 58.dp else 74.dp
-    val playTouch = if (compact) 76.dp else 92.dp
+    val playSize = if (compact) 60.dp else 76.dp
+    val playTouch = if (compact) 78.dp else 94.dp
     val skipSize = if (compact) 44.dp else PLAYER_SKIP_ICON_SIZE
     val reduceAnimation by PlayerSettings.reduceAnimation.collectAsStateWithLifecycle()
     val previousMotion = rememberPlayerSkipMotion(active = animationsActive, reduceMotion = reduceAnimation)
@@ -1014,7 +1014,7 @@ internal fun CircleGlyph(
     val haptics = rememberHaptics()
     Box(
         modifier = modifier
-            .size(38.dp)
+            .size(40.dp)
             .clip(CircleShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -1034,7 +1034,7 @@ internal fun CircleGlyph(
                 imageVector = glyph,
                 contentDescription = contentDescription,
                 tint = Color.White,
-                modifier = Modifier.size(22.dp),
+                modifier = Modifier.size(24.dp),
             )
         }
     }
