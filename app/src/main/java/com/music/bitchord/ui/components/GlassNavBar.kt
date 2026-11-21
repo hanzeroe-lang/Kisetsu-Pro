@@ -121,7 +121,7 @@ fun GlassNavBar(
     // this shape, and a fresh RoundedCornerShape each pass means a fresh factory
     // lambda, which the tab bar sees as a changed argument and recomposes on.
     val pillShape = remember { RoundedCornerShape(percent = 50) }
-    val contentColor = glassContentColor()
+    val contentColor = Color(0xFF007AFF)
     val selectedColor = contentColor
     val unselectedColor = contentColor.copy(alpha = 0.65f)
     val haptics = rememberHaptics()
@@ -160,7 +160,7 @@ fun GlassNavBar(
                     isPlaying = isPlaying,
                     isLoading = isLoading,
                     animationsActive = animationsActive,
-                    contentColor = glassContentColor(),
+                    contentColor = contentColor,
                     onPlayPause = onPlayPause,
                     onNext = onNext,
                     onPrevious = onPrevious,
@@ -182,7 +182,7 @@ fun GlassNavBar(
                     isPlaying = isPlaying,
                     isLoading = isLoading,
                     animationsActive = animationsActive,
-                    contentColor = glassContentColor(),
+                    contentColor = contentColor,
                     onPlayPause = onPlayPause,
                     onNext = onNext,
                     onPrevious = onPrevious,
