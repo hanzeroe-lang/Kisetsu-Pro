@@ -2544,22 +2544,7 @@ fun NowPlayingScreen(
                                     overlayOpen = { overlayOpen.value },
                                 )
                             },
-                            lyricStrip = if (syncedLyricsEnabled && !hideLyricsPreview) {
-                                {
-                                    CurrentLyricStrip(
-                                        lines = lyricsTranslation.displayedLyrics,
-                                        trackKey = song.videoId,
-                                        playhead = lyricsPlayhead,
-                                        isPlaying = isPlaying && position.advancing,
-                                        durationMs = durationMs,
-                                        lyricsUnavailable = lyricsUnavailable,
-                                        loadingText = lyricsLoadingText,
-                                        onClick = openLyrics,
-                                    )
-                                }
-                            } else {
-                                null
-                            },
+                            lyricStrip = null,
                             scrubber = {
                                 PlayerScrubber(
                                     shown = shown,
@@ -3005,7 +2990,8 @@ fun NowPlayingScreen(
                 val gradientColors = remember(topGradientAlpha) {
                     List(steps) { index ->
                         val progress = index / (steps - 1).toFloat()
-                        val factor = (1f - progress).toDouble().pow(1.5).toFloat()
+                        val shifted = ((progress - 0.2f) / 0.8f).coerceIn(0f, 1f)
+                        val factor = (1f - shifted).toDouble().pow(1.5).toFloat()
                         Color.Black.copy(alpha = topGradientAlpha * factor)
                     }
                 }
@@ -4262,7 +4248,7 @@ fun NowPlayingScreen(
                                 if (signedIn || song.localUri != null) {
                                     val liked = likeStatus == LikeStatus.LIKE
                                     CircleGlyph(
-                                        icon = if (liked) BitChordIcons.StarFilled else BitChordIcons.Star,
+                                        icon = if (liked) BitChordIcons.Star else BitChordIcons.StarFilled,
                                         contentDescription = stringResource(
                                             if (liked) Res.string.remove_from_liked else Res.string.like,
                                         ),
@@ -4567,50 +4553,7 @@ fun NowPlayingScreen(
                     // loading, "not available", status and blank lines titleMedium's
                     // 24sp, taller again in Devanagari or Thai — so every track change
                     // (sung line → loading line) grew the deck and shrank the sleeve.
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(lyricSlotHeight),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                    if (!lyricsOpen && syncedLyricsEnabled && !hideLyricsPreview) {
-                        CurrentLyricStrip(
-                            lines = lyricsTranslation.displayedLyrics,
-                            trackKey = song.videoId,
-                            playhead = lyricsPlayhead,
-                            isPlaying = isPlaying && position.advancing,
-                            durationMs = durationMs,
-                            lyricsUnavailable = lyricsUnavailable,
-                            loadingText = lyricsLoadingText,
-                            // Still visible over the queue, so still a valid way in:
-                            // opens the same full lyrics panel it always has, closing
-                            // the queue behind it the same way the "Up next" glyph
-                            // closes lyrics behind the queue.
-                            onClick = openLyrics,
-                        )
-                    }
-                    if (!lyricsOpen && !syncedLyricsEnabled) {
-                        Text(
-                            text = "\u00A0",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .offset(y = 6.dp)
-                                .padding(vertical = 4.dp),
-                        )
-                    }
-                    if (lyricsOpen) {
-                        LyricsStatusWithChange(
-                            status = lyricsTranslation.status,
-                            onStatusClick = { showLyricsProviders = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .offset(y = 6.dp)
-                                .padding(vertical = 4.dp),
-                        )
-                    }
-                    }
+
                     val transitionWindow by PlayerSettings.smartTransitionWindow.collectAsStateWithLifecycle()
                     PlayerScrubber(
                         shown = shown,
