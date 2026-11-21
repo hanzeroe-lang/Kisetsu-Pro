@@ -76,7 +76,10 @@ object AppUpdateChecker {
             val url = release["html_url"]?.jsonPrimitive?.contentOrNull ?: return@runCatching
             val apkUrl = apkAssetUrl(release)
             val notes = release["body"]?.jsonPrimitive?.contentOrNull
-            val latest = tag.removePrefix("v")
+            val latest = tag
+                .removePrefix("kisetsu-v")
+                .removePrefix("kisetsu-")
+                .removePrefix("v")
             if (isNewer(latest, BuildConfig.VERSION_NAME)) {
                 _available.value = UpdateInfo(latest, url, apkUrl, notes)
             }
