@@ -121,13 +121,13 @@ fun accentForPreset(name: String, customArgb: Int): Color = when (name) {
 private val DarkColors = darkColorScheme(
     primary = KisetsuBlossom,
     onPrimary = Color.Black,
-    background = Color.Black,
+    background = Color(0xFF121212),
     onBackground = Color.White,
-    surface = Color(0xFF0D0D0F),
+    surface = Color(0xFF181818),
     onSurface = Color.White,
-    surfaceVariant = Color(0xFF1C1C1E),
-    onSurfaceVariant = Color(0xFF8E8E93),
-    outline = Color(0xFF2C2C2E),
+    surfaceVariant = Color(0xFF282828),
+    onSurfaceVariant = Color(0xFFB3B3B3),
+    outline = Color(0xFF404040),
 )
 
 private val LightColors = lightColorScheme(

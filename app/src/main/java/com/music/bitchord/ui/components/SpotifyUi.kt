@@ -248,7 +248,7 @@ import kotlinx.coroutines.launch
 private val SpotifyDarkBg = Color(0xFF121212)
 private val SpotifyLightBg = Color(0xFFF7F7F9)
 private val SpotifyBlack = SpotifyDarkBg
-private val SpotifyCardDark = Color(0xFF242424)
+private val SpotifyCardDark = Color(0xFF181818)
 internal val DefaultSpotifyGreen = Color(0xFF1DB954)
 internal var SpotifyGreenDynamic = DefaultSpotifyGreen
 private val SpotifyGreen: Color get() = SpotifyGreenDynamic
@@ -264,13 +264,13 @@ private fun SpotifyBg(): Color = if (spotifyIsDark()) SpotifyDarkBg else Spotify
 private fun SpotifyOnBg(alpha: Float = 1f): Color = MaterialTheme.colorScheme.onBackground.copy(alpha = alpha)
 
 @Composable
-private fun SpotifySurfaceBg(): Color = if (spotifyIsDark()) Color(0xFF242424) else Color(0xFFFFFFFF)
+private fun SpotifySurfaceBg(): Color = if (spotifyIsDark()) Color(0xFF181818) else Color(0xFFFFFFFF)
 
 @Composable
-private fun SpotifySurfaceAlt(): Color = if (spotifyIsDark()) Color(0xFF2E2E2E) else Color(0xFFEFEFF3)
+private fun SpotifySurfaceAlt(): Color = if (spotifyIsDark()) Color(0xFF282828) else Color(0xFFEFEFF3)
 
 @Composable
-private fun SpotifyCard(): Color = if (spotifyIsDark()) Color(0xFF242424) else Color(0xFFFFFFFF)
+private fun SpotifyCard(): Color = if (spotifyIsDark()) Color(0xFF181818) else Color(0xFFFFFFFF)
 
 /** Subtle tinted fill for cards/chips: light-on-dark, soft grey-on-light. */
 @Composable
