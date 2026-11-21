@@ -4522,7 +4522,7 @@ fun NowPlayingScreen(
                     // (sung line → loading line) grew the deck and shrank the sleeve.
 
                     val transitionWindow by PlayerSettings.smartTransitionWindow.collectAsStateWithLifecycle()
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(2.dp))
                     PlayerScrubber(
                         shown = shown,
                         durationMs = durationMs,
@@ -4570,9 +4570,9 @@ fun NowPlayingScreen(
                         // as one. Both of its own gaps take half the spread, so on a
                         // tall screen it holds the centre rather than drifting up
                         // under the seek bar.
-                        Spacer(Modifier.height(6.dp + controlSpread / 2))
+                        Spacer(Modifier.height(4.dp + controlSpread / 2))
                         transport()
-                        Spacer(Modifier.height(10.dp + controlSpread / 2))
+                        Spacer(Modifier.height(8.dp + controlSpread / 2))
                         VolumeRow(
                             value = { volume.level.value },
                             onValueChange = onVolumeChange,
@@ -4580,7 +4580,7 @@ fun NowPlayingScreen(
                         )
                         // The volume slider already has 13dp below its drawn track.
                         // Balance that invisible inset with the caption gap below the icons.
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(2.dp))
                     } else {
                         // No volume bar: the transport centres itself in the whole run
                         // between the scrubber and the bottom row instead. The run is
@@ -4589,7 +4589,7 @@ fun NowPlayingScreen(
                         // The scrubber draws its times 9dp above their slot, which
                         // leaves that much more visible room above; half of it moves
                         // from the top gap to the bottom one.
-                        val run = 6.dp + 10.dp + 4.dp + controlSpread + VOLUME_ROW_HEIGHT
+                        val run = 4.dp + 8.dp + 2.dp + controlSpread + VOLUME_ROW_HEIGHT
                         val lift = SCRUBBER_LABEL_LIFT / 2
                         Spacer(Modifier.height(run / 2 - lift))
                         transport()
@@ -4597,7 +4597,7 @@ fun NowPlayingScreen(
                     }
 
                     playerActions()
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(10.dp))
                     }
                     }
                     }
