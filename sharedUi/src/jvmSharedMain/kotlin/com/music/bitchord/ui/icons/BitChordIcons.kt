@@ -934,8 +934,8 @@ object BitChordIcons {
                 strokeLineWidth = 2.8f,
                 strokeLineCap = StrokeCap.Round,
             ) {
-                moveTo(3.6f, 5.4f)
-                lineTo(3.6f, 18.6f)
+                moveTo(4.2f, 5.6f)
+                lineTo(4.2f, 18.4f)
             }
             path(
                 fill = stroke,
@@ -944,13 +944,9 @@ object BitChordIcons {
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {
-                moveTo(21.2f, 5.4f)
-                lineTo(12.5f, 12f)
-                lineTo(21.2f, 18.6f)
-                close()
-                moveTo(12.5f, 5.4f)
-                lineTo(5.0f, 12f)
-                lineTo(12.5f, 18.6f)
+                moveTo(19.8f, 5.6f)
+                lineTo(7.2f, 12f)
+                lineTo(19.8f, 18.4f)
                 close()
             }
         }.build()
@@ -968,8 +964,8 @@ object BitChordIcons {
                 strokeLineWidth = 2.8f,
                 strokeLineCap = StrokeCap.Round,
             ) {
-                moveTo(20.4f, 5.4f)
-                lineTo(20.4f, 18.6f)
+                moveTo(19.8f, 5.6f)
+                lineTo(19.8f, 18.4f)
             }
             path(
                 fill = stroke,
@@ -978,13 +974,9 @@ object BitChordIcons {
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {
-                moveTo(2.8f, 5.4f)
-                lineTo(11.5f, 12f)
-                lineTo(2.8f, 18.6f)
-                close()
-                moveTo(11.5f, 5.4f)
-                lineTo(19.0f, 12f)
-                lineTo(11.5f, 18.6f)
+                moveTo(4.2f, 5.6f)
+                lineTo(16.8f, 12f)
+                lineTo(4.2f, 18.4f)
                 close()
             }
         }.build()

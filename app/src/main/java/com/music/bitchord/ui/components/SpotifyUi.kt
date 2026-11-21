@@ -3227,7 +3227,7 @@ private fun SpotifyPlayerPage(
     val sleepEndOfQueue by SleepTimer.endOfQueue.collectAsStateWithLifecycle()
     val sleepActive = sleepDeadline != null || sleepAfterTrack || sleepEndOfQueue
     var showSleepMenu by remember { mutableStateOf(false) }
-    Column(modifier = modifier.padding(horizontal = 8.dp)) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
         // ---- Top bar ---------------------------------------------------
         Row(
             modifier = Modifier
@@ -3291,7 +3291,7 @@ private fun SpotifyPlayerPage(
                 .weight(1f)
                 .fillMaxWidth()
                 .clipToBounds()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                .padding(horizontal = 0.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center,
         ) {
             val side = minOf(maxWidth, maxHeight * 0.85f)
@@ -3342,7 +3342,7 @@ private fun SpotifyPlayerPage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, top = 4.dp),
+                .padding(start = 0.dp, end = 0.dp, top = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
@@ -3350,7 +3350,7 @@ private fun SpotifyPlayerPage(
                 Text(
                     text = song.title,
                     color = SpotifyOnBg(),
-                    fontSize = 24.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -3406,7 +3406,7 @@ private fun SpotifyPlayerPage(
             }
         }
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(16.dp))
 
         // ---- Scrubber --------------------------------------------------
         var scrubFraction by remember { mutableStateOf<Float?>(null) }
@@ -3415,7 +3415,7 @@ private fun SpotifyPlayerPage(
         val crossfadeSec by AppSettings.crossfadeSeconds.collectAsStateWithLifecycle()
         val automixEngine by AppSettings.automixEngine.collectAsStateWithLifecycle()
         val isRadio = song.videoId.startsWith("src:")
-        Column(Modifier.padding(horizontal = 8.dp)) {
+        Column(Modifier.padding(horizontal = 0.dp)) {
             SpotifyScrubber(
                 position = position,
                 durationMs = durationMs,
@@ -3457,13 +3457,13 @@ private fun SpotifyPlayerPage(
             }
         }
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(14.dp))
 
         // ---- Transport -------------------------------------------------
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -3685,7 +3685,7 @@ private fun SpotifyPlayerPage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 0.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SpotifyPipToggle(
@@ -3755,7 +3755,7 @@ private fun SpotifyPlayerPage(
             }
         }
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(12.dp))
 
         // ---- Lyrics preview (not available for live radio) -------------
         if (!song.videoId.startsWith("src:")) {
@@ -5146,10 +5146,19 @@ private fun SpotifyPlayPauseGlyph(
                 blendMode = drawBlend,
             )
         } else {
+            val l = size.width * 0.18f
+            val r = size.width * 0.90f
+            val t = size.height * 0.08f
+            val b = size.height * 0.92f
+            val m = size.height * 0.5f
+            val cr = size.width * 0.06f
             val path = Path().apply {
-                moveTo(size.width * 0.18f, size.height * 0.08f)
-                lineTo(size.width * 0.90f, size.height * 0.5f)
-                lineTo(size.width * 0.18f, size.height * 0.92f)
+                moveTo(l + cr * 0.4f, t + cr)
+                quadraticTo(l, t + cr * 0.2f, l, t + cr * 1.2f)
+                lineTo(l, b - cr * 1.2f)
+                quadraticTo(l, b - cr * 0.2f, l + cr * 0.4f, b - cr)
+                lineTo(r - cr, m + cr * 0.55f)
+                quadraticTo(r, m, r - cr, m - cr * 0.55f)
                 close()
             }
             drawPath(path, tint, blendMode = drawBlend)
