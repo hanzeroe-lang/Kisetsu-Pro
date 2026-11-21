@@ -464,20 +464,20 @@ fun MiniPlayer(
                 ExplicitSongTitle(
                     song = song,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    badgeColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color.White,
+                    badgeColor = Color.White.copy(alpha = 0.7f),
                     fadeOverflow = true,
                 )
                 FadingLine(
                     text = song.artist,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color.White.copy(alpha = 0.7f),
                 )
             }
             if (isLoading) {
                 Box(Modifier.size(GLYPH_SLOT), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = Color.White,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(SPINNER_SIZE),
                     )
@@ -498,7 +498,7 @@ fun MiniPlayer(
                         playPainter = rememberVectorPainter(Icons.Rounded.PlayArrow),
                         pausePainter = rememberVectorPainter(Icons.Rounded.Pause),
                         contentDescription = stringResource(if (isPlaying) R.string.pause else R.string.play),
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        tint = Color.White,
                         modifier = Modifier.size(GLYPH_SIZE),
                     )
                 }
@@ -517,8 +517,7 @@ fun MiniPlayer(
             ) {
                 MiniPlayerNextGlyph(
                     motion = nextMotion,
-                    tint = MaterialTheme.colorScheme.onBackground
-                        .copy(alpha = if (controlsLocked) 0.3f else 1f),
+                    tint = Color.White.copy(alpha = if (controlsLocked) 0.3f else 1f),
                 )
             }
         }

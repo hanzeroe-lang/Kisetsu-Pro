@@ -547,7 +547,7 @@ object AppSettings {
      * much for: the bar's rim, shadow, tint and motion all stay. A Liquid Glass
      * option, honoured only while [liquidGlass] is on.
      */
-    val glassPerformance = MutableStateFlow(false)
+    val glassPerformance = MutableStateFlow(true)
 
     /**
      * Blurs what scrolls under the status bar and the top controls, easing out
@@ -1136,7 +1136,7 @@ object AppSettings {
         reduceDynamicBlur.value = prefs.getBoolean(KEY_REDUCE_BLUR, false)
         disableBlendEffects.value = prefs.getBoolean(KEY_DISABLE_BLEND_EFFECTS, false)
         liquidGlass.value = prefs.getBoolean(KEY_LIQUID_GLASS, true)
-        glassPerformance.value = prefs.getBoolean(KEY_GLASS_PERFORMANCE, false)
+        glassPerformance.value = prefs.getBoolean(KEY_GLASS_PERFORMANCE, true)
         progressiveBlur.value = prefs.getBoolean(KEY_PROGRESSIVE_BLUR, false)
         lyricsBlur.value = prefs.getBoolean(KEY_LYRICS_BLUR, true)
         lyricsOffsetMs.value = prefs.getInt(KEY_LYRICS_OFFSET_MS, 0)
