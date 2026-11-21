@@ -6045,11 +6045,6 @@ fun SpotifyHomeScreen(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-            if (!slopless) {
-                headerBanner?.let { banner ->
-                    item(key = "home-banner") { banner() }
-                }
-            }
             item(key = "home-header") {
                 Column(Modifier.padding(top = 0.dp, bottom = 4.dp)) {
                     Row(
@@ -6214,17 +6209,19 @@ fun SpotifyHomeScreen(
                         }
                         val isAllowed: (String) -> Boolean = { raw ->
                             val t = cleanTitle(raw).lowercase()
-                            t.contains("made for you") ||
-                                t.contains("your top mixes") ||
+                            t.contains("made for you") || t.contains("mixed for you") ||
+                                t.contains("your top mixes") || t.contains("top mix") ||
                                 t.contains("albums featuring") ||
-                                t.contains("recommended stations") ||
-                                t.contains("your favorite artists") ||
-                                t.contains("recommended for today") ||
-                                t.contains("based on recent listening") ||
+                                t.contains("recommended stations") || t.contains("radio") ||
+                                t.contains("your favorite artists") || t.contains("favourite artists") ||
+                                t.contains("recommended for today") || t.contains("recommended for you") ||
+                                t.contains("based on recent listening") || t.contains("recent listening") ||
                                 t.startsWith("more like") || t.contains(" more like") ||
-                                t.startsWith("for fans of") || t.contains(" for fans of")
+                                t.startsWith("for fans of") || t.contains(" for fans of") ||
+                                t.contains("listen again") || t.contains("quick picks")
                         }
-                        val shownShelves = if (selectedPill == "All") filtered.filter { isAllowed(it.title) } else filtered
+                        val preferred = if (selectedPill == "All") filtered.filter { isAllowed(it.title) } else filtered
+                        val shownShelves = if (preferred.isNotEmpty()) preferred else filtered
                         if (shownShelves.isEmpty()) {
                             item(key = "home-empty-filtered") {
                                 Text(

@@ -4117,29 +4117,6 @@ val filteredPicks by remember(kisetsuPicks) {
                                                 type = BrowseType.PLAYLIST,
                                             )
                                         },
-                                        headerBanner = if (sloplessMode) {
-                                            null
-                                        } else {
-                                            {
-                                                Column {
-                                                    KisetsuWrappedEntry(
-                                                        onOpen = { showKisetsuWrapped = true },
-                                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                                    )
-                                                    KisetsuMomentsStrip(
-                                                        onOpenChronicle = { showChronicle = true },
-                                                        onOpenOnThisDay = { showOnThisDay = true },
-                                                        onOpenPersona = { showPersona = true },
-                                                        onOpenDiscoveryCrate = { showDiscoveryCrate = true },
-                                                        onOpenEras = { showEras = true },
-                                                        onOpenMonthlyRecap = { month ->
-                                                            monthlyRecapMonth = month
-                                                            showMonthlyRecap = true
-                                                        },
-                                                    )
-                                                }
-                                            }
-                                        },
                                     )
                                 }
                                 spotifyHome -> {
@@ -4166,29 +4143,6 @@ val filteredPicks by remember(kisetsuPicks) {
                                                 thumbnailUrl = playlist.imageUrl,
                                                 type = BrowseType.PLAYLIST,
                                             )
-                                        },
-                                        headerBanner = if (sloplessMode) {
-                                            null
-                                        } else {
-                                            {
-                                                Column {
-                                                    KisetsuWrappedEntry(
-                                                        onOpen = { showKisetsuWrapped = true },
-                                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                                    )
-                                                    KisetsuMomentsStrip(
-                                                        onOpenChronicle = { showChronicle = true },
-                                                        onOpenOnThisDay = { showOnThisDay = true },
-                                                        onOpenPersona = { showPersona = true },
-                                                        onOpenDiscoveryCrate = { showDiscoveryCrate = true },
-                                                        onOpenEras = { showEras = true },
-                                                        onOpenMonthlyRecap = { month ->
-                                                            monthlyRecapMonth = month
-                                                            showMonthlyRecap = true
-                                                        },
-                                                    )
-                                                }
-                                            }
                                         },
                                     )
                                 }
@@ -4220,29 +4174,6 @@ val filteredPicks by remember(kisetsuPicks) {
                                         onOpenRadio = null,
                                         stationArtworkUrl = flowArt,
                                         onOpenReplay = { showReplay = true },
-                                        headerBanner = if (sloplessMode) {
-                                            null
-                                        } else {
-                                            {
-                                                Column {
-                                                    KisetsuWrappedEntry(
-                                                        onOpen = { showKisetsuWrapped = true },
-                                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                                    )
-                                                    KisetsuMomentsStrip(
-                                                        onOpenChronicle = { showChronicle = true },
-                                                        onOpenOnThisDay = { showOnThisDay = true },
-                                                        onOpenPersona = { showPersona = true },
-                                                        onOpenDiscoveryCrate = { showDiscoveryCrate = true },
-                                                        onOpenEras = { showEras = true },
-                                                        onOpenMonthlyRecap = { month ->
-                                                            monthlyRecapMonth = month
-                                                            showMonthlyRecap = true
-                                                        },
-                                                    )
-                                                }
-                                            }
-                                        },
                                     )
                                 }
                             }
