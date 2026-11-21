@@ -5331,19 +5331,25 @@ val filteredPicks by remember(kisetsuPicks) {
                             }
                             Spacer(Modifier.height(4.dp))
                         }
+                        val navTabs = if (spotifyNavBar) spotifyTabs else tabs
+                        val hiddenTabs = if (showDiscoverTab) emptySet() else setOf(TAB_CREATE)
+                        val visibleNav = navTabs.mapIndexedNotNull { i, t -> if (i in hiddenTabs) null else i to t }
+                        val visibleNavTabs = visibleNav.map { it.second }
+                        val visibleNavSelected = visibleNav.indexOfFirst { it.first == selectedTab }.takeIf { it >= 0 } ?: 0
+                        val navOnSelect: (Int) -> Unit = { vi -> visibleNav.getOrNull(vi)?.first?.let(onTabSelected) }
                         if (netflixChrome) {
                             NetflixNavBar(
-                                tabs = if (spotifyNavBar) spotifyTabs else tabs,
-                                selectedIndex = selectedTab,
-                                onTabSelected = onTabSelected,
+                                tabs = visibleNavTabs,
+                                selectedIndex = visibleNavSelected,
+                                onTabSelected = navOnSelect,
                                 tint = navPalette.wash,
                                 palette = navPalette,
                             )
                         } else {
                             SpotifyNavBar(
-                                tabs = if (spotifyNavBar) spotifyTabs else tabs,
-                                selectedIndex = selectedTab,
-                                onTabSelected = onTabSelected,
+                                tabs = visibleNavTabs,
+                                selectedIndex = visibleNavSelected,
+                                onTabSelected = navOnSelect,
                                 tint = navPalette.wash,
                                 palette = navPalette,
                             )

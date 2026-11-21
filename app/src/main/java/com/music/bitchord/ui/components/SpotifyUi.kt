@@ -344,8 +344,9 @@ fun SpotifyNavBar(
 ) {
     val haptics = rememberHaptics()
     val artworkTintedChrome by AppSettings.playerArtworkTintedChrome.collectAsStateWithLifecycle()
+    val coloredNav by AppSettings.coloredNavBar.collectAsStateWithLifecycle()
     val slopless by AppSettings.sloplessMode.collectAsStateWithLifecycle()
-    val useDynamic = !slopless && artworkTintedChrome && (palette != null || tint != null)
+    val useDynamic = coloredNav && !slopless && artworkTintedChrome && (palette != null || tint != null)
     val base = if (slopless) {
         SpotifyBg()
     } else if (useDynamic) {
