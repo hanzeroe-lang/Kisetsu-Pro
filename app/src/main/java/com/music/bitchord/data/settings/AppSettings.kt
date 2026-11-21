@@ -886,7 +886,7 @@ object AppSettings {
     val livePlayerBackground = MutableStateFlow(true)
 
     /** Spotify-style now playing background. Migrates from [livePlayerBackground]. */
-    val spotifyPlayerBackgroundMode = MutableStateFlow(SpotifyPlayerBackgroundMode.ALBUM_BLUR)
+    val spotifyPlayerBackgroundMode = MutableStateFlow(SpotifyPlayerBackgroundMode.GRADIENT)
 
     /**
      * Real backdrop-sampled glass (blur, lens refraction) on the floating
@@ -1623,7 +1623,7 @@ object AppSettings {
         livePlayerBackground.value = prefs.getBoolean(KEY_LIVE_PLAYER_BACKGROUND, true)
         spotifyPlayerBackgroundMode.value = runCatching {
             SpotifyPlayerBackgroundMode.valueOf(prefs.getString(KEY_SPOTIFY_PLAYER_BACKGROUND_MODE, null) ?: "")
-        }.getOrElse { SpotifyPlayerBackgroundMode.ALBUM_BLUR }
+        }.getOrElse { SpotifyPlayerBackgroundMode.GRADIENT }
         liquidGlass.value = prefs.getBoolean(KEY_LIQUID_GLASS, true)
         foldingNavBar.value = prefs.getBoolean(KEY_FOLDING_NAV_BAR, true)
         qobuzHelpDismissed.value = prefs.getBoolean(KEY_QOBUZ_HELP_DISMISSED, false)

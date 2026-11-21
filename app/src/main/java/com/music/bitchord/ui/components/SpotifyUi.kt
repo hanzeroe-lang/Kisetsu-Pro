@@ -1845,7 +1845,7 @@ private fun SpotifyFullscreenCanvasPlayerPage(
     val haptics = rememberHaptics()
     val hazeState = remember { HazeState() }
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
-    val playShape = if (antiCircle) RoundedCornerShape(6.dp) else CircleShape
+    val playShape = CircleShape
     val canvas = produceState<CanvasArtwork?>(initialValue = null, song.videoId, song.title, song.artist) {
         value = CanvasRepository.cached(song) ?: CanvasRepository.canvasFor(song)
     }.value
@@ -3213,7 +3213,7 @@ private fun SpotifyPlayerPage(
     val haptics = rememberHaptics()
     val artwork = rememberRemoteArtworkUrl(song)
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
-    val playShape = if (antiCircle) RoundedCornerShape(6.dp) else CircleShape
+    val playShape = CircleShape
     val coverScale by animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0.92f,
         animationSpec = spring(dampingRatio = 0.65f, stiffness = 420f),
@@ -5123,11 +5123,11 @@ private fun SpotifyPlayPauseGlyph(
     Canvas(modifier) {
         val drawBlend = if (cutout) BlendMode.Clear else BlendMode.SrcOver
         if (isPlaying) {
-            val barWidth = size.width * 0.30f
-            val gap = size.width * 0.08f
-            val top = size.height * 0.10f
-            val barHeight = size.height * 0.80f
-            val radius = CornerRadius(1.5.dp.toPx())
+            val barWidth = size.width * 0.22f
+            val gap = size.width * 0.12f
+            val top = size.height * 0.12f
+            val barHeight = size.height * 0.76f
+            val radius = CornerRadius(barWidth / 2f, barWidth / 2f)
             drawRoundRect(
                 color = tint,
                 topLeft = Offset((size.width - barWidth * 2 - gap) / 2f, top),
@@ -7974,7 +7974,7 @@ private fun SpotifyNetflixPlayerPage(
 ) {
     val haptics = rememberHaptics()
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
-    val playShape = if (antiCircle) RoundedCornerShape(10.dp) else CircleShape
+    val playShape = CircleShape
     val kisetsuCover = song.needsKisetsuRadioCover()
     val coverScale by animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0.90f,
