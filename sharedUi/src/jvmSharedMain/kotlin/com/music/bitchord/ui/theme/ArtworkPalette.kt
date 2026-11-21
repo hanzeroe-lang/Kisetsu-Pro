@@ -372,57 +372,46 @@ internal fun playerInkFor(artworkLuminance: Float?): Color {
 
 private fun Seed.toPalette(dark: Boolean): ArtworkPalette = if (dark) {
     ArtworkPalette(
-        // Deep enough that white body text clears contrast on any sleeve, but
-        // not so deep the hue is gone — the whole point is that the page is
-        // recognisably *this* record's colour.
         background = dominant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.20f, maximum = 0.62f) },
-            lightness = { 0.13f },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.32f, maximum = 0.78f) },
+            lightness = { 0.14f },
         ),
-        // Follows the edge's own brightness within a band that stays clear of
-        // white body text at the top and of [background] at the bottom: a
-        // sleeve that ends dark hands over almost invisibly, one that ends
-        // bright leaves a page that is visibly lit from under the artwork.
         wash = edge.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.18f, maximum = 0.58f) },
-            lightness = { it.coerceIn(0.14f, 0.24f) },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.28f, maximum = 0.74f) },
+            lightness = { it.coerceIn(0.15f, 0.26f) },
         ),
         elevated = dominant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.20f, maximum = 0.62f) },
-            lightness = { 0.22f },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.32f, maximum = 0.78f) },
+            lightness = { 0.23f },
         ),
         accent = vibrant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.55f, maximum = 1f) },
-            lightness = { it.coerceIn(0.62f, 0.78f) },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.72f, maximum = 1f) },
+            lightness = { it.coerceIn(0.60f, 0.76f) },
         ),
         onBackground = Color.White,
-        // Well above the grey the untinted screens use for secondary text. A
-        // tint is a *coloured* background, not a black one, so the contrast a
-        // dim grey has against black is not the contrast it has here — artist
-        // names were sinking into the wash on mid-toned sleeves.
-        onBackgroundVariant = Color.White.copy(alpha = 0.80f),
+        onBackgroundVariant = Color.White.copy(alpha = 0.82f),
         divider = Color.White.copy(alpha = 0.12f),
     )
 } else {
     ArtworkPalette(
         background = dominant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.14f, maximum = 0.50f) },
-            lightness = { 0.91f },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.22f, maximum = 0.62f) },
+            lightness = { 0.90f },
         ),
         wash = edge.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.12f, maximum = 0.46f) },
-            lightness = { it.coerceIn(0.78f, 0.90f) },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.20f, maximum = 0.58f) },
+            lightness = { it.coerceIn(0.76f, 0.89f) },
         ),
         elevated = dominant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.14f, maximum = 0.50f) },
-            lightness = { 0.83f },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.22f, maximum = 0.62f) },
+            lightness = { 0.82f },
         ),
         accent = vibrant.withHsl(
-            saturation = { adaptedArtworkSaturation(it, minimum = 0.55f, maximum = 1f) },
-            lightness = { it.coerceIn(0.30f, 0.44f) },
+            saturation = { adaptedArtworkSaturation(it, minimum = 0.72f, maximum = 1f) },
+            lightness = { it.coerceIn(0.32f, 0.46f) },
         ),
         onBackground = Color.Black,
-        onBackgroundVariant = Color.Black.copy(alpha = 0.70f),
+        onBackgroundVariant = Color.Black.copy(alpha = 0.72f),
         divider = Color.Black.copy(alpha = 0.10f),
     )
 }

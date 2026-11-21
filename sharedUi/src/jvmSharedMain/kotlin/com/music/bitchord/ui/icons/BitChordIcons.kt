@@ -929,31 +929,28 @@ object BitChordIcons {
             defaultWidth = 24.dp, defaultHeight = 24.dp,
             viewportWidth = 24f, viewportHeight = 24f,
         ).apply {
-            // Outer bar. Round cap, so its ends are as soft as the triangles.
             path(
                 stroke = stroke,
-                strokeLineWidth = 2.6f,
+                strokeLineWidth = 2.8f,
                 strokeLineCap = StrokeCap.Round,
             ) {
-                moveTo(3.4f, 5.2f)
-                lineTo(3.4f, 18.8f)
+                moveTo(3.6f, 5.4f)
+                lineTo(3.6f, 18.6f)
             }
             path(
                 fill = stroke,
                 stroke = stroke,
-                strokeLineWidth = 1.4f,
+                strokeLineWidth = 1.2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Right triangle, apex left.
-                moveTo(21.4f, 5.4f)
+                moveTo(21.2f, 5.4f)
                 lineTo(12.5f, 12f)
-                lineTo(21.4f, 18.6f)
+                lineTo(21.2f, 18.6f)
                 close()
-                // Left triangle, apex against the bar.
-                moveTo(12.4f, 5.4f)
-                lineTo(4.9f, 12f)
-                lineTo(12.4f, 18.6f)
+                moveTo(12.5f, 5.4f)
+                lineTo(5.0f, 12f)
+                lineTo(12.5f, 18.6f)
                 close()
             }
         }.build()
@@ -968,26 +965,26 @@ object BitChordIcons {
         ).apply {
             path(
                 stroke = stroke,
-                strokeLineWidth = 2.6f,
+                strokeLineWidth = 2.8f,
                 strokeLineCap = StrokeCap.Round,
             ) {
-                moveTo(20.6f, 5.2f)
-                lineTo(20.6f, 18.8f)
+                moveTo(20.4f, 5.4f)
+                lineTo(20.4f, 18.6f)
             }
             path(
                 fill = stroke,
                 stroke = stroke,
-                strokeLineWidth = 1.4f,
+                strokeLineWidth = 1.2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {
-                moveTo(2.6f, 5.4f)
+                moveTo(2.8f, 5.4f)
                 lineTo(11.5f, 12f)
-                lineTo(2.6f, 18.6f)
+                lineTo(2.8f, 18.6f)
                 close()
-                moveTo(11.6f, 5.4f)
-                lineTo(19.1f, 12f)
-                lineTo(11.6f, 18.6f)
+                moveTo(11.5f, 5.4f)
+                lineTo(19.0f, 12f)
+                lineTo(11.5f, 18.6f)
                 close()
             }
         }.build()

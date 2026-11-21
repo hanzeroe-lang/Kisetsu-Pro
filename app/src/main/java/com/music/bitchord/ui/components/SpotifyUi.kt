@@ -74,6 +74,7 @@ import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Animation
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Cast
@@ -3221,6 +3222,11 @@ private fun SpotifyPlayerPage(
     )
     // Lyrics PiP: toggled here, honoring onUserLeaveHint.
     val pipOn by AppSettings.pipLyricPreview.collectAsStateWithLifecycle()
+    val sleepDeadline by SleepTimer.deadline.collectAsStateWithLifecycle()
+    val sleepAfterTrack by SleepTimer.afterTrack.collectAsStateWithLifecycle()
+    val sleepEndOfQueue by SleepTimer.endOfQueue.collectAsStateWithLifecycle()
+    val sleepActive = sleepDeadline != null || sleepAfterTrack || sleepEndOfQueue
+    var showSleepMenu by remember { mutableStateOf(false) }
     Column(modifier = modifier.padding(horizontal = 8.dp)) {
         // ---- Top bar ---------------------------------------------------
         Row(
@@ -3297,8 +3303,8 @@ private fun SpotifyPlayerPage(
                             scaleX = coverScale
                             scaleY = coverScale
                         }
-                        .shadow(24.dp, RoundedCornerShape(4.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                        .clip(RoundedCornerShape(8.dp)),
                 )
             } else {
                 AsyncImage(
@@ -3311,8 +3317,8 @@ private fun SpotifyPlayerPage(
                             scaleX = coverScale
                             scaleY = coverScale
                         }
-                        .shadow(24.dp, RoundedCornerShape(4.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(4.dp))
+                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(SpotifyFill(0.06f)),
                 )
             }
@@ -3324,8 +3330,8 @@ private fun SpotifyPlayerPage(
                             scaleX = coverScale
                             scaleY = coverScale
                         }
-                        .shadow(24.dp, RoundedCornerShape(4.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                        .clip(RoundedCornerShape(8.dp)),
                 ) {
                     ad()
                 }
@@ -3427,13 +3433,7 @@ private fun SpotifyPlayerPage(
                     )
                 }
             }
-            val transitionLabel = when {
-                isRadio -> null
-                automixEngine == com.music.bitchord.data.settings.AutomixEngine.V2 && crossfadeSec > 0 ->
-                    "Automix . ${crossfadeSec}s"
-                crossfadeSec > 0 -> "Crossfade . ${crossfadeSec}s"
-                else -> null
-            }
+            val transitionLabel: String? = null
             if (showQuality || transitionLabel != null) {
                 val q = nerdStats
                 val quality = when {
@@ -3513,19 +3513,19 @@ private fun SpotifyPlayerPage(
                 enabled = !song.videoId.startsWith("src:") || song.isPodcastEpisode,
                 modifier = Modifier.size(64.dp),
             ) {
-                if (useAppleTransport) {
+                if (song.isPodcastEpisode) {
+                    Icon(
+                        imageVector = Icons.Rounded.Replay10,
+                        contentDescription = "Back 10 seconds",
+                        tint = skipTint,
+                        modifier = Modifier.size(48.dp),
+                    )
+                } else {
                     Icon(
                         painter = PlayerIcons.SkipPrevious.painter(),
                         contentDescription = "Previous",
                         tint = skipTint,
                         modifier = Modifier.size(38.dp),
-                    )
-                } else {
-                    Icon(
-                        imageVector = if (song.isPodcastEpisode) Icons.Rounded.Replay10 else Icons.Filled.SkipPrevious,
-                        contentDescription = if (song.isPodcastEpisode) "Back 10 seconds" else "Previous",
-                        tint = skipTint,
-                        modifier = Modifier.size(48.dp),
                     )
                 }
             }
@@ -3613,19 +3613,19 @@ private fun SpotifyPlayerPage(
                     ),
                 contentAlignment = Alignment.Center,
             ) {
-                if (useAppleTransport) {
+                if (song.isPodcastEpisode) {
+                    Icon(
+                        imageVector = Icons.Rounded.Forward30,
+                        contentDescription = "Forward 30 seconds",
+                        tint = skipTint,
+                        modifier = Modifier.size(48.dp),
+                    )
+                } else {
                     Icon(
                         painter = PlayerIcons.SkipNext.painter(),
                         contentDescription = "Next (long press to mix)",
                         tint = skipTint,
                         modifier = Modifier.size(38.dp),
-                    )
-                } else {
-                    Icon(
-                        imageVector = if (song.isPodcastEpisode) Icons.Rounded.Forward30 else Icons.Filled.SkipNext,
-                        contentDescription = if (song.isPodcastEpisode) "Forward 30 seconds" else "Next (long press to mix)",
-                        tint = skipTint,
-                        modifier = Modifier.size(48.dp),
                     )
                 }
             }
@@ -3653,21 +3653,29 @@ private fun SpotifyPlayerPage(
                     )
                 }
             } else {
-                SpotifyModeControl(
-                    icon = BitChordIcons.PlayerRepeat,
-                    contentDescription = when (repeatMode) {
-                        1 -> "Repeat one"
-                        2 -> "Repeat all"
-                        else -> "Repeat off"
-                    },
-                    active = repeatMode != 0,
-                    activeDots = when (repeatMode) {
-                        1 -> 2 // "double loop"
-                        2 -> 1
-                        else -> 0
-                    },
-                    onClick = onCycleRepeat,
-                )
+                Box {
+                    IconButton(
+                        onClick = { haptics.play(Haptic.Select); showSleepMenu = true },
+                        modifier = Modifier.size(44.dp).pressScale(pressedScale = 1.08f),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Timer,
+                            contentDescription = "Sleep timer",
+                            tint = if (sleepActive) SpotifyGreen else SpotifyMuted(0.82f),
+                            modifier = Modifier.size(23.dp),
+                        )
+                    }
+                    DropdownMenu(expanded = showSleepMenu, onDismissRequest = { showSleepMenu = false }) {
+                        if (sleepActive) {
+                            DropdownMenuItem(text = { Text("Cancel timer") }, onClick = { SleepTimer.cancel(); showSleepMenu = false })
+                        }
+                        DropdownMenuItem(text = { Text("After this song") }, onClick = { SleepTimer.startAfterTrack(); showSleepMenu = false })
+                        DropdownMenuItem(text = { Text("End of queue") }, onClick = { SleepTimer.startEndOfQueue(); showSleepMenu = false })
+                        SleepTimer.PRESETS.forEach { m ->
+                            DropdownMenuItem(text = { Text("$m minutes") }, onClick = { SleepTimer.start(m); showSleepMenu = false })
+                        }
+                    }
+                }
             }
         }
 
@@ -3686,11 +3694,6 @@ private fun SpotifyPlayerPage(
                     haptics.play(if (pipOn) Haptic.ToggleOff else Haptic.ToggleOn)
                     AppSettings.setPipLyricPreview(!pipOn)
                 },
-            )
-            Spacer(Modifier.width(10.dp))
-            SpotifySleepCountdown(
-                position = position,
-                durationMs = durationMs,
             )
             if (song.isPodcastEpisode) {
                 Spacer(Modifier.width(6.dp))

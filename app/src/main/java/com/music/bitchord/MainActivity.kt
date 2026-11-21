@@ -79,6 +79,8 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.Repeat
+import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LibraryMusic
@@ -6243,26 +6245,61 @@ val filteredPicks by remember(kisetsuPicks) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
+                    val repeatMode = player.repeatMode
+                    val repeatIcon = if (repeatMode == androidx.media3.common.Player.REPEAT_MODE_ONE) Icons.Rounded.RepeatOne else Icons.Rounded.Repeat
+                    val repeatTint = if (repeatMode != androidx.media3.common.Player.REPEAT_MODE_OFF) Color(0xFF1DB954) else Color.White.copy(alpha = 0.7f)
                     if (upNextSheetRedesign) {
                         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                             Box(Modifier.width(40.dp).height(4.dp).clip(RoundedCornerShape(99.dp)).background(Color.White.copy(alpha = 0.22f)))
                         }
                         Spacer(Modifier.height(10.dp))
-                        Text(
-                            text = "Up Next",
-                            color = Color.White,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 10.dp),
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "Up Next",
+                                color = Color.White,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f),
+                            )
+                            IconButton(onClick = {
+                                controller?.let { c ->
+                                    c.repeatMode = when (c.repeatMode) {
+                                        androidx.media3.common.Player.REPEAT_MODE_OFF -> androidx.media3.common.Player.REPEAT_MODE_ALL
+                                        androidx.media3.common.Player.REPEAT_MODE_ALL -> androidx.media3.common.Player.REPEAT_MODE_ONE
+                                        else -> androidx.media3.common.Player.REPEAT_MODE_OFF
+                                    }
+                                }
+                            }) {
+                                Icon(repeatIcon, contentDescription = "Repeat", tint = repeatTint)
+                            }
+                        }
                     } else {
-                        Text(
-                            text = "Queue",
-                            color = Color.White,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "Queue",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f),
+                            )
+                            IconButton(onClick = {
+                                controller?.let { c ->
+                                    c.repeatMode = when (c.repeatMode) {
+                                        androidx.media3.common.Player.REPEAT_MODE_OFF -> androidx.media3.common.Player.REPEAT_MODE_ALL
+                                        androidx.media3.common.Player.REPEAT_MODE_ALL -> androidx.media3.common.Player.REPEAT_MODE_ONE
+                                        else -> androidx.media3.common.Player.REPEAT_MODE_OFF
+                                    }
+                                }
+                            }) {
+                                Icon(repeatIcon, contentDescription = "Repeat", tint = repeatTint)
+                            }
+                        }
                     }
                     val q = player.queue
                     val idx = player.queueIndex
