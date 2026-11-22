@@ -247,15 +247,7 @@ fun SearchScreen(
             }
             stickyHeader(key = "search:field") {
                 Box(Modifier.fillMaxWidth()) {
-                    // A translucent scrim, not a solid slab. No Haze effect here:
-                    // the sticky header lives inside the page's own Haze source,
-                    // which an effect may not sample from.
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(54.dp)
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)),
-                    )
+                    // Nothing behind the field — it just floats over the list.
                     if (showField) {
                         SearchField(
                             query = query,
