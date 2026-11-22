@@ -5378,8 +5378,8 @@ private fun SpotifyScrubber(
         appleStyle -> 7.dp
         else -> 4.dp
     }
-    val trackBg = if (isLiveRadio) SpotifyMuted(0.16f) else SpotifyMuted(0.24f)
-    val trackFg = if (isLiveRadio) SpotifyMuted(0.34f) else SpotifyMuted(0.90f)
+    val trackBg = if (isLiveRadio) SpotifyMuted(0.16f) else SpotifyMuted(0.22f)
+    val trackFg = if (isLiveRadio) SpotifyMuted(0.34f) else SpotifyGreen
 
     Box(
         modifier = modifier
@@ -6192,13 +6192,40 @@ fun SpotifyHomeScreen(
 
             when (state) {
                 is UiState.Loading -> item(key = "home-loading") {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 80.dp),
-                        contentAlignment = Alignment.Center,
+                            .padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(22.dp),
                     ) {
-                        CircularProgressIndicator(color = SpotifyGreen, strokeWidth = 2.dp)
+                        repeat(3) { row ->
+                            Column(Modifier.padding(horizontal = 16.dp)) {
+                                Box(
+                                    Modifier
+                                        .width(if (row == 0) 160.dp else 130.dp)
+                                        .height(20.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(SpotifyFill(0.10f))
+                                )
+                                Spacer(Modifier.height(14.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    repeat(3) {
+                                        Column {
+                                            Box(
+                                                Modifier
+                                                    .size(140.dp)
+                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .background(SpotifyFill(0.08f))
+                                            )
+                                            Spacer(Modifier.height(8.dp))
+                                            Box(Modifier.width(110.dp).height(12.dp).clip(RoundedCornerShape(4.dp)).background(SpotifyFill(0.08f)))
+                                            Spacer(Modifier.height(6.dp))
+                                            Box(Modifier.width(80.dp).height(10.dp).clip(RoundedCornerShape(4.dp)).background(SpotifyFill(0.06f)))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 is UiState.Error -> item(key = "home-error") {
