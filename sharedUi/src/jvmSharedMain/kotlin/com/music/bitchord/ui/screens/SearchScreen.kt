@@ -253,7 +253,11 @@ fun SearchScreen(
             // They are YouTube's categories, so the Library source has none.
             // The same selector as the sources above it and a folder's tabs, so
             // the app has one look for "pick one of these".
-            if (results != null && !suggesting && !searchingLibrary && !searchingAddons) {
+            AnimatedVisibility(
+                visible = (results != null || query.isNotBlank()) && !suggesting && !searchingLibrary && !searchingAddons,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
                 PillSegmentedControl(
                     options = SearchFilter.entries.map { it.label },
                     selectedIndex = filter.ordinal,
