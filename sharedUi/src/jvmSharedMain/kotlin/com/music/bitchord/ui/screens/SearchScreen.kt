@@ -1,7 +1,14 @@
 package com.music.bitchord.ui.screens
 
 import com.music.bitchord.ui.components.trackArtSize
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import com.music.bitchord.data.model.toSong
 import com.music.bitchord.ui.components.SwipeToQueueBox
 import com.music.bitchord.ui.components.contextClick
@@ -56,6 +63,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -185,6 +193,8 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     var internalFieldFocused by remember { mutableStateOf(false) }
     val effectiveFieldFocused = fieldFocused || internalFieldFocused
+    var discoverCollapsePx by remember { mutableFloatStateOf(0f) }
+    var discoverMaxPx by remember { mutableFloatStateOf(0f) }
     // Tapping the search tab from the nav bar sets focusRequested;
     // respond by focusing the field and opening the keyboard.
     LaunchedEffect(focusRequested) {
@@ -198,7 +208,10 @@ fun SearchScreen(
     // new request so choosing a recent search cannot inherit the history's
     // previous scroll position (or a previous result page's position).
     LaunchedEffect(scrollResetTrigger) {
-        if (scrollResetTrigger > 0) listState.scrollToItem(0)
+        if (scrollResetTrigger > 0) {
+            listState.scrollToItem(0)
+            discoverCollapsePx = 0f
+        }
     }
     // A non-empty suggestion list means the field is mid-edit — see
     // MainViewModel.suggestions. Nothing below it is worth showing while it is
@@ -219,20 +232,50 @@ fun SearchScreen(
             if (!loadingMore && total > 0 && lastVisible >= total - 4) onLoadMore()
         }
     }
-    Column(modifier = modifier.fillMaxSize()) {
-        // Search field and filter tabs stay fixed at the top, outside the
-        // scrolling list, so they're always reachable rather than scrolling
-        // away with the results or recent searches beneath them.
-        // The FrostedTopBar is visible on this tab (showing "Search"), so we
-        // clear it fully — status bar inset + bar height + breathing gap — so
-        // the search field sits cleanly below the bar instead of overlapping it.
+    val density = LocalDensity.current
+    val headerNestedScroll = remember(listState) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                val dy = available.y
+                if (dy >= 0f || discoverMaxPx <= 0f) return Offset.Zero
+                val canCollapse = listState.canScrollForward || listState.canScrollBackward || listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+                if (!canCollapse) return Offset.Zero
+                val old = discoverCollapsePx
+                discoverCollapsePx = (discoverCollapsePx - dy).coerceIn(0f, discoverMaxPx)
+                return Offset(0f, -(discoverCollapsePx - old))
+            }
+
+            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                val dy = available.y
+                if (dy <= 0f || discoverMaxPx <= 0f) return Offset.Zero
+                if (listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0) return Offset.Zero
+                val old = discoverCollapsePx
+                discoverCollapsePx = (discoverCollapsePx - dy).coerceIn(0f, discoverMaxPx)
+                return Offset(0f, -(discoverCollapsePx - old))
+            }
+        }
+    }
+    val discoverHeightDp = with(density) { (discoverMaxPx - discoverCollapsePx).coerceAtLeast(0f).toDp() }
+
+    Column(modifier = modifier.fillMaxSize().nestedScroll(headerNestedScroll)) {
+        // Search field and filter tabs stay reachable at the top. The Discover
+        // title collapses as content scrolls up, giving results/vibes more room
+        // while keeping the search controls pinned.
         Column(modifier = Modifier.padding(top = topPadding)) {
-            Text(
-                text = "Discover",
-                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onSizeChanged { if (discoverMaxPx == 0f) discoverMaxPx = it.height.toFloat() }
+                    .then(if (discoverMaxPx > 0f) Modifier.height(discoverHeightDp) else Modifier)
+                    .clip(androidx.compose.ui.graphics.RectangleShape),
+            ) {
+                Text(
+                    text = "Discover",
+                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
+                )
+            }
             if (showField) {
                 SearchField(
                     query = query,
