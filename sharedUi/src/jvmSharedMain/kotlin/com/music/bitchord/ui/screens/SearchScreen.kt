@@ -223,15 +223,15 @@ fun SearchScreen(
     Column(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            // The Discover title and sort tabs scroll away with the results,
-            // but the search field is a sticky header: it floats just below
-            // the top bar while everything else scrolls, then settles back
-            // into its normal place when you scroll back up.
-            contentPadding = PaddingValues(
-                top = topPadding,
-                bottom = contentPadding.calculateBottomPadding(),
-            ),
+            // Pad the whole list below the frosted top bar so the sticky
+            // search field pins *below* it (not half cut off behind it). The
+            // Discover title and sort tabs still scroll away with the results,
+            // and the field settles back into place when you scroll to the top.
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(top = topPadding),
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
         ) {
             item(key = "search:title") {
                 Text(
