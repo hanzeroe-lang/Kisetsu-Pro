@@ -4238,11 +4238,7 @@ private fun SpotifyLyricsPreview(
     onShowLyrics: () -> Unit,
 ) {
     val haptics = rememberHaptics()
-    val lines = lyrics.orEmpty().filter { !it.isGap && it.text.isNotBlank() }
-    val posMs = position.positionMs
-    val currentIndex = lines.indexOfLast { it.timeMs <= posMs }.coerceAtLeast(0)
-    val preview = if (lines.isEmpty()) emptyList() else lines.drop(currentIndex).take(2)
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -4256,30 +4252,18 @@ private fun SpotifyLyricsPreview(
                     Brush.horizontalGradient(listOf(SpotifySurfaceBg(), SpotifySurfaceAlt()))
                 },
             )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-    ) {
-        Spacer(Modifier.height(28.dp))
-        if (preview.isNotEmpty()) {
-            preview.forEachIndexed { i, line ->
-                Text(
-                    text = line.text,
-                    color = if (i == 0) SpotifyOnBg() else SpotifyMuted(0.55f),
-                    fontSize = if (i == 0) 18.sp else 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (i == 0) Spacer(Modifier.height(6.dp))
-            }
-            Spacer(Modifier.height(14.dp))
-        }
-        SpotifyPill(
-            text = "Show lyrics",
-            onClick = {
+            .clickable {
                 haptics.play(Haptic.Tap)
                 onShowLyrics()
-            },
-            filled = true,
+            }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Lyrics preview",
+            color = SpotifyOnBg(),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
