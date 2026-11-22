@@ -93,8 +93,8 @@ fun ThinSlider(
      * unplayed bar so the mix is visible before it arrives.
      */
     transitionWindow: ClosedFloatingPointRange<Float>? = null,
-    idleHeight: Dp = 7.dp,
-    activeHeight: Dp = 12.dp,
+    idleHeight: Dp = 4.dp,
+    activeHeight: Dp = 10.dp,
     activeColor: Color = Color.White.copy(alpha = 0.92f),
     inactiveColor: Color = Color.White.copy(alpha = 0.26f),
     /** Halfway between the two track colours: visible against unplayed, invisible under played. */
@@ -113,6 +113,14 @@ fun ThinSlider(
             stiffness = Spring.StiffnessMediumLow,
         ),
         label = "sliderHeight",
+    )
+    val thumbRadius by animateDpAsState(
+        targetValue = if (dragging) 7.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = 0.55f,
+            stiffness = Spring.StiffnessMediumLow,
+        ),
+        label = "sliderThumb",
     )
     // The sheen gets a minimum beat even when the switch resolves instantly —
     // a cached offset can land in a few hundred milliseconds — so its entry,
@@ -256,6 +264,15 @@ fun ThinSlider(
                         size.height,
                     ),
                     cornerRadius = radius,
+                )
+            }
+            val thumbPx = thumbRadius.toPx()
+            if (thumbPx > 0f) {
+                val x = (size.width * fraction.coerceIn(0f, 1f)).coerceIn(thumbPx, size.width - thumbPx)
+                drawCircle(
+                    color = activeColor,
+                    radius = thumbPx,
+                    center = androidx.compose.ui.geometry.Offset(x, size.height / 2f),
                 )
             }
         }

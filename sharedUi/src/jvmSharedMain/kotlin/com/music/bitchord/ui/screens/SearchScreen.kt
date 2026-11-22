@@ -20,6 +20,7 @@ import com.music.bitchord.ui.components.PillSegmentedControl
 import com.music.bitchord.ui.components.longPressMenuClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -76,6 +77,8 @@ import com.music.bitchord.data.model.SearchResult
 import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.playingRowMatcher
 import com.music.bitchord.data.model.UiState
+import com.music.bitchord.data.model.MoodGenre
+import com.music.bitchord.data.model.MoodGenreSection
 import com.music.bitchord.data.model.SearchHistoryEntity
 import com.music.bitchord.data.model.EntityType
 import com.music.bitchord.ui.components.MessageState
@@ -169,6 +172,8 @@ fun SearchScreen(
      * about the results, and the switcher would just push them down.
      */
     sourceSwitcher: (@Composable () -> Unit)? = null,
+    moodSections: List<MoodGenreSection> = emptyList(),
+    onMoodClick: (MoodGenre) -> Unit = {},
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -305,19 +310,43 @@ fun SearchScreen(
                         )
                     }
                 }
-                results == null -> if (history.isEmpty()) {
-                    item { MessageState(stringResource(Res.string.search_empty)) }
-                } else {
-                    recentSearches(
-                        history = history,
-                        currentSong = currentSong,
-                        isPlaying = isPlaying,
-                        onClick = onHistoryClick,
-                        onSongLongPress = onSongLongPress,
-                        onRemove = onHistoryRemove,
-                        onClear = onHistoryClear,
-                        onSongSwipe = onSongSwipe,
-                    )
+                results == null -> {
+                    if (history.isNotEmpty() && query.isBlank()) {
+                        recentSearches(
+                            history = history,
+                            currentSong = currentSong,
+                            isPlaying = isPlaying,
+                            onClick = onHistoryClick,
+                            onSongLongPress = onSongLongPress,
+                            onRemove = onHistoryRemove,
+                            onClear = onHistoryClear,
+                            onSongSwipe = onSongSwipe,
+                        )
+                    }
+                    val vibeRows = moodSections.flatMap { it.items }
+                        .distinctBy { it.browseId to it.params }
+                    if (vibeRows.isNotEmpty() && query.isBlank()) {
+                        item { 
+                            Text(
+                                text = stringResource(Res.string.explore),
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 8.dp, bottom = 12.dp),
+                            )
+                        }
+                        item {
+                            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                                val columns = moodColumns(maxWidth)
+                                Column(Modifier.fillMaxWidth()) {
+                                    vibeRows.chunked(columns).forEach { row ->
+                                        MoodGenreRow(row = row, columns = columns, onCategoryClick = onMoodClick)
+                                    }
+                                }
+                            }
+                        }
+                    } else if (history.isEmpty()) {
+                        item { MessageState(stringResource(Res.string.search_empty)) }
+                    }
                 }
                 results is UiState.Loading -> songListSkeleton(circular = filter == SearchFilter.ARTISTS)
                 results is UiState.Error -> item { MessageState(results.message) }

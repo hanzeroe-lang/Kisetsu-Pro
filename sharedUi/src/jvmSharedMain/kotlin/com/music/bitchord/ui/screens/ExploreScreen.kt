@@ -121,7 +121,7 @@ fun ExploreScreen(
 }
 
 @Composable
-private fun MoodGenreRow(
+fun MoodGenreRow(
     row: List<MoodGenre>,
     columns: Int,
     onCategoryClick: (MoodGenre) -> Unit,
@@ -174,30 +174,25 @@ fun MoodGenreSleeve(
     titleStyle: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     val tone = remember(item.stripeColor, item.title) { moodTone(item) }
-    Box(modifier = modifier.background(tone.stripe)) {
-        Box(
-            Modifier
-                .align(Alignment.CenterEnd)
-                .fillMaxHeight()
-                .fillMaxWidth(1f - MOOD_STRIPE_FRACTION)
-                .background(tone.placeholder),
-        ) {
-            item.thumbnailUrl?.let { artwork ->
-                AsyncImage(
-                    model = artwork,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    colorFilter = tone.duotone,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
+    Box(modifier = modifier.background(tone.placeholder)) {
+        item.thumbnailUrl?.let { artwork ->
+            AsyncImage(
+                model = artwork,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
-        // Pale stripes (Energize's cream, Feel good's mint) would swallow
-        // white type; a soft shade under the title keeps it legible.
         Box(
             Modifier
                 .matchParentSize()
-                .background(Brush.verticalGradient(0f to Color.Black.copy(alpha = .24f), .62f to Color.Transparent)),
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.45f to Color.Transparent,
+                        1f to Color.Black.copy(alpha = 0.55f),
+                    ),
+                ),
         )
         Text(
             text = item.title,
@@ -209,7 +204,7 @@ fun MoodGenreSleeve(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .align(Alignment.BottomStart)
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         )
     }
@@ -284,7 +279,7 @@ private val MOOD_MIN_CARD_WIDTH = 220.dp
 
 private const val MOOD_MAX_COLUMNS = 6
 
-private fun moodColumns(available: Dp): Int {
+fun moodColumns(available: Dp): Int {
     val row = available - PAGE_GUTTER * 2
     return ((row + MOOD_SPACING) / (MOOD_MIN_CARD_WIDTH + MOOD_SPACING)).toInt().coerceIn(2, MOOD_MAX_COLUMNS)
 }
