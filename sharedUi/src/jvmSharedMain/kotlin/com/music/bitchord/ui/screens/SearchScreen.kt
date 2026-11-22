@@ -245,10 +245,9 @@ fun SearchScreen(
                     modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
                 )
             }
-            stickyHeader(key = "search:field") {
-                Box(Modifier.fillMaxWidth()) {
-                    // Nothing behind the field — it just floats over the list.
-                    if (showField) {
+            if (showField) {
+                stickyHeader(key = "search:field") {
+                    Box(Modifier.fillMaxWidth()) {
                         SearchField(
                             query = query,
                             onQueryChange = onQueryChange,
@@ -267,33 +266,33 @@ fun SearchScreen(
                     }
                 }
             }
-            item(key = "search:controls") {
-                Column {
-                    if (sourceSwitcher != null) {
-                        AnimatedVisibility(
-                            visible = query.isEmpty() && effectiveFieldFocused,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            Box(Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 4.dp)) {
-                                sourceSwitcher()
-                            }
-                        }
-                    }
-                    // The sort tabs only mean something once there is a result
-                    // set to narrow; they stay up for an empty or failed search
-                    // too, and scroll away with the list below.
-                    AnimatedVisibility(
-                        visible = results != null && !suggesting && !searchingLibrary && !searchingAddons,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically(),
+            // Sort tabs stay at top while scrolling results.
+            if (results != null && !suggesting && !searchingLibrary && !searchingAddons) {
+                stickyHeader(key = "search:filters") {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
                     ) {
                         PillSegmentedControl(
                             options = SearchFilter.entries.map { it.label },
                             selectedIndex = filter.ordinal,
                             onSelect = { onFilterChange(SearchFilter.entries[it]) },
-                            modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 6.dp),
+                            modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 2.dp, bottom = 6.dp),
                         )
+                    }
+                }
+            }
+            item(key = "search:controls") {
+                if (sourceSwitcher != null) {
+                    AnimatedVisibility(
+                        visible = query.isEmpty() && effectiveFieldFocused,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically(),
+                    ) {
+                        Box(Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 4.dp)) {
+                            sourceSwitcher()
+                        }
                     }
                 }
             }

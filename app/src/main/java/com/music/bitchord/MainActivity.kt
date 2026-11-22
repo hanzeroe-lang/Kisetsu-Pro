@@ -31,8 +31,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +66,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -63,6 +74,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.LocalOverscrollFactory
@@ -287,6 +299,13 @@ import com.music.bitchord.ui.components.backdrop.backdrops.rememberLayerBackdrop
 import com.music.bitchord.ui.components.backdrop.backdrops.rememberSnapshotBackdrop
 import com.music.bitchord.ui.components.backdrop.backdrops.snapshotBackdropSource
 import com.music.bitchord.ui.components.isGlassSupported
+import com.music.bitchord.ui.components.liquidGlass
+import com.music.bitchord.ui.components.optimizedHazeEffect
+import com.music.bitchord.ui.components.floatingBarInsets
+import com.music.bitchord.ui.components.NAV_BAR_GUTTER
+import com.music.bitchord.ui.components.NAV_BAR_LIFT
+import com.music.bitchord.ui.components.GLASS_EDGE_WIDTH
+import com.music.bitchord.ui.components.GLASS_EDGE_COLOR
 import com.music.bitchord.data.sources.SourceConfig
 import com.music.bitchord.data.sources.SourceKind
 import com.music.bitchord.data.sources.SourceRegistry
@@ -827,9 +846,8 @@ private fun BitChordApp(
     val autoplayEnabled = autoplayEnabledFor(partyState, autoplay)
     val partyServerStatus by ListenTogether.serverConnectionState.collectAsStateWithLifecycle()
     val listenBrainzToken by AppSettings.listenBrainzToken.collectAsStateWithLifecycle()
-    // Set each time the search tab is tapped, which SearchScreen uses as a
-    // signal to focus the input field.
-    var searchFocusRequested by remember { mutableStateOf(false) }
+    // Bottom search bar morphs out of the search nav button.
+    var searchBarActive by remember { mutableStateOf(false) }
     var searchFieldFocused by remember { mutableStateOf(false) }
     val searchFieldFocus = remember { FocusRequester() }
     // Invalidates an in-flight radio lookup when a later play request wins.
@@ -3712,9 +3730,10 @@ private fun BitChordApp(
                                 onLoadMore = viewModel::loadMoreSearchResults,
                                 listState = searchListState,
                                 scrollResetTrigger = searchScrollReset,
-                                focusRequested = searchFocusRequested,
-                                onFocusHandled = { searchFocusRequested = false },
-                                fieldFocused = searchFieldFocused,
+                                focusRequested = false,
+                                onFocusHandled = {},
+                                fieldFocused = searchBarActive,
+                                showField = false,
                                 // Search hits are alternatives to each other, not a running
                                 // order — play the one tapped and build a station from it.
                                 onSongClick = { songs, index ->
@@ -3837,7 +3856,6 @@ private fun BitChordApp(
                                     selectedMoodGenre == null && selectedTab == TAB_SEARCH
                                 ) topBarHeight() - TopBarContentHeight + 12.dp
                                 else topBarHeight() + 20.dp,
-                                showField = true,
                                 // The settings page's own two-state selector, so the
                                 // app has one look for "pick one of these".
                                 sourceSwitcher = {
@@ -4401,23 +4419,24 @@ private fun BitChordApp(
                     viewModel.closeMoodGenre()
                     selectedTab = index
 
-                    // Every search tab tap resets the field, focuses it, and opens
-                    // the keyboard through SearchScreen's focus request.
                     if (index == TAB_SEARCH) {
-                        viewModel.onQueryChange("")
-                        searchFocusRequested = false
+                        searchBarActive = true
                         searchFieldFocused = false
+                    } else {
+                        searchBarActive = false
                     }
                 }
 
                 val haptics = rememberHaptics()
                 val scrollScope = rememberCoroutineScope()
                 var scrollJob by remember { mutableStateOf<Job?>(null) }
-                /** Scroll the current tab's list back to top when the active tab is tapped (excludes Search). */
+                /** Scroll the current tab's list back to top when the active tab is tapped. */
                 val onActiveTabTap: () -> Unit = fun() {
-                    // Capture overlay state at tap time, before any navigation handler clears it.
                     if (route != null || detail != null || selectedMoodGenre != null) return
-                    if (selectedTab == TAB_SEARCH) return
+                    if (selectedTab == TAB_SEARCH) {
+                        searchBarActive = true
+                        return
+                    }
                     haptics.play(Haptic.Select)
                     scrollJob?.cancel()
                     scrollJob = scrollScope.launch {
@@ -4426,6 +4445,8 @@ private fun BitChordApp(
                 }
 
                 val miniArtwork = rememberMiniAutoMixArtwork(player.song, player.queue, player.queueIndex)
+                val showBottomSearchBar = searchBarActive &&
+                    selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null
                 if (glassActive) Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -4434,46 +4455,55 @@ private fun BitChordApp(
                         .onSizeChanged { floatingBarsHeight.intValue = it.height },
                 ) {
                     QueueActionNoticeHost(queueNotice)
-                    // Liquid glass replaces the two stacked bars with the single
-                    // component they are stacked to imitate: the now playing
-                    // controls dock into the tab bar rather than riding above it,
-                    // and the pair folds together on scroll. See [GlassNavBar].
-                    GlassNavBar(
-                        tabs = tabs,
-                        selectedIndex = selectedTab,
-                        onTabSelected = onTabSelected,
-                        scrollConnection = navBarScroll,
-                        song = player.song,
-                        isPlaying = player.isPlaying,
-                        isLoading = playPauseBusy,
-                        animationsActive = !showNowPlaying,
-                        onPlayPause = {
-                            togglePlayPause()
+                    AnimatedContent(
+                        targetState = showBottomSearchBar,
+                        transitionSpec = {
+                            (fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.92f, animationSpec = tween(220)))
+                                .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 0.92f, animationSpec = tween(180)))
                         },
-                        onNext = { controller?.seekToNextMediaItem() },
-                        onPrevious = { controller?.seekToPrevious() },
-                        onExpand = if (reducePlayerMotion) {
-                            { showNowPlaying = true }
+                        label = "searchBarMorph",
+                    ) { active ->
+                        if (active) {
+                            LiquidGlassSearchBar(
+                                query = query,
+                                onQueryChange = viewModel::onQueryChange,
+                                onClose = { searchBarActive = false },
+                                onSubmit = { viewModel.submitSearch() },
+                                focusRequester = searchFieldFocus,
+                                hazeState = hazeState,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
                         } else {
-                            playerSheetMotion::open
-                        },
-                        controlsLocked = controlsLocked,
-                        onBlockedControl = showHostOnlyNotice,
-                        dock = activeDock,
-                        pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                        modifier = Modifier.fillMaxWidth(),
-                        onActiveTabTap = onActiveTabTap,
-                        autoMixArtwork = miniArtwork,
-                    )
+                            GlassNavBar(
+                                tabs = tabs,
+                                selectedIndex = selectedTab,
+                                onTabSelected = onTabSelected,
+                                scrollConnection = navBarScroll,
+                                song = player.song,
+                                isPlaying = player.isPlaying,
+                                isLoading = playPauseBusy,
+                                animationsActive = !showNowPlaying,
+                                onPlayPause = { togglePlayPause() },
+                                onNext = { controller?.seekToNextMediaItem() },
+                                onPrevious = { controller?.seekToPrevious() },
+                                onExpand = if (reducePlayerMotion) {
+                                    { showNowPlaying = true }
+                                } else {
+                                    playerSheetMotion::open
+                                },
+                                controlsLocked = controlsLocked,
+                                onBlockedControl = showHostOnlyNotice,
+                                dock = activeDock,
+                                pull = playerSheetMotion.takeIf { !reducePlayerMotion },
+                                modifier = Modifier.fillMaxWidth(),
+                                onActiveTabTap = onActiveTabTap,
+                                autoMixArtwork = miniArtwork,
+                            )
+                        }
+                    }
                 } else Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        // Capped and centred rather than run to the page's edges
-                        // — see [FLOATING_BAR_MAX_WIDTH]. It sits on the Column
-                        // rather than on each bar so the two are held to the same
-                        // width and keep the shared left and right edge they have
-                        // on a phone. Before fillMaxWidth, so the fill has
-                        // already been bounded by the time it is applied.
                         .widthIn(max = FLOATING_BAR_MAX_WIDTH)
                         .fillMaxWidth()
                         .onSizeChanged { floatingBarsHeight.intValue = it.height },
@@ -4487,9 +4517,7 @@ private fun BitChordApp(
                             isLoading = playPauseBusy,
                             animationsActive = !showNowPlaying,
                             hazeState = hazeState,
-                            onPlayPause = {
-                                togglePlayPause()
-                            },
+                            onPlayPause = { togglePlayPause() },
                             onNext = { controller?.seekToNextMediaItem() },
                             onPrevious = { controller?.seekToPrevious() },
                             onExpand = if (reducePlayerMotion) {
@@ -4506,13 +4534,34 @@ private fun BitChordApp(
                         )
                         Spacer(Modifier.height(8.dp))
                     }
-                    FloatingBottomBar(
-                        tabs = tabs,
-                        selectedIndex = selectedTab,
-                        hazeState = hazeState,
-                        onTabSelected = onTabSelected,
-                        onActiveTabTap = onActiveTabTap,
-                    )
+                    AnimatedContent(
+                        targetState = showBottomSearchBar,
+                        transitionSpec = {
+                            (fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.92f, animationSpec = tween(220)))
+                                .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 0.92f, animationSpec = tween(180)))
+                        },
+                        label = "searchBarMorph",
+                    ) { active ->
+                        if (active) {
+                            LiquidGlassSearchBar(
+                                query = query,
+                                onQueryChange = viewModel::onQueryChange,
+                                onClose = { searchBarActive = false },
+                                onSubmit = { viewModel.submitSearch() },
+                                focusRequester = searchFieldFocus,
+                                hazeState = hazeState,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        } else {
+                            FloatingBottomBar(
+                                tabs = tabs,
+                                selectedIndex = selectedTab,
+                                hazeState = hazeState,
+                                onTabSelected = onTabSelected,
+                                onActiveTabTap = onActiveTabTap,
+                            )
+                        }
+                    }
                 }
             }
 
@@ -6653,6 +6702,101 @@ private const val SNAPSHOT_RELEASE_DELAY_MS = 400L
 private object PlayerSheetShape : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline =
         Outline.Rectangle(Rect(0f, -size.height, size.width, size.height))
+}
+
+@OptIn(ExperimentalHazeMaterialsApi::class)
+@Composable
+private fun LiquidGlassSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClose: () -> Unit,
+    onSubmit: () -> Unit,
+    focusRequester: FocusRequester,
+    hazeState: HazeState,
+    modifier: Modifier = Modifier,
+) {
+    val pillShape = RoundedCornerShape(percent = 50)
+    val container = MaterialTheme.colorScheme.surface
+    val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
+    val useGlass = LocalLiquidGlassEnabled.current && isGlassSupported()
+    val onTint = MaterialTheme.colorScheme.onSurface
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(Unit) {
+        // Let the morph settle slightly before pulling keyboard up.
+        kotlinx.coroutines.delay(120)
+        runCatching { focusRequester.requestFocus() }
+    }
+
+    val surface = if (reduceDynamicBlur) {
+        Modifier.background(container, pillShape)
+    } else if (useGlass) {
+        Modifier.liquidGlass(shape = pillShape)
+    } else {
+        Modifier.optimizedHazeEffect(
+            state = hazeState,
+            style = HazeMaterials.regular(container),
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .windowInsetsPadding(floatingBarInsets)
+            .padding(horizontal = NAV_BAR_GUTTER)
+            .padding(bottom = NAV_BAR_LIFT)
+            .fillMaxWidth()
+            .height(56.dp)
+            .clip(pillShape)
+            .then(surface)
+            .border(GLASS_EDGE_WIDTH, GLASS_EDGE_COLOR, pillShape)
+            .padding(horizontal = 6.dp),
+    ) {
+        IconButton(onClick = {
+            focusManager.clearFocus()
+            onClose()
+        }) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "Close search",
+                tint = onTint,
+            )
+        }
+        Box(Modifier.weight(1f)) {
+            if (query.isEmpty()) {
+                Text(
+                    text = "Search",
+                    color = onTint.copy(alpha = 0.55f),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = onTint),
+                cursorBrush = SolidColor(onTint),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = { onSubmit(); focusManager.clearFocus() },
+                    onDone = { onSubmit(); focusManager.clearFocus() },
+                    onGo = { onSubmit(); focusManager.clearFocus() },
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+            )
+        }
+        if (query.isNotEmpty()) {
+            IconButton(onClick = { onQueryChange("") }) {
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "Clear",
+                    tint = onTint.copy(alpha = 0.7f),
+                )
+            }
+        }
+    }
 }
 
 private const val TAB_HOME = 0
