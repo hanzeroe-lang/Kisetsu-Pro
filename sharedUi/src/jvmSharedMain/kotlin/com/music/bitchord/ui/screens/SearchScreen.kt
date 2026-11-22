@@ -380,6 +380,14 @@ fun SearchScreen(
                     val isCurrentRow = playingRowMatcher(tracks, currentSong)
                     val topResult = results.data.filterIsInstance<SearchResult.TopTrack>().firstOrNull()
                     if (filter == SearchFilter.ALL && topResult != null) {
+                        item(key = "search:top-result-header") {
+                            Text(
+                                text = "Top Result",
+                                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 8.dp, bottom = 8.dp),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
                         item(key = "search:top-result:${topResult.song.videoId}") {
                             SwipeToQueueBox(
                                 onSwipeToQueue = { onSongSwipe(topResult.song) },
@@ -402,10 +410,10 @@ fun SearchScreen(
                                     modifier = Modifier.padding(
                                         start = PAGE_GUTTER,
                                         end = PAGE_GUTTER,
-                                        top = 16.dp,
-                                        bottom = 6.dp,
+                                        top = 20.dp,
+                                        bottom = 8.dp,
                                     ),
-                                    style = MaterialTheme.typography.titleSmall,
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
                             }

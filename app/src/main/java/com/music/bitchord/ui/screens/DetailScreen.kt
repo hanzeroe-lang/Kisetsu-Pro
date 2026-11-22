@@ -1056,7 +1056,7 @@ private fun ReleaseHeader(
         Spacer(Modifier.height(20.dp))
         Text(
             text = page.title,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
             color = palette.onBackground,
             textAlign = TextAlign.Center,
             maxLines = 2,
