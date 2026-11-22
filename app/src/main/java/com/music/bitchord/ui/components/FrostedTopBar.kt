@@ -75,6 +75,7 @@ import com.music.bitchord.R
 import com.music.bitchord.data.model.Account
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.ui.theme.stableStatusBarInsets
+import dev.chrisbanes.haze.ExperimentalHazeApi
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -484,7 +485,7 @@ private fun Modifier.artworkActionEdgePadding(): Modifier = layout { measurable,
 }
 
 /** The navbar's exact material choice, reusable by every floating top control. */
-@OptIn(ExperimentalHazeMaterialsApi::class)
+@OptIn(ExperimentalHazeMaterialsApi::class, ExperimentalHazeApi::class)
 @Composable
 private fun artworkPageSurface(
     shape: CornerBasedShape,
@@ -503,7 +504,13 @@ private fun artworkPageSurface(
                 else -> Modifier.optimizedHazeEffect(
                     state = hazeState,
                     style = HazeMaterials.regular(container),
-                )
+                ) {
+                    // Blur only: a floating surface should frost what scrolls
+                    // under it, not lay a solid tint over it.
+                    backgroundColor = Color.Transparent
+                    tints = emptyList()
+                    blurRadius = 20.dp
+                }
             },
         )
         // Keep the same explicit hairline as FloatingBottomBar. Liquid glass

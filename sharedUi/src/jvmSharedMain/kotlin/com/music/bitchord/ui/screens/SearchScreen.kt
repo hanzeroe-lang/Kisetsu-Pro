@@ -180,6 +180,12 @@ fun SearchScreen(
     moodSections: List<MoodGenreSection> = emptyList(),
     onMoodClick: (MoodGenre) -> Unit = {},
     fieldFocused: Boolean = false,
+    /**
+     * Backdrop drawn behind the pinned search field. The phone supplies a
+     * progressive Haze blur so the field floats; without it a translucent
+     * surface is used, but never a solid slab.
+     */
+    stickyFieldBackdrop: (@Composable () -> Unit)? = null,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -242,7 +248,17 @@ fun SearchScreen(
                 )
             }
             stickyHeader(key = "search:field") {
-                Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+                Box(Modifier.fillMaxWidth()) {
+                    if (stickyFieldBackdrop != null) {
+                        stickyFieldBackdrop()
+                    } else {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(54.dp)
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
+                        )
+                    }
                     if (showField) {
                         SearchField(
                             query = query,
