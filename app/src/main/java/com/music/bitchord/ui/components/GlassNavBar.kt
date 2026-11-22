@@ -240,9 +240,9 @@ fun GlassNavBar(
         contentKey = remember(selectedIndex, tabs, contentColor) {
             listOf(selectedIndex, tabs, contentColor)
         },
-        // Expanded, Search shares the tab pill; collapsed, it is the circle at
-        // the end of the row.
-        mergeStandaloneWhenExpanded = true,
+        // Search is always its own detached circle, like Apple Music —
+        // never merged into the tab pill.
+        mergeStandaloneWhenExpanded = false,
     ) {
         tabs.forEachIndexed { index, tab ->
             val isSelected = index == selectedIndex
@@ -277,8 +277,8 @@ fun GlassNavBar(
                 )
             }
             if (index == standaloneIndex) {
-                // Titled for the expanded bar, where it is the pill's last tab.
-                standaloneTab(key = index, icon = icon, onClick = onClick, title = title)
+                // Always a detached circle: icon only, no label.
+                standaloneTab(key = index, icon = icon, onClick = onClick)
             } else {
                 tab(key = index, icon = icon, title = title, onClick = onClick)
             }
