@@ -1565,42 +1565,7 @@ fun SpotifyNowPlayingScreen(
                 // away, exactly as Spotify keeps the track and pause within reach.
                 // Wrapped in a fixed-height box to prevent layout thrashing during
                 // fast scrolling.
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(56.dp + statusBarHeight),
-                ) {
-                    AnimatedVisibility(
-                        visible = scrolledPastHeader,
-                        enter = fadeIn(tween(180)),
-                        exit = fadeOut(tween(180)),
-                    ) {
-                        Column(
-                            modifier = Modifier.background(
-                                Brush.verticalGradient(
-                                    0f to SpotifyBg().copy(alpha = 0.72f),
-                                    0.55f to SpotifyBg().copy(alpha = 0.42f),
-                                    1f to Color.Transparent,
-                                )
-                            )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(statusBarHeight),
-                            )
-                            SpotifyCondensedHeader(
-                                song = song,
-                                isPlaying = isPlaying,
-                                liked = liked,
-                                onPlayPause = onPlayPause,
-                                onToggleLike = onToggleLike,
-                                onMore = onMore,
-                            )
-                        }
-                    }
-                }
+
             }
 
             // Progressive blur at the bottom of the player
@@ -4238,12 +4203,7 @@ private fun SpotifyLyricsPreview(
     onShowLyrics: () -> Unit,
 ) {
     val haptics = rememberHaptics()
-    val lines = lyrics.orEmpty().filter { !it.isGap && it.text.isNotBlank() }
-    val posMs = position.positionMs
-    val currentIndex = lines.indexOfLast { it.timeMs <= posMs }.coerceAtLeast(0)
-    val preview = if (lines.isEmpty()) emptyList() else lines.drop(currentIndex).take(2)
-
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -4257,40 +4217,16 @@ private fun SpotifyLyricsPreview(
                     Brush.horizontalGradient(listOf(SpotifySurfaceBg(), SpotifySurfaceAlt()))
                 },
             )
-            .clickable {
-                haptics.play(Haptic.Tap)
-                onShowLyrics()
-            }
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Lyrics preview",
             color = SpotifyOnBg(),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f),
         )
-        Spacer(Modifier.height(14.dp))
-        if (preview.isNotEmpty()) {
-            preview.forEachIndexed { i, line ->
-                Text(
-                    text = line.text,
-                    color = if (i == 0) SpotifyOnBg() else SpotifyMuted(0.55f),
-                    fontSize = if (i == 0) 18.sp else 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (i == 0) Spacer(Modifier.height(6.dp))
-            }
-        } else {
-            Text(
-                text = "Open lyrics to follow along",
-                color = SpotifyMuted(0.65f),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-            )
-        }
-        Spacer(Modifier.height(14.dp))
         SpotifyPill(
             text = "Show lyrics",
             onClick = {
