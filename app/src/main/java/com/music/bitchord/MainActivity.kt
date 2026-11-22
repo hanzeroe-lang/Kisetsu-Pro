@@ -269,7 +269,6 @@ import com.music.bitchord.playback.setQueueDragActive
 import com.music.bitchord.ui.MainViewModel
 import com.music.bitchord.ui.SearchSource
 import com.music.bitchord.ui.components.BottomFadeBlur
-import com.music.bitchord.ui.components.StickySearchBlur
 import com.music.bitchord.ui.components.BottomFadeScrim
 import com.music.bitchord.ui.components.TopFadeBlur
 import com.music.bitchord.ui.components.FloatingBarsTapGuard
@@ -3832,22 +3831,6 @@ private fun BitChordApp(
                                 // accessory), so what comes next is the field's own
                                 // suggestions and filters, and a gap reads as a break.
                                 topPadding = topBarHeight() + 20.dp,
-                                // Blur behind the pinned field instead of a solid
-                                // slab, so it floats over the scrolling results.
-                                stickyFieldBackdrop = {
-                                    if (reduceDynamicBlur || !glassActive || !progressiveBlur) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(54.dp)
-                                                .background(
-                                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
-                                                ),
-                                        )
-                                    } else {
-                                        StickySearchBlur(hazeState = hazeState)
-                                    }
-                                },
                                 showField = true,
                                 // The settings page's own two-state selector, so the
                                 // app has one look for "pick one of these".

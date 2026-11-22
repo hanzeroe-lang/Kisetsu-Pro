@@ -180,12 +180,6 @@ fun SearchScreen(
     moodSections: List<MoodGenreSection> = emptyList(),
     onMoodClick: (MoodGenre) -> Unit = {},
     fieldFocused: Boolean = false,
-    /**
-     * Backdrop drawn behind the pinned search field. The phone supplies a
-     * progressive Haze blur so the field floats; without it a translucent
-     * surface is used, but never a solid slab.
-     */
-    stickyFieldBackdrop: (@Composable () -> Unit)? = null,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -196,8 +190,12 @@ fun SearchScreen(
     // respond by focusing the field and opening the keyboard.
     LaunchedEffect(focusRequested) {
         if (focusRequested && showField) {
-            focusRequester.requestFocus()
-            keyboardController?.show()
+            // The field is inside a lazy list item, which is not guaranteed to
+            // be attached on the first frame the tab is selected. Requesting
+            // focus before then throws, so skip it rather than crash the tab.
+            if (runCatching { focusRequester.requestFocus() }.isSuccess) {
+                keyboardController?.show()
+            }
             onFocusHandled()
         }
     }
@@ -249,16 +247,15 @@ fun SearchScreen(
             }
             stickyHeader(key = "search:field") {
                 Box(Modifier.fillMaxWidth()) {
-                    if (stickyFieldBackdrop != null) {
-                        stickyFieldBackdrop()
-                    } else {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(54.dp)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
-                        )
-                    }
+                    // A translucent scrim, not a solid slab. No Haze effect here:
+                    // the sticky header lives inside the page's own Haze source,
+                    // which an effect may not sample from.
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)),
+                    )
                     if (showField) {
                         SearchField(
                             query = query,
