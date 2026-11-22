@@ -1,12 +1,19 @@
 package com.music.bitchord.ui.components
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -3299,56 +3306,74 @@ private fun SpotifyPlayerPage(
             contentAlignment = Alignment.Center,
         ) {
             val side = minOf(maxWidth, maxHeight * 0.85f)
-            if (song.videoId.startsWith("src:") && song.thumbnailUrl.isNullOrBlank()) {
-                KisetsuRadioFallback(
-                    modifier = Modifier
-                        .size(side)
-                        .graphicsLayer {
-                            scaleX = coverScale
-                            scaleY = coverScale
-                        }
-                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(8.dp)),
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(side)
-                        .graphicsLayer {
-                            scaleX = coverScale
-                            scaleY = coverScale
-                        }
-                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(SpotifyFill(0.06f)),
-                ) {
-                    AsyncImage(
-                        model = artwork?.artworkAt(PLAYER_ART_PX),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                    canvas?.let { c ->
-                        CanvasArtworkPlayer(
-                            canvas = c,
-                            isPlaying = isPlaying,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
+            AnimatedContent(
+                targetState = song,
+                transitionSpec = {
+                    (fadeIn(tween(260)) + slideInHorizontally(tween(260)) { it / 10 }) togetherWith
+                        (fadeOut(tween(220)) + slideOutHorizontally(tween(220)) { -it / 10 })
+                },
+                label = "player-cover-transition",
+                contentKey = { it.videoId },
+            ) { displayedSong ->
+                val displayedArtwork = rememberRemoteArtworkUrl(displayedSong)
+                val displayedCanvas by produceState<CanvasArtwork?>(initialValue = null, displayedSong.videoId, displayedSong.title, displayedSong.artist, animatedCanvas) {
+                    value = if (animatedCanvas) CanvasRepository.cached(displayedSong) ?: CanvasRepository.canvasFor(displayedSong) else null
                 }
-            }
-            coverAd?.let { ad ->
-                Box(
-                    modifier = Modifier
-                        .size(side)
-                        .graphicsLayer {
-                            scaleX = coverScale
-                            scaleY = coverScale
+                Box(contentAlignment = Alignment.Center) {
+                    if (displayedSong.videoId.startsWith("src:") && displayedSong.thumbnailUrl.isNullOrBlank()) {
+                        KisetsuRadioFallback(
+                            modifier = Modifier
+                                .size(side)
+                                .graphicsLayer {
+                                    scaleX = coverScale
+                                    scaleY = coverScale
+                                }
+                                .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                .clip(RoundedCornerShape(8.dp)),
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(side)
+                                .graphicsLayer {
+                                    scaleX = coverScale
+                                    scaleY = coverScale
+                                }
+                                .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(SpotifyFill(0.06f)),
+                        ) {
+                            AsyncImage(
+                                model = displayedArtwork?.artworkAt(PLAYER_ART_PX),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                            displayedCanvas?.let { c ->
+                                CanvasArtworkPlayer(
+                                    canvas = c,
+                                    isPlaying = isPlaying && displayedSong.videoId == song.videoId,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
                         }
-                        .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                        .clip(RoundedCornerShape(8.dp)),
-                ) {
-                    ad()
+                    }
+                    if (displayedSong.videoId == song.videoId) {
+                        coverAd?.let { ad ->
+                            Box(
+                                modifier = Modifier
+                                    .size(side)
+                                    .graphicsLayer {
+                                        scaleX = coverScale
+                                        scaleY = coverScale
+                                    }
+                                    .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                    .clip(RoundedCornerShape(8.dp)),
+                            ) {
+                                ad()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -5372,12 +5397,22 @@ private fun SpotifyScrubber(
     }
     val fraction = if (isLiveRadio) 1f else (dragFraction ?: liveFraction)
     val dragging = dragFraction != null
-    val trackHeight = when {
-        isLiveRadio -> 4.dp
-        appleStyle && dragging -> 10.dp
-        appleStyle -> 7.dp
-        else -> 4.dp
+    val targetTrackHeight = when {
+        isLiveRadio -> 3.dp
+        dragging -> if (appleStyle) 10.dp else 6.dp
+        appleStyle -> 6.dp
+        else -> 3.dp
     }
+    val trackHeight by animateDpAsState(
+        targetValue = targetTrackHeight,
+        animationSpec = spring(dampingRatio = 0.82f, stiffness = Spring.StiffnessMediumLow),
+        label = "scrubberTrackHeight",
+    )
+    val thumbSize by animateDpAsState(
+        targetValue = if (dragging && !isLiveRadio) 16.dp else 12.dp,
+        animationSpec = spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessMediumLow),
+        label = "scrubberThumbSize",
+    )
     val trackBg = if (isLiveRadio) SpotifyMuted(0.16f) else SpotifyMuted(0.22f)
     val trackFg = if (isLiveRadio) SpotifyMuted(0.34f) else SpotifyGreen
 
@@ -5440,17 +5475,18 @@ private fun SpotifyScrubber(
                 .clip(CircleShape)
                 .background(trackFg),
         )
-        if (!isLiveRadio && !appleStyle) {
+        if (!isLiveRadio) {
             Box(
                 Modifier
                     .offset {
+                        val thumbPx = thumbSize.toPx()
                         IntOffset(
-                            x = (fraction * widthPx - 6.dp.toPx()).roundToInt()
-                                .coerceIn(0, (widthPx - 12.dp.toPx().roundToInt()).coerceAtLeast(0)),
+                            x = (fraction * widthPx - thumbPx / 2f).roundToInt()
+                                .coerceIn(0, (widthPx - thumbPx.roundToInt()).coerceAtLeast(0)),
                             y = 0,
                         )
                     }
-                    .size(12.dp)
+                    .size(thumbSize)
                     .clip(CircleShape)
                     .background(SpotifyOnBg()),
             )
@@ -5467,14 +5503,20 @@ private fun SpotifyScrubber(
 // audiobooks have no shelf here, so its tab is gone.
 private val SpotifyHomePills = listOf(
     "All",
+    "Recents",
     "Mixes",
     "Music",
+    "New releases",
+    "Trending",
     "Podcasts",
     "Artists",
 )
 private val SpotifyHomeModePills = listOf(
     "All",
+    "Recents",
     "Music",
+    "New releases",
+    "Trending",
     "Podcasts",
     "Radio",
     "Episodes",
@@ -5978,9 +6020,21 @@ fun SpotifyHomeScreen(
     if (selectedPill !in pills) selectedPill = pills.first()
 
     val shelves = (state as? UiState.Success)?.data.orEmpty()
-    val filtered = remember(shelves, selectedPill, homeModeTabs) {
-        when {
+    val filtered = remember(shelves, selectedPill, homeModeTabs, recentSongs, recommendedSongs) {
+        val base = when {
             selectedPill == "All" -> shelves
+            selectedPill == "Recents" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("recent") || t.contains("listen again") || t.contains("jump back in") || t.contains("history") || t.contains("continue")
+            }
+            selectedPill == "New releases" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("new release") || t.contains("new album") || t.contains("new music") || t.contains("fresh") || t.contains("just dropped")
+            }
+            selectedPill == "Trending" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("trending") || t.contains("chart") || t.contains("hot") || t.contains("top") || t.contains("popular")
+            }
             selectedPill == "Music" && homeModeTabs -> shelves.filter {
                 val group = spotifyShelfGroup(it)
                 group == "Music" || group == "Mixes" || group == "Artists"
@@ -5994,6 +6048,12 @@ fun SpotifyHomeScreen(
                     spotifyShelfGroup(it) == "Mixes"
             }
             else -> shelves.filter { spotifyShelfGroup(it) == selectedPill }
+        }
+        if (base.isNotEmpty()) base else when (selectedPill) {
+            "Recents" -> if (recentSongs.isNotEmpty()) listOf(HomeShelf("Recent songs", recentSongs)) else emptyList()
+            "New releases" -> if (recommendedSongs.isNotEmpty()) listOf(HomeShelf("New releases", recommendedSongs)) else emptyList()
+            "Trending" -> if (recommendedSongs.isNotEmpty()) listOf(HomeShelf("Trending", recommendedSongs)) else emptyList()
+            else -> base
         }
     }
     // When the account's home feed has no podcast shelves of its own - the
@@ -7467,8 +7527,20 @@ fun NetflixHomeScreen(
 
     val shelves = (state as? UiState.Success)?.data.orEmpty()
     val filtered = remember(shelves, selectedPill, homeModeTabs) {
-        when {
+        val base = when {
             selectedPill == "All" -> shelves
+            selectedPill == "Recents" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("recent") || t.contains("listen again") || t.contains("jump back in") || t.contains("history") || t.contains("continue")
+            }
+            selectedPill == "New releases" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("new release") || t.contains("new album") || t.contains("new music") || t.contains("fresh") || t.contains("just dropped")
+            }
+            selectedPill == "Trending" -> shelves.filter {
+                val t = it.title.lowercase()
+                t.contains("trending") || t.contains("chart") || t.contains("hot") || t.contains("top") || t.contains("popular")
+            }
             selectedPill == "Music" && homeModeTabs -> shelves.filter {
                 val group = spotifyShelfGroup(it)
                 group == "Music" || group == "Mixes" || group == "Artists"
@@ -7483,6 +7555,7 @@ fun NetflixHomeScreen(
             }
             else -> shelves.filter { spotifyShelfGroup(it) == selectedPill }
         }
+        base
     }
 
     val podcastFallback = produceState<List<HomeShelf>?>(initialValue = null, selectedPill) {
