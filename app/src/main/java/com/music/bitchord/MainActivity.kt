@@ -1403,7 +1403,7 @@ private fun BitChordApp(
             BottomTab(newReleasesLabel, BitChordIcons.TabExplore),
             BottomTab(radioLabel, BitChordIcons.TabRadio),
             BottomTab(libraryLabel, BitChordIcons.TabLibrary),
-            BottomTab(searchLabel, BitChordIcons.TabSearch),
+            BottomTab(searchLabel, BitChordIcons.TabSearch, compact = true),
         )
     }
 
