@@ -237,16 +237,14 @@ fun SearchScreen(
                 .padding(top = topPadding),
             contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
         ) {
-            item(key = "search:title") {
-                Text(
-                    text = "Discover",
-                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
-                )
-            }
-            stickyHeader(key = "search:field") {
-                Box(Modifier.fillMaxWidth()) {
+            stickyHeader(key = "search:header") {
+                Column(Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Discover",
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
+                    )
                     // Nothing behind the field — it just floats over the list.
                     if (showField) {
                         SearchField(
