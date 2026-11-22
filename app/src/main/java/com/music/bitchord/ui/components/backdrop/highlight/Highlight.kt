@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 data class Highlight(
-    val width: Dp = 0.6f.dp,
-    val blurRadius: Dp = width / 2f,
-    @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1f,
+    val width: Dp = 0.7f.dp,
+    val blurRadius: Dp = 0.7f.dp,
+    @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 0.7f,
     val style: HighlightStyle = HighlightStyle.Default
 ) {
 

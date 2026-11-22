@@ -62,10 +62,10 @@ fun isGlassSupported(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= B
 /** Apple-matched defaults (Echo's GlassEffectConfig()), fixed rather than user sliders. */
 private const val VIBRANCY = 1f
 private const val BLUR_RADIUS_DP = 4f
-private const val LENS_HEIGHT = 0.55f
-private const val LENS_AMOUNT = 0.6f
+private const val LENS_HEIGHT = 0.3f
+private const val LENS_AMOUNT = 0.35f
 private const val LENS_MAX_DP = 48f
-private const val SURFACE_OPACITY = 0.25f
+private const val SURFACE_OPACITY = 0.10f
 
 /**
  * Resolution fraction the glass surface records and processes its backdrop at.
@@ -232,12 +232,7 @@ fun Modifier.liquidGlass(
     val blurPx = with(density) { blurRadiusDp.dp.toPx() } * resolutionScale
     val lensHeightPx = with(density) { (LENS_HEIGHT * LENS_MAX_DP).dp.toPx() } * resolutionScale
     val lensAmountPx = with(density) { (LENS_AMOUNT * LENS_MAX_DP).dp.toPx() } * resolutionScale
-    val themeTint = if (MaterialTheme.colorScheme.surface.luminance() > 0.5f) {
-        Color(0xFFFAFAFA)
-    } else {
-        Color(0xFF121212)
-    }
-    val surfaceTintColor = surfaceTint ?: themeTint.copy(alpha = SURFACE_OPACITY)
+    val surfaceTintColor = surfaceTint ?: Color.White.copy(alpha = SURFACE_OPACITY)
 
     return drawBackdrop(
         backdrop = backdrop,
@@ -250,7 +245,7 @@ fun Modifier.liquidGlass(
                     refractionHeight = lensHeightPx,
                     refractionAmount = lensAmountPx,
                     depthEffect = true,
-                    chromaticAberration = true,
+                    chromaticAberration = false,
                 )
             }
         },
