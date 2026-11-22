@@ -83,7 +83,7 @@ fun SearchField(
                     // Fixed height prevents the row from growing when text is entered
                     Modifier
                         .height(46.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(11.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(percent = 50))
                 },
             )
             // Asymmetric: the magnifier is a button now and wants a real touch
