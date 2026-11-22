@@ -4003,6 +4003,12 @@ private fun BitChordApp(
                 val fadeRamp = if (artistListState != null) TOP_FADE_RAMP else 1f
                 val topFadeAlpha by remember(headerListState, fadeStart, fadeRamp) {
                     derivedStateOf {
+                        // Search pads its list below the bar, so nothing scrolls
+                        // under this strip — blurring that empty area just paints
+                        // a solid slab above the floating search field.
+                        if (route == null && detail == null && selectedMoodGenre == null &&
+                            selectedTab == TAB_SEARCH
+                        ) return@derivedStateOf 0f
                         val list = headerListState ?: return@derivedStateOf 1f
                         if (list.firstVisibleItemIndex > 0) return@derivedStateOf 1f
                         val header = list.layoutInfo.visibleItemsInfo
