@@ -474,13 +474,10 @@ private fun HomeTitle(
             modifier = Modifier.padding(bottom = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_logo),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .height(logoHeight)
-                    .aspectRatio(LOGO_ASPECT),
+            Text(
+                text = "Home",
+                style = style,
+                color = MaterialTheme.colorScheme.onBackground,
             )
             if (replayYear != null) {
                 Spacer(Modifier.width(14.dp))

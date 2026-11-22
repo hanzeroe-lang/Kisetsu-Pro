@@ -255,6 +255,7 @@ fun SettingsScreen(
     val disableBlendEffects by AppSettings.disableBlendEffects.collectAsStateWithLifecycle()
     val liquidGlass by AppSettings.liquidGlass.collectAsStateWithLifecycle()
     val glassPerformance by AppSettings.glassPerformance.collectAsStateWithLifecycle()
+    val glassFrost by AppSettings.glassFrost.collectAsStateWithLifecycle()
     val progressiveBlur by AppSettings.progressiveBlur.collectAsStateWithLifecycle()
     val liquidGlassSupported = isGlassSupported()
     val lyricsBlur by AppSettings.lyricsBlur.collectAsStateWithLifecycle()
@@ -1210,12 +1211,17 @@ fun SettingsScreen(
             // on their own. Progressive Blur has its own switch because it costs
             // frames of its own. Reduce dynamic blur turns it off.
             if (liquidGlass && liquidGlassSupported) {
-                val glassPerformanceTitle = stringResource(R.string.glass_performance)
-                row(glassPerformanceTitle, "glass", "performance", "refraction", "frosted", "lag", divided = false) {
-                    SettingsSubRow(
-                        title = glassPerformanceTitle,
-                        checked = glassPerformance,
-                        onCheckedChange = AppSettings::setGlassPerformance,
+                val glassStyleTitle = stringResource(R.string.glass_style)
+                row(glassStyleTitle, "glass", "frosted", "style", "ios", divided = false) {
+                    SliderRow(
+                        icon = SfIcons.BlurOn,
+                        title = glassStyleTitle,
+                        subtitle = stringResource(R.string.glass_style_subtitle),
+                        value = if (glassFrost >= 0.5f) "Frosted" else "Glass",
+                        sliderValue = glassFrost,
+                        onSliderValue = { AppSettings.setGlassFrost(it) },
+                        valueRange = 0f..1f,
+                        steps = 0,
                     )
                 }
                 val progressiveBlurTitle = stringResource(R.string.progressive_blur)

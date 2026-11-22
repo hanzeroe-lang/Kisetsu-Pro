@@ -549,6 +549,9 @@ object AppSettings {
      */
     val glassPerformance = MutableStateFlow(true)
 
+    /** 0f = more glass, 1f = more frosted. */
+    val glassFrost = MutableStateFlow(1f)
+
     /**
      * Blurs what scrolls under the status bar and the top controls, easing out
      * just below them, instead of fading it to the page colour. A Liquid Glass
@@ -1140,6 +1143,7 @@ object AppSettings {
         disableBlendEffects.value = prefs.getBoolean(KEY_DISABLE_BLEND_EFFECTS, false)
         liquidGlass.value = prefs.getBoolean(KEY_LIQUID_GLASS, true)
         glassPerformance.value = prefs.getBoolean(KEY_GLASS_PERFORMANCE, true)
+        glassFrost.value = prefs.getFloat(KEY_GLASS_FROST, if (glassPerformance.value) 1f else 0f).coerceIn(0f, 1f)
         progressiveBlur.value = prefs.getBoolean(KEY_PROGRESSIVE_BLUR, false)
         lyricsBlur.value = prefs.getBoolean(KEY_LYRICS_BLUR, true)
         lyricsOffsetMs.value = prefs.getInt(KEY_LYRICS_OFFSET_MS, 0)
@@ -1674,6 +1678,13 @@ object AppSettings {
     fun setGlassPerformance(value: Boolean) {
         glassPerformance.value = value
         prefs.edit().putBoolean(KEY_GLASS_PERFORMANCE, value).apply()
+    }
+
+    fun setGlassFrost(value: Float) {
+        val v = value.coerceIn(0f, 1f)
+        glassFrost.value = v
+        glassPerformance.value = v >= 0.5f
+        prefs.edit().putFloat(KEY_GLASS_FROST, v).putBoolean(KEY_GLASS_PERFORMANCE, v >= 0.5f).apply()
     }
 
     fun setProgressiveBlur(value: Boolean) {
@@ -2491,6 +2502,7 @@ object AppSettings {
     private const val KEY_DISABLE_BLEND_EFFECTS = "disable_blend_effects"
     private const val KEY_LIQUID_GLASS = "liquid_glass"
     private const val KEY_GLASS_PERFORMANCE = "glass_performance"
+    private const val KEY_GLASS_FROST = "glass_frost"
     private const val KEY_PROGRESSIVE_BLUR = "progressive_blur"
     private const val KEY_LYRICS_BLUR = "lyrics_blur"
     private const val KEY_LYRICS_OFFSET_MS = "lyrics_offset_ms"

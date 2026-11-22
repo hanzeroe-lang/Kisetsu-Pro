@@ -223,15 +223,17 @@ fun Modifier.liquidGlass(
         return background(MaterialTheme.colorScheme.surface, shape)
             .border(GLASS_EDGE_WIDTH, GLASS_EDGE_COLOR, shape)
     }
-    val glassPerformance by AppSettings.glassPerformance.collectAsStateWithLifecycle()
+    val glassFrost by AppSettings.glassFrost.collectAsStateWithLifecycle()
     val backdrop = LocalAppBackdrop.current
     val exportedBackdrop = LocalGlassExport.current
     val density = LocalDensity.current
-    val resolutionScale = if (glassPerformance) FROST_RESOLUTION_SCALE else GLASS_RESOLUTION_SCALE
-    val blurRadiusDp = if (glassPerformance) FROST_BLUR_RADIUS_DP else BLUR_RADIUS_DP
+    val frost = glassFrost.coerceIn(0f, 1f)
+    val resolutionScale = GLASS_RESOLUTION_SCALE + (FROST_RESOLUTION_SCALE - GLASS_RESOLUTION_SCALE) * frost
+    val blurRadiusDp = BLUR_RADIUS_DP + (FROST_BLUR_RADIUS_DP - BLUR_RADIUS_DP) * frost
     val blurPx = with(density) { blurRadiusDp.dp.toPx() } * resolutionScale
-    val lensHeightPx = with(density) { (LENS_HEIGHT * LENS_MAX_DP).dp.toPx() } * resolutionScale
-    val lensAmountPx = with(density) { (LENS_AMOUNT * LENS_MAX_DP).dp.toPx() } * resolutionScale
+    val lensStrength = 1f - frost
+    val lensHeightPx = with(density) { (LENS_HEIGHT * LENS_MAX_DP).dp.toPx() } * resolutionScale * lensStrength
+    val lensAmountPx = with(density) { (LENS_AMOUNT * LENS_MAX_DP).dp.toPx() } * resolutionScale * lensStrength
     val surfaceTintColor = surfaceTint ?: Color.White.copy(alpha = SURFACE_OPACITY)
 
     return drawBackdrop(
@@ -240,7 +242,7 @@ fun Modifier.liquidGlass(
         effects = {
             colorControls(saturation = 1f + 0.5f * VIBRANCY)
             blur(blurPx)
-            if (!glassPerformance && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (lensStrength > 0.05f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 lens(
                     refractionHeight = lensHeightPx,
                     refractionAmount = lensAmountPx,

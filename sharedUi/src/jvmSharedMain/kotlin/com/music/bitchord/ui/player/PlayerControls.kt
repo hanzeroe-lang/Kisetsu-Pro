@@ -1014,7 +1014,7 @@ internal fun CircleGlyph(
     val haptics = rememberHaptics()
     Box(
         modifier = modifier
-            .size(42.dp)
+            .size(44.dp)
             .clip(CircleShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -1034,7 +1034,7 @@ internal fun CircleGlyph(
                 imageVector = glyph,
                 contentDescription = contentDescription,
                 tint = Color.White,
-                modifier = Modifier.size(25.dp),
+                modifier = Modifier.size(26.dp),
             )
         }
     }

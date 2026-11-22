@@ -339,17 +339,18 @@ fun FloatingBottomBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Deep iOS blue in dark theme, black in light theme.
+            // Selected tab deep blue; unselected neutral.
             val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
-            val glassTint = if (isLight) Color.Black else Color(0xFF007AFF)
-            val adaptiveTint = if (useGlass) glassTint else null
+            val neutralTint = if (isLight) Color.Black else Color.White
+            val adaptiveSelected = if (useGlass) Color(0xFF007AFF) else null
+            val adaptiveUnselected = if (useGlass) neutralTint.copy(alpha = 0.65f) else null
             tabs.forEachIndexed { index, tab ->
                 BottomBarItem(
                     tab = tab,
                     selected = index == selectedIndex,
                     glassSpec = glassSpec,
-                    selectedTint = adaptiveTint,
-                    unselectedTint = adaptiveTint?.copy(alpha = 0.65f),
+                    selectedTint = adaptiveSelected,
+                    unselectedTint = adaptiveUnselected,
                     onClick = { onTabSelected(index) },
                     onActiveTabTap = onActiveTabTap,
                     modifier = Modifier.weight(1f),
