@@ -227,6 +227,12 @@ fun SearchScreen(
         // clear it fully — status bar inset + bar height + breathing gap — so
         // the search field sits cleanly below the bar instead of overlapping it.
         Column(modifier = Modifier.padding(top = topPadding)) {
+            Text(
+                text = "Discover",
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
+            )
             if (showField) {
                 SearchField(
                     query = query,
@@ -241,7 +247,7 @@ fun SearchScreen(
                     } else {
                         stringResource(Res.string.search_hint)
                     },
-                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 4.dp),
+                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 8.dp),
                 )
             }
             if (sourceSwitcher != null) {
@@ -344,15 +350,8 @@ fun SearchScreen(
                     if (showBrowseCards) {
                         val vibeRows = moodSections.flatMap { it.items }
                             .distinctBy { it.browseId to it.params }
-                        item {
-                            Text(
-                                text = "Discover",
-                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 8.dp, bottom = 18.dp),
-                            )
-                        }
                         if (vibeRows.isNotEmpty()) {
+                            item { Spacer(Modifier.height(8.dp)) }
                             item {
                                 BoxWithConstraints(Modifier.fillMaxWidth()) {
                                     val columns = moodColumns(maxWidth)
