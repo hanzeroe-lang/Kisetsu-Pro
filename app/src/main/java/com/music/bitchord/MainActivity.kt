@@ -52,6 +52,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,6 +69,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.union
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -79,6 +82,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.NorthWest
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
@@ -137,6 +142,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -997,6 +1003,7 @@ private fun BitChordApp(
     val lyricsProviderStates by viewModel.lyricsProviderStates.collectAsStateWithLifecycle()
     val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.suggestions.collectAsStateWithLifecycle()
+    val searchTypeaheadResults by viewModel.typeaheadResults.collectAsStateWithLifecycle()
     val searchLoadingMore by viewModel.searchLoadingMore.collectAsStateWithLifecycle()
     val searchScrollReset by viewModel.searchScrollReset.collectAsStateWithLifecycle()
     val releaseLibrary by viewModel.releaseLibrary.collectAsStateWithLifecycle()
@@ -3810,7 +3817,7 @@ private fun BitChordApp(
                                 },
                                 history = searchHistory,
                                 suggestions = searchSuggestions,
-                                typeaheadResults = viewModel.typeaheadResults.collectAsStateWithLifecycle().value,
+                                typeaheadResults = searchTypeaheadResults,
                                 onSubmit = viewModel::submitSearch,
                                 // Suggestions land in search history via searchFor → recordSearch.
                                 // History items (onHistoryClick) navigate/play without re-logging.
@@ -4464,15 +4471,26 @@ private fun BitChordApp(
                         label = "searchBarMorph",
                     ) { active ->
                         if (active) {
-                            LiquidGlassSearchBar(
-                                query = query,
-                                onQueryChange = viewModel::onQueryChange,
-                                onClose = { searchBarActive = false },
-                                onSubmit = { viewModel.submitSearch() },
-                                focusRequester = searchFieldFocus,
-                                hazeState = hazeState,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                            val focusManager = LocalFocusManager.current
+                            Column(Modifier.fillMaxWidth()) {
+                                BottomSearchSuggestions(
+                                    suggestions = searchSuggestions,
+                                    onSuggestionClick = { term ->
+                                        viewModel.searchFor(term)
+                                        focusManager.clearFocus()
+                                    },
+                                    onFill = viewModel::onQueryChange,
+                                )
+                                LiquidGlassSearchBar(
+                                    query = query,
+                                    onQueryChange = viewModel::onQueryChange,
+                                    onClose = { searchBarActive = false },
+                                    onSubmit = { viewModel.submitSearch() },
+                                    focusRequester = searchFieldFocus,
+                                    hazeState = hazeState,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         } else {
                             GlassNavBar(
                                 tabs = tabs,
@@ -4543,15 +4561,26 @@ private fun BitChordApp(
                         label = "searchBarMorph",
                     ) { active ->
                         if (active) {
-                            LiquidGlassSearchBar(
-                                query = query,
-                                onQueryChange = viewModel::onQueryChange,
-                                onClose = { searchBarActive = false },
-                                onSubmit = { viewModel.submitSearch() },
-                                focusRequester = searchFieldFocus,
-                                hazeState = hazeState,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                            val focusManager = LocalFocusManager.current
+                            Column(Modifier.fillMaxWidth()) {
+                                BottomSearchSuggestions(
+                                    suggestions = searchSuggestions,
+                                    onSuggestionClick = { term ->
+                                        viewModel.searchFor(term)
+                                        focusManager.clearFocus()
+                                    },
+                                    onFill = viewModel::onQueryChange,
+                                )
+                                LiquidGlassSearchBar(
+                                    query = query,
+                                    onQueryChange = viewModel::onQueryChange,
+                                    onClose = { searchBarActive = false },
+                                    onSubmit = { viewModel.submitSearch() },
+                                    focusRequester = searchFieldFocus,
+                                    hazeState = hazeState,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         } else {
                             FloatingBottomBar(
                                 tabs = tabs,
@@ -6704,6 +6733,63 @@ private object PlayerSheetShape : Shape {
         Outline.Rectangle(Rect(0f, -size.height, size.width, size.height))
 }
 
+@Composable
+private fun BottomSearchSuggestions(
+    suggestions: List<String>,
+    onSuggestionClick: (String) -> Unit,
+    onFill: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val visible = suggestions.drop(1).take(3)
+    if (visible.isEmpty()) return
+    val shape = RoundedCornerShape(20.dp)
+    val container = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.96f)
+    Column(
+        modifier = modifier
+            .padding(horizontal = NAV_BAR_GUTTER)
+            .padding(bottom = 8.dp)
+            .fillMaxWidth()
+            .clip(shape)
+            .background(container, shape)
+            .border(GLASS_EDGE_WIDTH, GLASS_EDGE_COLOR, shape)
+            .padding(vertical = 6.dp),
+    ) {
+        visible.forEach { term ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSuggestionClick(term) }
+                    .padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    Icons.Rounded.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(Modifier.width(14.dp))
+                Text(
+                    text = term,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = { onFill(term) }, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        Icons.Rounded.NorthWest,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun LiquidGlassSearchBar(
@@ -6742,9 +6828,9 @@ private fun LiquidGlassSearchBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .windowInsetsPadding(floatingBarInsets)
+            .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
             .padding(horizontal = NAV_BAR_GUTTER)
-            .padding(bottom = NAV_BAR_LIFT)
+            .padding(bottom = NAV_BAR_LIFT + 12.dp)
             .fillMaxWidth()
             .height(56.dp)
             .clip(pillShape)

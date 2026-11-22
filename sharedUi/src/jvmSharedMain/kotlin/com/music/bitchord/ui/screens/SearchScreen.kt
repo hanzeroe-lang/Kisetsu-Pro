@@ -314,29 +314,31 @@ fun SearchScreen(
                     onBlockedSongClick = onBlockedSongClick,
                 )
                 suggesting -> {
-                    searchSuggestions(
-                        suggestions = suggestions,
-                        // Picking one is done typing, so the keyboard comes down
-                        // with it and the results get the whole screen.
-                        onClick = { term ->
-                            onSuggestionClick(term)
-                            focusManager.clearFocus()
-                        },
-                        onFill = onQueryChange,
-                    )
-                    if (showTypeahead) {
-                        searchTypeaheadDropdown(
-                            typeaheadResults = typeaheadResults,
-                            onSongClick = { song -> onTopResultPlay(song) },
-                            onSongLongPress = onTypeaheadLongPress,
-                            onSongSwipe = onSongSwipe,
-                            onBrowseClick = { item ->
-                                onBrowseClick(item)
+                    if (showField) {
+                        searchSuggestions(
+                            suggestions = suggestions,
+                            // Picking one is done typing, so the keyboard comes down
+                            // with it and the results get the whole screen.
+                            onClick = { term ->
+                                onSuggestionClick(term)
+                                focusManager.clearFocus()
                             },
-                            currentSong = currentSong,
-                            isPlaying = isPlaying,
+                            onFill = onQueryChange,
                         )
+                        if (showTypeahead) {
+                            searchTypeaheadDropdown(
+                                typeaheadResults = typeaheadResults,
+                                onSongClick = { song -> onTopResultPlay(song) },
+                                onSongLongPress = onTypeaheadLongPress,
+                                onSongSwipe = onSongSwipe,
+                                onBrowseClick = { item -> onBrowseClick(item) },
+                                currentSong = currentSong,
+                                isPlaying = isPlaying,
+                            )
+                        }
                     }
+                    // When the bottom search bar owns input, suggestions are shown
+                    // in the bottom panel above the keyboard instead.
                 }
                 results == null -> {
                     val showBrowseCards = query.isBlank() && !effectiveFieldFocused
