@@ -3222,6 +3222,10 @@ private fun SpotifyPlayerPage(
     )
     // Lyrics PiP: toggled here, honoring onUserLeaveHint.
     val pipOn by AppSettings.pipLyricPreview.collectAsStateWithLifecycle()
+    val animatedCanvas by AppSettings.animatedCanvas.collectAsStateWithLifecycle()
+    val canvas by produceState<CanvasArtwork?>(initialValue = null, song.videoId, song.title, song.artist, animatedCanvas) {
+        value = if (animatedCanvas) CanvasRepository.cached(song) ?: CanvasRepository.canvasFor(song) else null
+    }
     val sleepDeadline by SleepTimer.deadline.collectAsStateWithLifecycle()
     val sleepAfterTrack by SleepTimer.afterTrack.collectAsStateWithLifecycle()
     val sleepEndOfQueue by SleepTimer.endOfQueue.collectAsStateWithLifecycle()
@@ -3307,10 +3311,7 @@ private fun SpotifyPlayerPage(
                         .clip(RoundedCornerShape(8.dp)),
                 )
             } else {
-                AsyncImage(
-                    model = artwork?.artworkAt(PLAYER_ART_PX),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                Box(
                     modifier = Modifier
                         .size(side)
                         .graphicsLayer {
@@ -3320,7 +3321,21 @@ private fun SpotifyPlayerPage(
                         .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
                         .clip(RoundedCornerShape(8.dp))
                         .background(SpotifyFill(0.06f)),
-                )
+                ) {
+                    AsyncImage(
+                        model = artwork?.artworkAt(PLAYER_ART_PX),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    canvas?.let { c ->
+                        CanvasArtworkPlayer(
+                            canvas = c,
+                            isPlaying = isPlaying,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
             }
             coverAd?.let { ad ->
                 Box(
