@@ -4596,6 +4596,8 @@ val filteredPicks by remember(kisetsuPicks) {
                                     insightItems = monthInsights,
                                     insightTitle = "On repeat this month",
                                     downloadStatusText = downloadStatusText,
+                                    accountPhotoUrl = account?.thumbnailUrl,
+                                    onOpenSettings = { showSettings = true },
                                 )
                             }
                         }

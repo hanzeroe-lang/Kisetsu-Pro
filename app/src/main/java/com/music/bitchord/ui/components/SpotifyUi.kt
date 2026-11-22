@@ -284,7 +284,7 @@ private fun SpotifySurfaceBg(): Color = if (spotifyIsDark()) Color(0xFF181818) e
 private fun SpotifySurfaceAlt(): Color = if (spotifyIsDark()) Color(0xFF282828) else Color(0xFFEFEFF3)
 
 @Composable
-private fun SpotifyCard(): Color = if (spotifyIsDark()) Color(0xFF181818) else Color(0xFFFFFFFF)
+private fun SpotifyCard(): Color = if (spotifyIsDark()) Color(0xFF2A2A2A) else Color(0xFFFFFFFF)
 
 /** Subtle tinted fill for cards/chips: light-on-dark, soft grey-on-light. */
 @Composable
@@ -4238,7 +4238,12 @@ private fun SpotifyLyricsPreview(
     onShowLyrics: () -> Unit,
 ) {
     val haptics = rememberHaptics()
-    Row(
+    val lines = lyrics.orEmpty().filter { !it.isGap && it.text.isNotBlank() }
+    val posMs = position.positionMs
+    val currentIndex = lines.indexOfLast { it.timeMs <= posMs }.coerceAtLeast(0)
+    val preview = if (lines.isEmpty()) emptyList() else lines.drop(currentIndex).take(2)
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -4257,13 +4262,42 @@ private fun SpotifyLyricsPreview(
                 onShowLyrics()
             }
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Lyrics preview",
             color = SpotifyOnBg(),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
+        )
+        Spacer(Modifier.height(14.dp))
+        if (preview.isNotEmpty()) {
+            preview.forEachIndexed { i, line ->
+                Text(
+                    text = line.text,
+                    color = if (i == 0) SpotifyOnBg() else SpotifyMuted(0.55f),
+                    fontSize = if (i == 0) 18.sp else 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (i == 0) Spacer(Modifier.height(6.dp))
+            }
+        } else {
+            Text(
+                text = "Open lyrics to follow along",
+                color = SpotifyMuted(0.65f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+        Spacer(Modifier.height(14.dp))
+        SpotifyPill(
+            text = "Show lyrics",
+            onClick = {
+                haptics.play(Haptic.Tap)
+                onShowLyrics()
+            },
+            filled = true,
         )
     }
 }
@@ -5981,7 +6015,7 @@ fun SpotifyHomeScreen(
                             )
                         )
                         .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(top = 4.dp, bottom = 16.dp),
+                        .padding(top = 2.dp, bottom = 10.dp),
                 ) {
                     Row(
                         modifier = Modifier
@@ -6034,7 +6068,7 @@ fun SpotifyHomeScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 4.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         recentItems.chunked(2).forEach { rowItems ->
