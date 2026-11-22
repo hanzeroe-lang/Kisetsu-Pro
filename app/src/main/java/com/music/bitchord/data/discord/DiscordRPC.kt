@@ -167,7 +167,7 @@ class DiscordRPC(
          */
         private const val APPLICATION_ID = "1411019391843172514"
 
-        const val PROJECT_URL = "https://github.com/horrockstom26/Fruit-Juce"
+        const val PROJECT_URL = "https://github.com/hanzeroe-lang/kistify"
 
         const val DEFAULT_BUTTON_1 = "Listen on YouTube Music"
         const val DEFAULT_BUTTON_2 = "Visit Kisetsu"
@@ -183,7 +183,7 @@ class DiscordRPC(
          * APK - a `res/` drawable has no address the presence can carry.
          */
         private const val FALLBACK_ART_URL =
-            "https://raw.githubusercontent.com/horrockstom26/Fruit-Juce/main/app/src/main/ic_launcher-playstore.png"
+            "https://raw.githubusercontent.com/hanzeroe-lang/kistify/main/app/src/main/ic_launcher-playstore.png"
 
         fun watchUrl(song: Song): String =
             "https://music.youtube.com/watch?v=${song.videoId}"
