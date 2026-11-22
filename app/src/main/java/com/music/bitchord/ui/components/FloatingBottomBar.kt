@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -338,8 +339,9 @@ fun FloatingBottomBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Lighter iOS blue for nav bar text/icons.
-            val glassTint = Color(0xFF0A84FF)
+            // Deep iOS blue in dark theme, black in light theme.
+            val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
+            val glassTint = if (isLight) Color.Black else Color(0xFF007AFF)
             val adaptiveTint = if (useGlass) glassTint else null
             tabs.forEachIndexed { index, tab ->
                 BottomBarItem(
