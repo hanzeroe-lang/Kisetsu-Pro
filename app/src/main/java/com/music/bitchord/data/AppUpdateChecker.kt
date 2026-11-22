@@ -123,10 +123,19 @@ object AppUpdateChecker {
                 if (ours) name.removeSuffix(".apk").removeSuffix(".APK") to url else null
             }
             .orEmpty()
-        apks.firstOrNull { (name, _) -> '_' !in name }?.second
-            ?: Build.SUPPORTED_ABIS.firstNotNullOfOrNull { abi ->
-                apks.firstOrNull { (name, _) -> name.endsWith("_$abi") }?.second
-            }
+        // Prefer this device's ABI split: it carries only one set of native
+        // libraries instead of every ABI, so the download is much smaller
+        // (less data, storage and install work). Fall back to the universal
+        // build, which runs anywhere. Our asset names use "-<abi>" but older
+        // releases used "_<abi>", so accept both.
+        Build.SUPPORTED_ABIS.firstNotNullOfOrNull { abi ->
+            apks.firstOrNull { (name, _) ->
+                name.endsWith("-$abi", ignoreCase = true) || name.endsWith("_$abi", ignoreCase = true)
+            }?.second
+        } ?: apks.firstOrNull { (name, _) ->
+            name.endsWith("-universal", ignoreCase = true) || name.endsWith("_universal", ignoreCase = true)
+        }?.second
+            ?: apks.firstOrNull { (name, _) -> '_' !in name }?.second
     }.getOrNull()
 
     /**

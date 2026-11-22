@@ -1,14 +1,7 @@
 package com.music.bitchord.ui.screens
 
 import com.music.bitchord.ui.components.trackArtSize
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
 import com.music.bitchord.data.model.toSong
 import com.music.bitchord.ui.components.SwipeToQueueBox
 import com.music.bitchord.ui.components.contextClick
@@ -63,7 +56,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -193,8 +185,6 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     var internalFieldFocused by remember { mutableStateOf(false) }
     val effectiveFieldFocused = fieldFocused || internalFieldFocused
-    var discoverCollapsePx by remember { mutableFloatStateOf(0f) }
-    var discoverMaxPx by remember { mutableFloatStateOf(0f) }
     // Tapping the search tab from the nav bar sets focusRequested;
     // respond by focusing the field and opening the keyboard.
     LaunchedEffect(focusRequested) {
@@ -208,10 +198,7 @@ fun SearchScreen(
     // new request so choosing a recent search cannot inherit the history's
     // previous scroll position (or a previous result page's position).
     LaunchedEffect(scrollResetTrigger) {
-        if (scrollResetTrigger > 0) {
-            listState.scrollToItem(0)
-            discoverCollapsePx = 0f
-        }
+        if (scrollResetTrigger > 0) listState.scrollToItem(0)
     }
     // A non-empty suggestion list means the field is mid-edit — see
     // MainViewModel.suggestions. Nothing below it is worth showing while it is
@@ -232,103 +219,71 @@ fun SearchScreen(
             if (!loadingMore && total > 0 && lastVisible >= total - 4) onLoadMore()
         }
     }
-    val density = LocalDensity.current
-    val headerNestedScroll = remember(listState) {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val dy = available.y
-                if (dy >= 0f || discoverMaxPx <= 0f) return Offset.Zero
-                val canCollapse = listState.canScrollForward || listState.canScrollBackward || listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-                if (!canCollapse) return Offset.Zero
-                val old = discoverCollapsePx
-                discoverCollapsePx = (discoverCollapsePx - dy).coerceIn(0f, discoverMaxPx)
-                return Offset(0f, -(discoverCollapsePx - old))
-            }
-
-            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                val dy = available.y
-                if (dy <= 0f || discoverMaxPx <= 0f) return Offset.Zero
-                if (listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0) return Offset.Zero
-                val old = discoverCollapsePx
-                discoverCollapsePx = (discoverCollapsePx - dy).coerceIn(0f, discoverMaxPx)
-                return Offset(0f, -(discoverCollapsePx - old))
-            }
-        }
-    }
-    val discoverHeightDp = with(density) { (discoverMaxPx - discoverCollapsePx).coerceAtLeast(0f).toDp() }
-
-    Column(modifier = modifier.fillMaxSize().nestedScroll(headerNestedScroll)) {
-        // Search field and filter tabs stay reachable at the top. The Discover
-        // title collapses as content scrolls up, giving results/vibes more room
-        // while keeping the search controls pinned.
-        Column(modifier = Modifier.padding(top = topPadding)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onSizeChanged { if (discoverMaxPx == 0f) discoverMaxPx = it.height.toFloat() }
-                    .then(if (discoverMaxPx > 0f) Modifier.height(discoverHeightDp) else Modifier)
-                    .clip(androidx.compose.ui.graphics.RectangleShape),
-            ) {
-                Text(
-                    text = "Discover",
-                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
-                )
-            }
-            if (showField) {
-                SearchField(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                    onSubmit = onSubmit,
-                    focusRequester = focusRequester,
-                    onFocusChanged = { internalFieldFocused = it },
-                    placeholder = if (searchingLibrary) {
-                        stringResource(Res.string.search_library_hint)
-                    } else if (searchingAddons) {
-                        stringResource(Res.string.search_addons_hint)
-                    } else {
-                        stringResource(Res.string.search_hint)
-                    },
-                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 8.dp),
-                )
-            }
-            if (sourceSwitcher != null) {
-                AnimatedVisibility(
-                    visible = query.isEmpty() && effectiveFieldFocused,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically(),
-                ) {
-                    Box(Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 4.dp)) {
-                        sourceSwitcher()
-                    }
-                }
-            }
-            // The filters only mean something once there is a result set to narrow;
-            // they stay up for an empty or failed search too, or picking a filter
-            // that finds nothing would take away the control needed to leave it.
-            // They are YouTube's categories, so the Library source has none.
-            // The same selector as the sources above it and a folder's tabs, so
-            // the app has one look for "pick one of these".
-            AnimatedVisibility(
-                visible = results != null && !suggesting && !searchingLibrary && !searchingAddons,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
-            ) {
-                PillSegmentedControl(
-                    options = SearchFilter.entries.map { it.label },
-                    selectedIndex = filter.ordinal,
-                    onSelect = { onFilterChange(SearchFilter.entries[it]) },
-                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 6.dp),
-                )
-            }
-        }
-
+    Column(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
+            // The whole header now scrolls with the list: the Discover title
+            // moves up together with the search bar (no overlap), and the sort
+            // tab bar hides with the songs when scrolling down.
+            contentPadding = PaddingValues(
+                top = topPadding,
+                bottom = contentPadding.calculateBottomPadding(),
+            ),
         ) {
+            item(key = "search:header") {
+                Column {
+                    Text(
+                        text = "Discover",
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
+                    )
+                    if (showField) {
+                        SearchField(
+                            query = query,
+                            onQueryChange = onQueryChange,
+                            onSubmit = onSubmit,
+                            focusRequester = focusRequester,
+                            onFocusChanged = { internalFieldFocused = it },
+                            placeholder = if (searchingLibrary) {
+                                stringResource(Res.string.search_library_hint)
+                            } else if (searchingAddons) {
+                                stringResource(Res.string.search_addons_hint)
+                            } else {
+                                stringResource(Res.string.search_hint)
+                            },
+                            modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 8.dp),
+                        )
+                    }
+                    if (sourceSwitcher != null) {
+                        AnimatedVisibility(
+                            visible = query.isEmpty() && effectiveFieldFocused,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
+                            Box(Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 4.dp)) {
+                                sourceSwitcher()
+                            }
+                        }
+                    }
+                    // The sort tabs only mean something once there is a result
+                    // set to narrow; they stay up for an empty or failed search
+                    // too, and scroll away with the list below.
+                    AnimatedVisibility(
+                        visible = results != null && !suggesting && !searchingLibrary && !searchingAddons,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically(),
+                    ) {
+                        PillSegmentedControl(
+                            options = SearchFilter.entries.map { it.label },
+                            selectedIndex = filter.ordinal,
+                            onSelect = { onFilterChange(SearchFilter.entries[it]) },
+                            modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 6.dp),
+                        )
+                    }
+                }
+            }
             when {
                 searchingLibrary || searchingAddons -> librarySearchResults(
                     query = query.trim(),
