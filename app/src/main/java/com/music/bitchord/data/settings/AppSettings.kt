@@ -1475,17 +1475,17 @@ object AppSettings {
         // The old single "Spotify skin" wrote SPOTIFY into app_ui. Seed both
         // new switches from it once, so anyone who had it on keeps the look.
         val legacySpotify = prefs.getString(KEY_APP_UI, null) == "SPOTIFY"
-        spotifyNavBar.value = prefs.getBoolean(KEY_SPOTIFY_NAV_BAR, true)
+        spotifyNavBar.value = true
         coloredNavBar.value = prefs.getBoolean(KEY_COLORED_NAV_BAR, false)
-        spotifyPlayer.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER, true)
-        spotifyPlayerCallMeApple.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER_CALL_ME_APPLE, false)
+        spotifyPlayer.value = true
+        spotifyPlayerCallMeApple.value = false
         spotifyPlayerSeekTransport.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER_SEEK_TRANSPORT, false)
-        spotifySimplePlayer.value = prefs.getBoolean(KEY_SPOTIFY_SIMPLE_PLAYER, false)
-        spotifyInstaReelsPlayer.value = prefs.getBoolean(KEY_SPOTIFY_INSTA_REELS_PLAYER, false)
-        spotifyFullscreenCanvasPlayer.value = prefs.getBoolean(KEY_SPOTIFY_FULLSCREEN_CANVAS_PLAYER, false)
-        spotifyNetflixPlayer.value = prefs.getBoolean(KEY_SPOTIFY_NETFLIX_PLAYER, false)
-        appleMusicPlayer.value = prefs.getBoolean(KEY_APPLE_MUSIC_PLAYER, false)
-        vinylMode.value = prefs.getBoolean(KEY_VINYL_MODE, false)
+        spotifySimplePlayer.value = false
+        spotifyInstaReelsPlayer.value = false
+        spotifyFullscreenCanvasPlayer.value = false
+        spotifyNetflixPlayer.value = false
+        appleMusicPlayer.value = false
+        vinylMode.value = false
         spotifyPlayerAppleMusicLyrics.value = prefs.getBoolean(KEY_SPOTIFY_PLAYER_APPLE_MUSIC_LYRICS, true)
         antiCircleCorners.value = prefs.getBoolean(KEY_ANTI_CIRCLE_CORNERS, false)
         homeCardGradients.value = prefs.getBoolean(KEY_HOME_CARD_GRADIENTS, false)
@@ -1493,7 +1493,7 @@ object AppSettings {
         seekForwardSeconds.value = prefs.getInt(KEY_SEEK_FORWARD_SECONDS, 10).coerceIn(1, 300)
         spotifyMode.value = prefs.getBoolean(KEY_SPOTIFY_MODE, true)
         fontSizeScale.value = prefs.getString(KEY_FONT_SIZE_SCALE, "normal") ?: "normal"
-        spotifyHome.value = prefs.getBoolean(KEY_SPOTIFY_HOME, true)
+        spotifyHome.value = true
         spotifyAlgorithm.value = prefs.getBoolean(KEY_SPOTIFY_ALGORITHM, false)
         homeNowHub.value = prefs.getBoolean(KEY_HOME_NOW_HUB, true)
         homeEditorialLayout.value = prefs.getBoolean(KEY_HOME_EDITORIAL_LAYOUT, true)

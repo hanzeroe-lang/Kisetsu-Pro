@@ -248,23 +248,13 @@ fun SettingsScreen(
     val lyricsSources by AppSettings.lyricsSources.collectAsStateWithLifecycle()
     val translationLanguage by AppSettings.translationLanguage.collectAsStateWithLifecycle()
     val theme by AppSettings.themeMode.collectAsStateWithLifecycle()
-    val spotifyNavBar by AppSettings.spotifyNavBar.collectAsStateWithLifecycle()
     val coloredNavBar by AppSettings.coloredNavBar.collectAsStateWithLifecycle()
-    val spotifyPlayer by AppSettings.spotifyPlayer.collectAsStateWithLifecycle()
-    val spotifyPlayerCallMeApple by AppSettings.spotifyPlayerCallMeApple.collectAsStateWithLifecycle()
     val spotifyPlayerSeekTransport by AppSettings.spotifyPlayerSeekTransport.collectAsStateWithLifecycle()
-    val spotifySimplePlayer by AppSettings.spotifySimplePlayer.collectAsStateWithLifecycle()
-    val spotifyInstaReelsPlayer by AppSettings.spotifyInstaReelsPlayer.collectAsStateWithLifecycle()
-    val spotifyFullscreenCanvasPlayer by AppSettings.spotifyFullscreenCanvasPlayer.collectAsStateWithLifecycle()
-    val spotifyNetflixPlayer by AppSettings.spotifyNetflixPlayer.collectAsStateWithLifecycle()
-    val appleMusicPlayer by AppSettings.appleMusicPlayer.collectAsStateWithLifecycle()
-    val vinylMode by AppSettings.vinylMode.collectAsStateWithLifecycle()
     val spotifyPlayerAppleMusicLyrics by AppSettings.spotifyPlayerAppleMusicLyrics.collectAsStateWithLifecycle()
     val antiCircleCorners by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
     val homeCardGradients by AppSettings.homeCardGradients.collectAsStateWithLifecycle()
     val seekBackSeconds by AppSettings.seekBackSeconds.collectAsStateWithLifecycle()
     val seekForwardSeconds by AppSettings.seekForwardSeconds.collectAsStateWithLifecycle()
-    val spotifyHome by AppSettings.spotifyHome.collectAsStateWithLifecycle()
     val sloplessMode by AppSettings.sloplessMode.collectAsStateWithLifecycle()
     val spotifyAlgorithm by AppSettings.spotifyAlgorithm.collectAsStateWithLifecycle()
     val discoverModeTabs by AppSettings.discoverModeTabs.collectAsStateWithLifecycle()
@@ -1184,25 +1174,7 @@ fun SettingsScreen(
                     onClick = { AppSettings.setSpotifyMode(!spotifyMode) },
                 )
             }
-            val spotifyNavBarTitle = stringResource(R.string.spotify_nav_bar)
-            row(spotifyNavBarTitle, "spotify", "navbar", "nav bar", "interface", "gradient", "floating") {
-                SettingsRow(
-                    icon = Icons.Rounded.MusicNote,
-                    title = spotifyNavBarTitle,
-                    subtitle = stringResource(R.string.spotify_nav_bar_subtitle),
-                    trailing = {
-                        Switch(
-                            checked = spotifyNavBar,
-                            onCheckedChange = AppSettings::setSpotifyNavBar,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyNavBar(!spotifyNavBar) },
-                )
-            }
+
             row("Colored nav bar", "navbar", "nav bar", "color", "accent", "tint") {
                 SettingsRow(
                     icon = Icons.Rounded.Palette,
@@ -1221,44 +1193,7 @@ fun SettingsScreen(
                     onClick = { AppSettings.setColoredNavBar(!coloredNavBar) },
                 )
             }
-            val spotifyPlayerTitle = stringResource(R.string.spotify_player)
-            row(spotifyPlayerTitle, "spotify", "player", "now playing", "interface", "full screen") {
-                SettingsRow(
-                    icon = Icons.Rounded.MusicNote,
-                    title = spotifyPlayerTitle,
-                    subtitle = stringResource(R.string.spotify_player_subtitle),
-                    trailing = {
-                        Switch(
-                            checked = spotifyPlayer,
-                            onCheckedChange = AppSettings::setSpotifyPlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyPlayer(!spotifyPlayer) },
-                )
-            }
-            val spotifyHomeTitle = stringResource(R.string.spotify_home)
-            row(spotifyHomeTitle, "spotify", "home", "home screen", "interface", "tabs", "artists") {
-                SettingsRow(
-                    icon = Icons.Rounded.MusicNote,
-                    title = spotifyHomeTitle,
-                    subtitle = stringResource(R.string.spotify_home_subtitle),
-                    trailing = {
-                        Switch(
-                            checked = spotifyHome,
-                            onCheckedChange = AppSettings::setSpotifyHome,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyHome(!spotifyHome) },
-                )
-            }
+
             row("Slopless mode", "slopless", "minimal", "home", "library", "nav", "mini player", "clean") {
                 SettingsRow(
                     icon = Icons.Rounded.Tune,
@@ -1388,9 +1323,8 @@ fun SettingsScreen(
                     onClick = { AppSettings.setSearchNetflixCinematic(!searchNetflixCinematic) },
                 )
             }
-            if (spotifyHome) {
-                @Composable
-                fun HomeRedesignToggle(title: String, subtitle: String, checked: Boolean, onChecked: (Boolean) -> Unit, key: String) {
+            @Composable
+            fun HomeRedesignToggle(title: String, subtitle: String, checked: Boolean, onChecked: (Boolean) -> Unit, key: String) {
                     row(title, "home", "redesign", key) {
                         SettingsRow(
                             icon = Icons.Rounded.AutoAwesome,
@@ -1417,7 +1351,6 @@ fun SettingsScreen(
                 HomeRedesignToggle("Home: Dynamic section colors", "Album-color accents per home section/block.", homeDynamicSectionColors, AppSettings::setHomeDynamicSectionColors, "dynamic colors sections")
                 HomeRedesignToggle("Home: Timeline", "Continue-first timeline / -œYour day in sound- flow.", homeTimeline, AppSettings::setHomeTimeline, "timeline continue day")
                 HomeRedesignToggle("Home: Explore bento", "Bento discovery grid and spotlight content.", homeExploreBento, AppSettings::setHomeExploreBento, "explore bento discovery")
-            }
             // Discover screen redesigns - every idea is individually toggleable.
             @Composable
             fun DiscoverRedesignToggle(title: String, subtitle: String, checked: Boolean, onChecked: (Boolean) -> Unit, key: String) {
@@ -1689,143 +1622,7 @@ fun SettingsScreen(
                     modifier = Modifier.padding(start = TEXT_INSET, end = ROW_INSET, bottom = 14.dp),
                 )
             }
-            val callMeAppleTitle = "Call Me Apple"
-            row(callMeAppleTitle, "apple", "ios", "player", "buttons", "spotify", "call") {
-                SettingsRow(
-                    icon = Icons.Rounded.PlayArrow,
-                    title = callMeAppleTitle,
-                    subtitle = "Use iOS-style play/pause and skip buttons on the Spotify player.",
-                    trailing = {
-                        Switch(
-                            checked = spotifyPlayerCallMeApple,
-                            onCheckedChange = AppSettings::setSpotifyPlayerCallMeApple,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyPlayerCallMeApple(!spotifyPlayerCallMeApple) },
-                )
-            }
-            val simplePlayerTitle = "Simple player"
-            row(simplePlayerTitle, "simple", "minimal", "player", "ios", "swipe") {
-                SettingsRow(
-                    icon = Icons.Rounded.MusicNote,
-                    title = simplePlayerTitle,
-                    subtitle = "Minimal player: centered album art, song and artist, iOS controls, solid album-color background, and swipe down to close.",
-                    trailing = {
-                        Switch(
-                            checked = spotifySimplePlayer,
-                            onCheckedChange = AppSettings::setSpotifySimplePlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifySimplePlayer(!spotifySimplePlayer) },
-                )
-            }
-            val instaReelsTitle = "Insta Reels player"
-            row(instaReelsTitle, "insta", "reels", "tiktok", "player", "vertical", "scrubber") {
-                SettingsRow(
-                    icon = Icons.Rounded.SmartDisplay,
-                    title = instaReelsTitle,
-                    subtitle = "TikTok/Reels-style player: centred album cover on a dynamic background, song info bottom-left, like/sleep/loop/more on the right, and an iOS scrubber beneath the cover.",
-                    trailing = {
-                        Switch(
-                            checked = spotifyInstaReelsPlayer,
-                            onCheckedChange = AppSettings::setSpotifyInstaReelsPlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyInstaReelsPlayer(!spotifyInstaReelsPlayer) },
-                )
-            }
-            row("Fullscreen Canvas player", "canvas", "fullscreen", "immersive", "video", "player") {
-                SettingsRow(
-                    icon = Icons.Rounded.AutoAwesome,
-                    title = "Fullscreen Canvas player",
-                    subtitle = "Immersive full-screen canvas/artwork player with overlay controls (can be turned off).",
-                    trailing = {
-                        Switch(
-                            checked = spotifyFullscreenCanvasPlayer,
-                            onCheckedChange = AppSettings::setSpotifyFullscreenCanvasPlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyFullscreenCanvasPlayer(!spotifyFullscreenCanvasPlayer) },
-                )
-            }
-            row("Netflix-style player", "netflix", "cinematic", "player", "immersive", "movie") {
-                SettingsRow(
-                    icon = Icons.Rounded.AutoAwesome,
-                    title = "Netflix-style player",
-                    subtitle = "Cinematic Netflix-inspired now playing screen with immersive visuals and bold controls (can be turned off).",
-                    trailing = {
-                        Switch(
-                            checked = spotifyNetflixPlayer,
-                            onCheckedChange = AppSettings::setSpotifyNetflixPlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setSpotifyNetflixPlayer(!spotifyNetflixPlayer) },
-                )
-            }
-            row(
-                "Apple Music player",
-                "apple",
-                "apple music",
-                "player",
-                "now playing",
-                "ios",
-                "design",
-            ) {
-                SettingsRow(
-                    icon = Icons.Rounded.LibraryMusic,
-                    title = "Apple Music player",
-                    subtitle = "Turn on a dedicated Apple Music-style Now Playing screen: blurred sleeve backdrop, oversized cover, hairline scrubber, Apple transport, volume capsule and the lyrics / output / queue foot.",
-                    trailing = {
-                        Switch(
-                            checked = appleMusicPlayer,
-                            onCheckedChange = AppSettings::setAppleMusicPlayer,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setAppleMusicPlayer(!appleMusicPlayer) },
-                )
-            }
-            row("Vinyl mode", "vinyl", "record", "needle", "turntable", "retro", "warm") {
-                SettingsRow(
-                    icon = Icons.Rounded.Album,
-                    title = "Vinyl mode",
-                    subtitle = "Plays at 0.9x with a subtle bass boost and tiny reverb for a warm vinyl feel. Opens an interactive vinyl player with full player controls. Best-effort lossless path when available.",
-                    trailing = {
-                        Switch(
-                            checked = vinylMode,
-                            onCheckedChange = AppSettings::setVinylMode,
-                            colors = SwitchDefaults.colors(
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                checkedBorderColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    },
-                    onClick = { AppSettings.setVinylMode(!vinylMode) },
-                )
-            }
+
             row("Apple Music-style lyrics", "lyrics", "apple music", "animation", "spotify player") {
                 SettingsRow(
                     icon = Icons.Rounded.MusicNote,
