@@ -584,7 +584,7 @@ private fun TopResultCard(
                 model = song.thumbnailUrl?.artworkAt(ROW_ART_PX),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.trackArtSize(72.dp, song.isVideo).clip(RoundedCornerShape(10.dp)),
+                modifier = Modifier.trackArtSize(72.dp, song.isVideo).clip(RoundedCornerShape(8.dp)),
             )
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {

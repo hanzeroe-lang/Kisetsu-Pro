@@ -780,7 +780,7 @@ fun TvSongRow(
         modifier = modifier
             .fillMaxWidth()
             .height(if (showArtwork) 48.dp else 42.dp)
-            .tvLift(interaction, RoundedCornerShape(10.dp), focusedScale = 1.025f, elevation = 10.dp)
+            .tvLift(interaction, RoundedCornerShape(8.dp), focusedScale = 1.025f, elevation = 10.dp)
             .tvPlatter(interaction, resting = Color.Transparent)
             .tvClick(interaction, onLongClick = onLongClick, onClick = onClick)
             .padding(horizontal = 11.dp),

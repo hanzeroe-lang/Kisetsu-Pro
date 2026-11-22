@@ -302,7 +302,7 @@ private fun CoverWall(year: ReplayYear, start: Long, modifier: Modifier) {
                             url = url,
                             fallbackText = "",
                             size = WALL_COVER,
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(8.dp),
                             px = CARD_ART_PX,
                         )
                     }

@@ -201,7 +201,7 @@ private const val SLEEVE_FRACTION = 0.76f
 /** ...and of its height, so a landscape window still shows the title under it. */
 private const val SLEEVE_MAX_HEIGHT = 0.5f
 
-private val SLEEVE_SHAPE = RoundedCornerShape(12.dp)
+private val SLEEVE_SHAPE = RoundedCornerShape(8.dp)
 private val SLEEVE_SHADOW = 18.dp
 
 /**
@@ -547,7 +547,7 @@ fun DetailScreen(
             // release's sleeve sits framed on one flat colour with nothing to
             // dissolve, so it takes the same [ArtworkPalette.background] the
             // bars at either end of the screen are already fading into.
-            val pageColor = if (isArtist) palette.wash else palette.background
+            val pageColor = if (isArtist || fullBleedArtwork) palette.wash else palette.background
             BoxWithConstraints(Modifier.fillMaxSize().background(pageColor)) {
                 // Measured rather than read off the window. The player runs
                 // full-screen at every window size, so this page's own width in
@@ -2394,8 +2394,8 @@ private fun SectionCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(10.dp))
-                .thumbnailBorder(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .thumbnailBorder(RoundedCornerShape(8.dp))
                 .background(palette.elevated),
         )
         Spacer(Modifier.height(8.dp))

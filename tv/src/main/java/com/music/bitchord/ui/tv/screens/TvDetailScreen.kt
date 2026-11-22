@@ -324,7 +324,7 @@ private fun TvReleaseHeader(
         horizontalArrangement = Arrangement.spacedBy(32.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        val shape = RoundedCornerShape(10.dp)
+        val shape = RoundedCornerShape(8.dp)
         TvArtwork(
             url = artworkUrl,
             px = 720,

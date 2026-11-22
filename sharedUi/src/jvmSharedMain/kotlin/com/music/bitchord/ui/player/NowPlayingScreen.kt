@@ -3133,7 +3133,7 @@ fun NowPlayingScreen(
                                         ).roundToPx(),
                                     )
                                 }
-                                .width(44.dp)
+                                .width(52.dp)
                                 .height(5.dp)
                                 .graphicsLayer { alpha = spotifyChromeAlpha }
                                 .shadow(2.dp, RoundedCornerShape(3.dp), clip = false)

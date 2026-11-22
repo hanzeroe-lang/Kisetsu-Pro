@@ -132,8 +132,8 @@
     <string name="wired_headphones">유선 헤드폰</string>
     <string name="usb_audio">USB 오디오</string>
     <string name="hdmi_output">HDMI</string>
-    <string name="personal_phone">%1$s의 폰</string>
-    <string name="this_phone">이 폰</string>
+    <string name="personal_phone">%1$s의 iPhone</string>
+    <string name="this_phone">이 iPhone</string>
     <string name="albums">앨범</string>
     <string name="artists">아티스트</string>
     <string name="card_plays_format">재생 %1$s회</string>

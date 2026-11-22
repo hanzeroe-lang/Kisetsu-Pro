@@ -49,6 +49,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import com.music.bitchord.ui.rememberIsForeground
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -1012,15 +1017,40 @@ internal fun CircleGlyph(
     modifier: Modifier = Modifier,
 ) {
     val haptics = rememberHaptics()
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val reduceMotion by PlayerSettings.reduceAnimation.collectAsStateWithLifecycle()
+    val foreground = rememberIsForeground()
+    var taps by remember { mutableIntStateOf(0) }
+    val scale by animateFloatAsState(
+        targetValue = if (pressed && !reduceMotion) 0.88f else 1f,
+        animationSpec = spring(
+            dampingRatio = 0.55f,
+            stiffness = Spring.StiffnessMediumLow,
+        ),
+        label = "circleGlyphScale",
+    )
     Box(
         modifier = modifier
             .size(44.dp)
-            .clip(CircleShape)
+            .playerPressCircle(
+                interactionSource = interactionSource,
+                trigger = taps,
+                enabled = foreground,
+                reduceMotion = reduceMotion,
+                tint = Color.White.copy(alpha = 0.85f),
+                glyphSize = 26.dp,
+                diameter = PLAYER_PRESS_CIRCLE_DIAMETER,
+                hasMotion = { false },
+                settled = { true },
+                minimumHoldMs = 85,
+            )
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 indication = null,
             ) {
                 haptics.play(haptic)
+                taps++
                 onClick()
             },
         contentAlignment = Alignment.Center,
@@ -1034,7 +1064,12 @@ internal fun CircleGlyph(
                 imageVector = glyph,
                 contentDescription = contentDescription,
                 tint = Color.White,
-                modifier = Modifier.size(26.dp),
+                modifier = Modifier
+                    .size(26.dp)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    },
             )
         }
     }
