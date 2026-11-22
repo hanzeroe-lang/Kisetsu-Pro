@@ -478,7 +478,7 @@ object AppSettings {
     val onboardingComplete = MutableStateFlow(false)
 
     /** Requests a sustained high-refresh UI. Off keeps Android's automatic policy. */
-    val highPerformanceMode = MutableStateFlow(false)
+    val highPerformanceMode = MutableStateFlow(true)
 
     /** Preferred UI refresh rate while [highPerformanceMode] is enabled. */
     val performanceRefreshRate = MutableStateFlow(DEFAULT_PERFORMANCE_REFRESH_RATE)
@@ -1117,7 +1117,7 @@ object AppSettings {
         showListenTogetherButton.value = prefs.getBoolean(KEY_LISTEN_TOGETHER_BUTTON, false)
         reduceAnimation.value = prefs.getBoolean(KEY_REDUCE_ANIMATION, false)
         onboardingComplete.value = prefs.getBoolean(KEY_ONBOARDING_COMPLETE, false)
-        highPerformanceMode.value = prefs.getBoolean(KEY_HIGH_PERFORMANCE_MODE, false)
+        highPerformanceMode.value = prefs.getBoolean(KEY_HIGH_PERFORMANCE_MODE, true)
         performanceRefreshRate.value = normalizePerformanceRefreshRate(
             prefs.getInt(KEY_PERFORMANCE_REFRESH_RATE, DEFAULT_PERFORMANCE_REFRESH_RATE),
         )

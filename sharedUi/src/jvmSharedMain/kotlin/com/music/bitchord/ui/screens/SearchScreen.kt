@@ -96,6 +96,7 @@ import com.music.bitchord.ui.components.thumbnailBorder
 import com.music.bitchord.ui.components.songListSkeleton
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(
     query: String,
@@ -223,22 +224,25 @@ fun SearchScreen(
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f).fillMaxWidth(),
-            // The whole header now scrolls with the list: the Discover title
-            // moves up together with the search bar (no overlap), and the sort
-            // tab bar hides with the songs when scrolling down.
+            // The Discover title and sort tabs scroll away with the results,
+            // but the search field is a sticky header: it floats just below
+            // the top bar while everything else scrolls, then settles back
+            // into its normal place when you scroll back up.
             contentPadding = PaddingValues(
                 top = topPadding,
                 bottom = contentPadding.calculateBottomPadding(),
             ),
         ) {
-            item(key = "search:header") {
-                Column {
-                    Text(
-                        text = "Discover",
-                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
-                    )
+            item(key = "search:title") {
+                Text(
+                    text = "Discover",
+                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 12.dp, bottom = 14.dp),
+                )
+            }
+            stickyHeader(key = "search:field") {
+                Column(Modifier.background(MaterialTheme.colorScheme.background)) {
                     if (showField) {
                         SearchField(
                             query = query,
@@ -256,6 +260,10 @@ fun SearchScreen(
                             modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, bottom = 8.dp),
                         )
                     }
+                }
+            }
+            item(key = "search:controls") {
+                Column {
                     if (sourceSwitcher != null) {
                         AnimatedVisibility(
                             visible = query.isEmpty() && effectiveFieldFocused,
