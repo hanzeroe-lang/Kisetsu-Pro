@@ -72,7 +72,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Person
@@ -4106,35 +4105,22 @@ private fun BitChordApp(
                                     searchFocusRequested = false
                                 }
                             }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                SearchField(
-                                    query = query,
-                                    onQueryChange = viewModel::onQueryChange,
-                                    onSubmit = viewModel::submitSearch,
-                                    focusRequester = searchFieldFocus,
-                                    onFocusChanged = { searchFieldFocused = it },
-                                    placeholder = org.jetbrains.compose.resources.stringResource(
-                                        if (searchSource == SearchSource.LIBRARY) {
-                                            SharedRes.string.search_library_hint
-                                        } else if (searchSource == SearchSource.ADDONS) {
-                                            SharedRes.string.search_addons_hint
-                                        } else {
-                                            SharedRes.string.search_hint
-                                        },
-                                    ),
-                                    modifier = Modifier.weight(1f),
-                                )
-                                IconButton(onClick = { navigator.push(AppRoute.Settings) }) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Settings,
-                                        contentDescription = stringResource(R.string.settings),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
+                            SearchField(
+                                query = query,
+                                onQueryChange = viewModel::onQueryChange,
+                                onSubmit = viewModel::submitSearch,
+                                focusRequester = searchFieldFocus,
+                                onFocusChanged = { searchFieldFocused = it },
+                                placeholder = org.jetbrains.compose.resources.stringResource(
+                                    if (searchSource == SearchSource.LIBRARY) {
+                                        SharedRes.string.search_library_hint
+                                    } else if (searchSource == SearchSource.ADDONS) {
+                                        SharedRes.string.search_addons_hint
+                                    } else {
+                                        SharedRes.string.search_hint
+                                    },
+                                ),
+                            )
                         }
                     } else null,
                     actions = {

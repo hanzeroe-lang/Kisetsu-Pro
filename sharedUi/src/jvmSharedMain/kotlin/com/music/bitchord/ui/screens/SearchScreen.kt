@@ -245,7 +245,7 @@ fun SearchScreen(
             }
             if (sourceSwitcher != null) {
                 AnimatedVisibility(
-                    visible = query.isEmpty(),
+                    visible = query.isEmpty() && effectiveFieldFocused,
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically(),
                 ) {
@@ -261,7 +261,7 @@ fun SearchScreen(
             // The same selector as the sources above it and a folder's tabs, so
             // the app has one look for "pick one of these".
             AnimatedVisibility(
-                visible = (effectiveFieldFocused || results != null || query.isNotBlank()) && !suggesting && !searchingLibrary && !searchingAddons,
+                visible = results != null && !suggesting && !searchingLibrary && !searchingAddons,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
