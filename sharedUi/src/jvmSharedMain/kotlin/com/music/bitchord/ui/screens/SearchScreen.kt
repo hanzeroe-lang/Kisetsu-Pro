@@ -65,6 +65,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.focus.FocusRequester
@@ -343,6 +344,14 @@ fun SearchScreen(
                     if (showBrowseCards) {
                         val vibeRows = moodSections.flatMap { it.items }
                             .distinctBy { it.browseId to it.params }
+                        item {
+                            Text(
+                                text = "Discover",
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 8.dp, bottom = 18.dp),
+                            )
+                        }
                         if (vibeRows.isNotEmpty()) {
                             item {
                                 BoxWithConstraints(Modifier.fillMaxWidth()) {

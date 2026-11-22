@@ -3830,7 +3830,7 @@ private fun BitChordApp(
                                 // gap below it: the field is in the bar (see the bar's
                                 // accessory), so what comes next is the field's own
                                 // suggestions and filters, and a gap reads as a break.
-                                topPadding = topBarHeight() + 4.dp,
+                                topPadding = topBarHeight() + 12.dp,
                                 showField = false,
                                 // The settings page's own two-state selector, so the
                                 // app has one look for "pick one of these".
