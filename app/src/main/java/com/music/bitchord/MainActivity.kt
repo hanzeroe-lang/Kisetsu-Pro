@@ -306,6 +306,7 @@ import com.music.bitchord.ui.components.TopBarDownloadButton
 import com.music.bitchord.ui.components.optimizedHazeEffect
 import com.music.bitchord.ui.components.topBarContentPadding
 import com.music.bitchord.ui.components.topBarHeight
+import com.music.bitchord.ui.components.TopBarContentHeight
 import com.music.bitchord.ui.components.AppLanguageDialog
 import com.music.bitchord.ui.components.TranslationLanguageDialog
 import com.music.bitchord.ui.components.LyricsSourcesDialog
@@ -3830,7 +3831,12 @@ private fun BitChordApp(
                                 // gap below it: the field is in the bar (see the bar's
                                 // accessory), so what comes next is the field's own
                                 // suggestions and filters, and a gap reads as a break.
-                                topPadding = topBarHeight() + 20.dp,
+                                // Search has no top bar here — its Discover title
+                                // owns the top — so clear only the status bar.
+                                topPadding = if (route == null && detail == null &&
+                                    selectedMoodGenre == null && selectedTab == TAB_SEARCH
+                                ) topBarHeight() - TopBarContentHeight + 12.dp
+                                else topBarHeight() + 20.dp,
                                 showField = true,
                                 // The settings page's own two-state selector, so the
                                 // app has one look for "pick one of these".
@@ -4003,6 +4009,11 @@ private fun BitChordApp(
                 val fadeRamp = if (artistListState != null) TOP_FADE_RAMP else 1f
                 val topFadeAlpha by remember(headerListState, fadeStart, fadeRamp) {
                     derivedStateOf {
+                        // Search draws no top bar, so the strip must not paint
+                        // a black slab over the Discover title.
+                        if (route == null && detail == null && selectedMoodGenre == null &&
+                            selectedTab == TAB_SEARCH
+                        ) return@derivedStateOf 0f
                         val list = headerListState ?: return@derivedStateOf 1f
                         if (list.firstVisibleItemIndex > 0) return@derivedStateOf 1f
                         val header = list.layoutInfo.visibleItemsInfo
@@ -4088,7 +4099,15 @@ private fun BitChordApp(
                         route != null || detail != null || selectedMoodGenre != null -> goBack
                         else -> null
                     },
-                    modifier = Modifier.align(Alignment.TopCenter),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        // Search's Discover title is the header — the whole
+                        // top bar is hidden so nothing sits in front of it.
+                        .then(
+                            if (route == null && detail == null && selectedMoodGenre == null &&
+                                selectedTab == TAB_SEARCH
+                            ) Modifier.graphicsLayer { alpha = 0f } else Modifier,
+                        ),
                     accessory = null,
                     actions = {
                         // This is intentionally scoped to Listen together: the
