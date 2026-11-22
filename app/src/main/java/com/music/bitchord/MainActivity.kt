@@ -72,6 +72,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Person
@@ -268,6 +269,7 @@ import com.music.bitchord.playback.rememberPlayerState
 import com.music.bitchord.playback.setQueueDragActive
 import com.music.bitchord.ui.MainViewModel
 import com.music.bitchord.ui.SearchSource
+import com.music.bitchord.ui.components.BottomFadeBlur
 import com.music.bitchord.ui.components.BottomFadeScrim
 import com.music.bitchord.ui.components.TopFadeBlur
 import com.music.bitchord.ui.components.FloatingBarsTapGuard
@@ -828,6 +830,7 @@ private fun BitChordApp(
     // Set each time the search tab is tapped, which SearchScreen uses as a
     // signal to focus the input field.
     var searchFocusRequested by remember { mutableStateOf(false) }
+    var searchFieldFocused by remember { mutableStateOf(false) }
     val searchFieldFocus = remember { FocusRequester() }
     // Invalidates an in-flight radio lookup when a later play request wins.
     var playRequestGeneration by remember { mutableIntStateOf(0) }
@@ -1385,7 +1388,7 @@ private fun BitChordApp(
     // a fold. Keyed on the labels so a locale change still rebuilds it.
     val homeLabel = stringResource(R.string.home)
     val playLabel = stringResource(R.string.play)
-    val newReleasesLabel = stringResource(R.string.shelf_new_releases)
+    val newReleasesLabel = "New"
     val libraryLabel = stringResource(R.string.library)
     val radioLabel = stringResource(R.string.radio)
     val searchLabel = stringResource(R.string.search)
@@ -3619,9 +3622,16 @@ private fun BitChordApp(
                             )
                             TAB_EXPLORE -> {
                                 val newReleaseState = when (val s = visibleHomeState) {
-                                    is UiState.Success -> UiState.Success(
-                                        s.data.filter { it.title.contains("new release", ignoreCase = true) },
-                                    )
+                                    is UiState.Success -> {
+                                        val filtered = s.data.filter { shelf ->
+                                            val t = shelf.title
+                                            t.contains("new release", ignoreCase = true) ||
+                                                t.contains("new album", ignoreCase = true) ||
+                                                t.contains("new single", ignoreCase = true) ||
+                                                t.contains("new music", ignoreCase = true)
+                                        }
+                                        UiState.Success(if (filtered.isNotEmpty()) filtered else s.data)
+                                    }
                                     else -> s
                                 }
                                 HomeScreen(
@@ -3629,7 +3639,7 @@ private fun BitChordApp(
                                     listState = exploreListState,
                                     currentSong = player.song,
                                     isPlaying = player.isPlaying,
-                                    title = stringResource(R.string.shelf_new_releases),
+                                    title = "New",
                                     signedIn = signedIn,
                                     onSignIn = { webSession = WebSessionMode.SIGN_IN },
                                     onItemClick = { item, shelfTitle ->
@@ -3704,6 +3714,7 @@ private fun BitChordApp(
                                 scrollResetTrigger = searchScrollReset,
                                 focusRequested = searchFocusRequested,
                                 onFocusHandled = { searchFocusRequested = false },
+                                fieldFocused = searchFieldFocused,
                                 // Search hits are alternatives to each other, not a running
                                 // order — play the one tapped and build a station from it.
                                 onSongClick = { songs, index ->
@@ -4095,21 +4106,35 @@ private fun BitChordApp(
                                     searchFocusRequested = false
                                 }
                             }
-                            SearchField(
-                                query = query,
-                                onQueryChange = viewModel::onQueryChange,
-                                onSubmit = viewModel::submitSearch,
-                                focusRequester = searchFieldFocus,
-                                placeholder = org.jetbrains.compose.resources.stringResource(
-                                    if (searchSource == SearchSource.LIBRARY) {
-                                        SharedRes.string.search_library_hint
-                                    } else if (searchSource == SearchSource.ADDONS) {
-                                        SharedRes.string.search_addons_hint
-                                    } else {
-                                        SharedRes.string.search_hint
-                                    },
-                                ),
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                SearchField(
+                                    query = query,
+                                    onQueryChange = viewModel::onQueryChange,
+                                    onSubmit = viewModel::submitSearch,
+                                    focusRequester = searchFieldFocus,
+                                    onFocusChanged = { searchFieldFocused = it },
+                                    placeholder = org.jetbrains.compose.resources.stringResource(
+                                        if (searchSource == SearchSource.LIBRARY) {
+                                            SharedRes.string.search_library_hint
+                                        } else if (searchSource == SearchSource.ADDONS) {
+                                            SharedRes.string.search_addons_hint
+                                        } else {
+                                            SharedRes.string.search_hint
+                                        },
+                                    ),
+                                    modifier = Modifier.weight(1f),
+                                )
+                                IconButton(onClick = { navigator.push(AppRoute.Settings) }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Settings,
+                                        contentDescription = stringResource(R.string.settings),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
                         }
                     } else null,
                     actions = {
@@ -4369,14 +4394,20 @@ private fun BitChordApp(
                 )
 
                 // Drawn before the bars so their own glass reads on top of it.
-                BottomFadeScrim(
-                    withMiniPlayer = player.song != null,
-                    // Not the wash: by the foot of the screen the page has finished
-                    // easing out of it and into this, so this is what is actually
-                    // under the tab bar.
-                    pageColor = chromePageColor,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
+                if (reduceDynamicBlur || !glassActive || !progressiveBlur) {
+                    BottomFadeScrim(
+                        withMiniPlayer = player.song != null,
+                        pageColor = chromePageColor,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    )
+                } else {
+                    BottomFadeBlur(
+                        hazeState = hazeState,
+                        pageColor = chromePageColor,
+                        withMiniPlayer = player.song != null,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    )
+                }
 
                 // Whichever bar is drawing reports its height here, for the
                 // guard to read at layout — never in composition, see the guard.
@@ -4398,7 +4429,8 @@ private fun BitChordApp(
                     // the keyboard through SearchScreen's focus request.
                     if (index == TAB_SEARCH) {
                         viewModel.onQueryChange("")
-                        searchFocusRequested = true
+                        searchFocusRequested = false
+                        searchFieldFocused = false
                     }
                 }
 

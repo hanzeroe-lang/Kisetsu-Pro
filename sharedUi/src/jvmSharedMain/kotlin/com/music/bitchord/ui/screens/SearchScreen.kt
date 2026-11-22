@@ -55,7 +55,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -174,10 +177,13 @@ fun SearchScreen(
     sourceSwitcher: (@Composable () -> Unit)? = null,
     moodSections: List<MoodGenreSection> = emptyList(),
     onMoodClick: (MoodGenre) -> Unit = {},
+    fieldFocused: Boolean = false,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var internalFieldFocused by remember { mutableStateOf(false) }
+    val effectiveFieldFocused = fieldFocused || internalFieldFocused
     // Tapping the search tab from the nav bar sets focusRequested;
     // respond by focusing the field and opening the keyboard.
     LaunchedEffect(focusRequested) {
@@ -226,6 +232,7 @@ fun SearchScreen(
                     onQueryChange = onQueryChange,
                     onSubmit = onSubmit,
                     focusRequester = focusRequester,
+                    onFocusChanged = { internalFieldFocused = it },
                     placeholder = if (searchingLibrary) {
                         stringResource(Res.string.search_library_hint)
                     } else if (searchingAddons) {
@@ -254,7 +261,7 @@ fun SearchScreen(
             // The same selector as the sources above it and a folder's tabs, so
             // the app has one look for "pick one of these".
             AnimatedVisibility(
-                visible = (results != null || query.isNotBlank()) && !suggesting && !searchingLibrary && !searchingAddons,
+                visible = (effectiveFieldFocused || results != null || query.isNotBlank()) && !suggesting && !searchingLibrary && !searchingAddons,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
@@ -315,41 +322,41 @@ fun SearchScreen(
                     }
                 }
                 results == null -> {
-                    if (history.isNotEmpty() && query.isBlank()) {
-                        recentSearches(
-                            history = history,
-                            currentSong = currentSong,
-                            isPlaying = isPlaying,
-                            onClick = onHistoryClick,
-                            onSongLongPress = onSongLongPress,
-                            onRemove = onHistoryRemove,
-                            onClear = onHistoryClear,
-                            onSongSwipe = onSongSwipe,
-                        )
-                    }
-                    val vibeRows = moodSections.flatMap { it.items }
-                        .distinctBy { it.browseId to it.params }
-                    if (vibeRows.isNotEmpty() && query.isBlank()) {
-                        item { 
-                            Text(
-                                text = stringResource(Res.string.explore),
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(start = PAGE_GUTTER, end = PAGE_GUTTER, top = 8.dp, bottom = 12.dp),
+                    val showBrowseCards = query.isBlank() && !effectiveFieldFocused
+                    val showRecent = query.isBlank() && effectiveFieldFocused
+                    if (showRecent) {
+                        if (history.isNotEmpty()) {
+                            recentSearches(
+                                history = history,
+                                currentSong = currentSong,
+                                isPlaying = isPlaying,
+                                onClick = onHistoryClick,
+                                onSongLongPress = onSongLongPress,
+                                onRemove = onHistoryRemove,
+                                onClear = onHistoryClear,
+                                onSongSwipe = onSongSwipe,
                             )
+                        } else {
+                            item { MessageState(stringResource(Res.string.search_empty)) }
                         }
-                        item {
-                            BoxWithConstraints(Modifier.fillMaxWidth()) {
-                                val columns = moodColumns(maxWidth)
-                                Column(Modifier.fillMaxWidth()) {
-                                    vibeRows.chunked(columns).forEach { row ->
-                                        MoodGenreRow(row = row, columns = columns, onCategoryClick = onMoodClick)
+                    }
+                    if (showBrowseCards) {
+                        val vibeRows = moodSections.flatMap { it.items }
+                            .distinctBy { it.browseId to it.params }
+                        if (vibeRows.isNotEmpty()) {
+                            item {
+                                BoxWithConstraints(Modifier.fillMaxWidth()) {
+                                    val columns = moodColumns(maxWidth)
+                                    Column(Modifier.fillMaxWidth()) {
+                                        vibeRows.chunked(columns).forEach { row ->
+                                            MoodGenreRow(row = row, columns = columns, onCategoryClick = onMoodClick)
+                                        }
                                     }
                                 }
                             }
+                        } else if (history.isEmpty()) {
+                            item { MessageState(stringResource(Res.string.search_empty)) }
                         }
-                    } else if (history.isEmpty()) {
-                        item { MessageState(stringResource(Res.string.search_empty)) }
                     }
                 }
                 results is UiState.Loading -> songListSkeleton(circular = filter == SearchFilter.ARTISTS)

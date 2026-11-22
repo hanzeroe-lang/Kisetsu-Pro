@@ -555,10 +555,9 @@ object AppSettings {
     /**
      * Blurs what scrolls under the status bar and the top controls, easing out
      * just below them, instead of fading it to the page colour. A Liquid Glass
-     * option, honoured only while [liquidGlass] is on. Off by default: it costs
-     * frames. Reduce dynamic blur overrides it.
+     * option, honoured only while [liquidGlass] is on. Reduce dynamic blur overrides it.
      */
-    val progressiveBlur = MutableStateFlow(false)
+    val progressiveBlur = MutableStateFlow(true)
 
     /** Blurs unfocused lyric lines, keeping the active line sharp. */
     val lyricsBlur = MutableStateFlow(true)
@@ -1144,7 +1143,7 @@ object AppSettings {
         liquidGlass.value = prefs.getBoolean(KEY_LIQUID_GLASS, true)
         glassPerformance.value = prefs.getBoolean(KEY_GLASS_PERFORMANCE, true)
         glassFrost.value = prefs.getFloat(KEY_GLASS_FROST, if (glassPerformance.value) 1f else 0f).coerceIn(0f, 1f)
-        progressiveBlur.value = prefs.getBoolean(KEY_PROGRESSIVE_BLUR, false)
+        progressiveBlur.value = prefs.getBoolean(KEY_PROGRESSIVE_BLUR, true)
         lyricsBlur.value = prefs.getBoolean(KEY_LYRICS_BLUR, true)
         lyricsOffsetMs.value = prefs.getInt(KEY_LYRICS_OFFSET_MS, 0)
             .coerceIn(MIN_LYRICS_OFFSET_MS, MAX_LYRICS_OFFSET_MS)
