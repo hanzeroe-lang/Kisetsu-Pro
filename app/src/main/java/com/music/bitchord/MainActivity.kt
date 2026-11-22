@@ -4003,12 +4003,6 @@ private fun BitChordApp(
                 val fadeRamp = if (artistListState != null) TOP_FADE_RAMP else 1f
                 val topFadeAlpha by remember(headerListState, fadeStart, fadeRamp) {
                     derivedStateOf {
-                        // Search pads its list below the bar, so nothing scrolls
-                        // under this strip — blurring that empty area just paints
-                        // a solid slab above the floating search field.
-                        if (route == null && detail == null && selectedMoodGenre == null &&
-                            selectedTab == TAB_SEARCH
-                        ) return@derivedStateOf 0f
                         val list = headerListState ?: return@derivedStateOf 1f
                         if (list.firstVisibleItemIndex > 0) return@derivedStateOf 1f
                         val header = list.layoutInfo.visibleItemsInfo
@@ -4337,8 +4331,12 @@ private fun BitChordApp(
                             }
                             // Not on a release page, whose pill already carries
                             // three of its own controls — Apple Music leaves the
-                            // profile off its album pages too.
-                            if (!isReleaseDetail) TopBarAccountButton(
+                            // profile off its album pages too. Search keeps its
+                            // own account/settings in Home, so the top-right stays
+                            // clear for the floating search header.
+                            val isSearchTab = route == null && detail == null &&
+                                selectedMoodGenre == null && selectedTab == TAB_SEARCH
+                            if (!isReleaseDetail && !isSearchTab) TopBarAccountButton(
                                 account = account,
                                 onClick = {
                                     if (signedIn) {
