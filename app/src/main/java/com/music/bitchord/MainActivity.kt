@@ -6828,9 +6828,13 @@ private fun LiquidGlassSearchBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+            .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(horizontal = NAV_BAR_GUTTER)
-            .padding(bottom = NAV_BAR_LIFT + 12.dp)
+            // Rise only partway toward the keyboard — docking at the full IME
+            // height pushed this bar halfway up the page.
+            .padding(bottom = NAV_BAR_LIFT + with(LocalDensity.current) {
+                (WindowInsets.ime.getBottom(this) * 0.5f).toDp()
+            })
             .fillMaxWidth()
             .height(56.dp)
             .clip(pillShape)
