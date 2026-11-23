@@ -4462,108 +4462,7 @@ private fun BitChordApp(
                     animationSpec = tween(280),
                     label = "navBarTuck",
                 )
-                if (glassActive) Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .widthIn(max = FLOATING_BAR_MAX_WIDTH)
-                        .fillMaxWidth()
-                        .onSizeChanged { floatingBarsHeight.intValue = it.height },
-                ) {
-                    QueueActionNoticeHost(queueNotice)
-                    AnimatedContent(
-                        targetState = showBottomSearchBar,
-                        transitionSpec = {
-                            (fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.92f, animationSpec = tween(220)))
-                                .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 0.92f, animationSpec = tween(180)))
-                        },
-                        label = "searchBarMorph",
-                    ) { active ->
-                        if (active) {
-                            val focusManager = LocalFocusManager.current
-                            Column(Modifier.fillMaxWidth()) {
-                                player.song?.let { song ->
-                                    MiniPlayer(
-                                        song = song,
-                                        isPlaying = player.isPlaying,
-                                        isLoading = playPauseBusy,
-                                        animationsActive = !showNowPlaying,
-                                        hazeState = hazeState,
-                                        onPlayPause = { togglePlayPause() },
-                                        onNext = { controller?.seekToNextMediaItem() },
-                                        onPrevious = { controller?.seekToPrevious() },
-                                        onExpand = if (reducePlayerMotion) {
-                                            { showNowPlaying = true }
-                                        } else {
-                                            playerSheetMotion::open
-                                        },
-                                        controlsLocked = controlsLocked,
-                                        onBlockedControl = showHostOnlyNotice,
-                                        dock = activeDock,
-                                        pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = NAV_BAR_GUTTER),
-                                        autoMixArtwork = miniArtwork,
-                                        useGlass = glassActive,
-                                    )
-                                    Spacer(Modifier.height(8.dp))
-                                }
-                                BottomSearchSuggestions(
-                                    suggestions = searchSuggestions,
-                                    onSuggestionClick = { term ->
-                                        viewModel.searchFor(term)
-                                        focusManager.clearFocus()
-                                    },
-                                    onFill = viewModel::onQueryChange,
-                                )
-                                LiquidGlassSearchBar(
-                                    query = query,
-                                    onQueryChange = viewModel::onQueryChange,
-                                    onClose = { searchBarActive = false },
-                                    onSubmit = { viewModel.submitSearch() },
-                                    focusRequester = searchFieldFocus,
-                                    hazeState = hazeState,
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                            }
-                        } else {
-                            if (selectedTab == TAB_SEARCH) {
-                                CompactSearchPill(
-                                    onClick = { searchBarActive = true },
-                                    hazeState = hazeState,
-                                )
-                                Spacer(Modifier.height(8.dp))
-                            }
-                            GlassNavBar(
-                                tabs = tabs,
-                                selectedIndex = selectedTab,
-                                onTabSelected = onTabSelected,
-                                scrollConnection = navBarScroll,
-                                song = player.song,
-                                isPlaying = player.isPlaying,
-                                isLoading = playPauseBusy,
-                                animationsActive = !showNowPlaying,
-                                onPlayPause = { togglePlayPause() },
-                                onNext = { controller?.seekToNextMediaItem() },
-                                onPrevious = { controller?.seekToPrevious() },
-                                onExpand = if (reducePlayerMotion) {
-                                    { showNowPlaying = true }
-                                } else {
-                                    playerSheetMotion::open
-                                },
-                                controlsLocked = controlsLocked,
-                                onBlockedControl = showHostOnlyNotice,
-                                dock = activeDock,
-                                pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .graphicsLayer { translationY = navBarTuck },
-                                onActiveTabTap = onActiveTabTap,
-                                autoMixArtwork = miniArtwork,
-                            )
-                        }
-                    }
-                } else Column(
+                Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .widthIn(max = FLOATING_BAR_MAX_WIDTH)
@@ -4591,57 +4490,82 @@ private fun BitChordApp(
                             onBlockedControl = showHostOnlyNotice,
                             dock = activeDock,
                             pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = NAV_BAR_GUTTER),
                             autoMixArtwork = miniArtwork,
+                            useGlass = glassActive,
                         )
                         Spacer(Modifier.height(8.dp))
                     }
-                    AnimatedContent(
-                        targetState = showBottomSearchBar,
-                        transitionSpec = {
-                            (fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.92f, animationSpec = tween(220)))
-                                .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 0.92f, animationSpec = tween(180)))
-                        },
-                        label = "searchBarMorph",
-                    ) { active ->
-                        if (active) {
+                    if (selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null) {
+                        if (showBottomSearchBar) {
                             val focusManager = LocalFocusManager.current
-                            Column(Modifier.fillMaxWidth()) {
-                                BottomSearchSuggestions(
-                                    suggestions = searchSuggestions,
-                                    onSuggestionClick = { term ->
-                                        viewModel.searchFor(term)
-                                        focusManager.clearFocus()
-                                    },
-                                    onFill = viewModel::onQueryChange,
-                                )
-                                LiquidGlassSearchBar(
-                                    query = query,
-                                    onQueryChange = viewModel::onQueryChange,
-                                    onClose = { searchBarActive = false },
-                                    onSubmit = { viewModel.submitSearch() },
-                                    focusRequester = searchFieldFocus,
-                                    hazeState = hazeState,
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                            }
-                        } else {
-                            if (selectedTab == TAB_SEARCH) {
-                                CompactSearchPill(
-                                    onClick = { searchBarActive = true },
-                                    hazeState = hazeState,
-                                )
-                                Spacer(Modifier.height(8.dp))
-                            }
-                            FloatingBottomBar(
-                                tabs = tabs,
-                                selectedIndex = selectedTab,
+                            BottomSearchSuggestions(
+                                suggestions = searchSuggestions,
+                                onSuggestionClick = { term ->
+                                    viewModel.searchFor(term)
+                                    focusManager.clearFocus()
+                                },
+                                onFill = viewModel::onQueryChange,
+                            )
+                            LiquidGlassSearchBar(
+                                query = query,
+                                onQueryChange = viewModel::onQueryChange,
+                                onClose = { searchBarActive = false },
+                                onSubmit = { viewModel.submitSearch() },
+                                focusRequester = searchFieldFocus,
                                 hazeState = hazeState,
-                                onTabSelected = onTabSelected,
-                                onActiveTabTap = onActiveTabTap,
-                                modifier = Modifier.graphicsLayer { translationY = navBarTuck },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        } else {
+                            CompactSearchPill(
+                                onClick = { searchBarActive = true },
+                                hazeState = hazeState,
                             )
                         }
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    val navBarModifier = Modifier
+                        .fillMaxWidth()
+                        .graphicsLayer { translationY = navBarTuck }
+                    if (glassActive) {
+                        GlassNavBar(
+                            tabs = tabs,
+                            selectedIndex = selectedTab,
+                            onTabSelected = onTabSelected,
+                            scrollConnection = navBarScroll,
+                            // The mini player above is the player on Search, so
+                            // the bar keeps only its tabs there — no double player.
+                            song = if (selectedTab == TAB_SEARCH) null else player.song,
+                            isPlaying = player.isPlaying,
+                            isLoading = playPauseBusy,
+                            animationsActive = !showNowPlaying,
+                            onPlayPause = { togglePlayPause() },
+                            onNext = { controller?.seekToNextMediaItem() },
+                            onPrevious = { controller?.seekToPrevious() },
+                            onExpand = if (reducePlayerMotion) {
+                                { showNowPlaying = true }
+                            } else {
+                                playerSheetMotion::open
+                            },
+                            controlsLocked = controlsLocked,
+                            onBlockedControl = showHostOnlyNotice,
+                            dock = activeDock,
+                            pull = playerSheetMotion.takeIf { !reducePlayerMotion },
+                            modifier = navBarModifier,
+                            onActiveTabTap = onActiveTabTap,
+                            autoMixArtwork = miniArtwork,
+                        )
+                    } else {
+                        FloatingBottomBar(
+                            tabs = tabs,
+                            selectedIndex = selectedTab,
+                            hazeState = hazeState,
+                            onTabSelected = onTabSelected,
+                            onActiveTabTap = onActiveTabTap,
+                            modifier = navBarModifier,
+                        )
                     }
                 }
             }
