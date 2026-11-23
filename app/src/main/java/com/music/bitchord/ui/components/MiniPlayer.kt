@@ -114,13 +114,13 @@ private val SPINNER_SIZE = 22.dp
  * Taken from the title's width rather than the bar's height, so nothing above
  * or below it moves.
  */
-private val TRANSPORT_GAP = 8.dp
+private val TRANSPORT_GAP = 5.dp
 
 /**
  * Vertical padding, which with the 40dp artwork sets the bar's height at 56dp
  * and so its pill radius at 28.
  */
-private val ROW_PADDING_VERTICAL = 10.dp
+private val ROW_PADDING_VERTICAL = 9.dp
 
 /**
  * Horizontal padding, deliberately larger than the vertical.
@@ -375,7 +375,7 @@ private val MiniPauseIcon: ImageVector by lazy {
         viewportWidth = 24f,
         viewportHeight = 24f,
     ).addPath(
-        pathData = roundedBarPath(6f, 5f, 10f, 19f, 1.2f) + roundedBarPath(14f, 5f, 18f, 19f, 1.2f),
+        pathData = roundedBarPath(6f, 5f, 10f, 19f, 1.6f) + roundedBarPath(14f, 5f, 18f, 19f, 1.6f),
         fill = androidx.compose.ui.graphics.SolidColor(Color.White),
     ).build()
 }

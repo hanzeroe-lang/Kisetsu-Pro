@@ -609,10 +609,16 @@ private fun BitChordApp(
     // What folds [GlassNavBar] between its expanded and inline shapes. Held here
     // rather than inside the bar because the page's scroll is what drives it,
     // and the page is a sibling of the bar rather than a child.
-    val navBarScroll = rememberFloatingTabBarScrollConnection(
+    val navBarScroll = rememberFloatingTabBarScrollConnection()
+    val steadyNavBarScroll = rememberFloatingTabBarScrollConnection(
         inlineBehavior = com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarInlineBehavior.Never,
     )
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    // Search keeps its bar (and the search stack above it) steady, so the nav
+    // bar only folds away while scrolling the other tabs.
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == TAB_SEARCH) navBarScroll.expand()
+    }
     // Explore loads the first time it's shown, not at launch beside Home.
     LaunchedEffect(selectedTab) {
         if (selectedTab == TAB_EXPLORE || selectedTab == TAB_SEARCH) viewModel.onExploreShown()
@@ -3099,7 +3105,9 @@ private fun BitChordApp(
                                     // Every page's scroll passes through here, so
                                     // the glass bar collapses on all of them
                                     // without each one having to know about it.
-                                    .nestedScroll(navBarScroll)
+                                    .nestedScroll(
+                                        if (selectedTab == TAB_SEARCH) steadyNavBarScroll else navBarScroll,
+                                    )
                             } else {
                                 Modifier
                             },
@@ -6811,7 +6819,7 @@ private fun SearchBarStack(
         } else {
             CompactSearchPill(onClick = onOpen, hazeState = hazeState)
         }
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
     }
 }
 
@@ -6875,7 +6883,7 @@ private fun BottomSearchSuggestions(
     Column(
         modifier = modifier
             .padding(horizontal = NAV_BAR_GUTTER)
-            .padding(bottom = 8.dp)
+            .padding(bottom = 6.dp)
             .fillMaxWidth()
             .clip(shape)
             .background(container, shape)
