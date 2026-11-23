@@ -8,6 +8,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
@@ -420,6 +426,17 @@ fun MiniPlayer(
     // a pill instead of a rounded rectangle. Same idiom as [FloatingBottomBar]
     // directly below it, so the two shapes are the same family.
     val shape = RoundedCornerShape(percent = 50)
+    val loadingPulse: androidx.compose.runtime.State<Float>? = if (isLoading && !reduceAnimation) {
+        rememberInfiniteTransition(label = "miniLoadingPulse").animateFloat(
+            initialValue = 1f,
+            targetValue = 0.35f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 650, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "miniLoadingAlpha",
+        )
+    } else null
     Box(
         modifier = modifier
             .padding(horizontal = BAR_GUTTER)
@@ -511,36 +528,30 @@ fun MiniPlayer(
                     color = Color.White.copy(alpha = 0.7f),
                 )
             }
-            if (isLoading) {
-                Box(Modifier.size(GLYPH_SLOT), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(SPINNER_SIZE),
-                    )
-                }
-            } else {
-                IconButton(
-                    onClick = {
-                        haptics.play(if (isPlaying) Haptic.Pause else Haptic.Resume)
-                        playPauseMotion.onTap()
-                        onPlayPause()
-                    },
-                    modifier = Modifier.size(GLYPH_SLOT),
-                ) {
-                    PlayerPlayPauseGlyph(
-                        motion = playPauseMotion,
-                        play = Icons.Rounded.PlayArrow,
-                        pause = Icons.Rounded.Pause,
-                        playPainter = rememberVectorPainter(Icons.Rounded.PlayArrow),
-                        // Rounded-rectangle bars, like the full player, rather
-                        // than the material icon's fully-rounded pills.
-                        pausePainter = rememberVectorPainter(MiniPauseIcon),
-                        contentDescription = stringResource(if (isPlaying) R.string.pause else R.string.play),
-                        tint = Color.White,
-                        modifier = Modifier.size(GLYPH_SIZE),
-                    )
-                }
+            IconButton(
+                onClick = {
+                    haptics.play(if (isPlaying) Haptic.Pause else Haptic.Resume)
+                    playPauseMotion.onTap()
+                    onPlayPause()
+                },
+                modifier = Modifier.size(GLYPH_SLOT),
+            ) {
+                PlayerPlayPauseGlyph(
+                    motion = playPauseMotion,
+                    play = Icons.Rounded.PlayArrow,
+                    pause = Icons.Rounded.Pause,
+                    playPainter = rememberVectorPainter(Icons.Rounded.PlayArrow),
+                    // Rounded-rectangle bars, like the full player, rather
+                    // than the material icon's fully-rounded pills.
+                    pausePainter = rememberVectorPainter(MiniPauseIcon),
+                    contentDescription = stringResource(if (isPlaying) R.string.pause else R.string.play),
+                    tint = Color.White,
+                    // While loading, pulse like the player's scrubber instead
+                    // of replacing the glyph with a spinning circle.
+                    modifier = Modifier
+                        .size(GLYPH_SIZE)
+                        .graphicsLayer { alpha = loadingPulse?.value ?: 1f },
+                )
             }
             Spacer(Modifier.width(TRANSPORT_GAP))
             // Faded and inert rather than removed while the host holds the

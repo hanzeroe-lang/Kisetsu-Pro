@@ -53,6 +53,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -4465,18 +4466,24 @@ private fun BitChordApp(
                 }
 
                 val miniArtwork = rememberMiniAutoMixArtwork(player.song, player.queue, player.queueIndex)
-                val showBottomSearchBar = searchBarActive &&
-                    selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null
+                val onSearchTab = selectedTab == TAB_SEARCH && route == null &&
+                    detail == null && selectedMoodGenre == null
+                val showBottomSearchBar = searchBarActive && onSearchTab
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .widthIn(max = FLOATING_BAR_MAX_WIDTH)
                         .fillMaxWidth()
+                        // Raise the whole stack together with the keyboard so
+                        // the gaps between player, search and nav stay constant.
+                        .imePadding()
                         .onSizeChanged { floatingBarsHeight.intValue = it.height },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     QueueActionNoticeHost(queueNotice)
-                    player.song?.let { song ->
+                    // On other tabs the glass bar owns the player as its
+                    // accessory, so it can fold into the tab row on scroll.
+                    if (!glassActive || onSearchTab) player.song?.let { song ->
                         SlimMiniPlayer(
                             song = song,
                             isPlaying = player.isPlaying,
@@ -4501,7 +4508,7 @@ private fun BitChordApp(
                         )
                         Spacer(Modifier.height(6.dp))
                     }
-                    if (selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null) {
+                    if (onSearchTab) {
                         val focusManager = LocalFocusManager.current
                         SearchBarStack(
                             expanded = showBottomSearchBar,
@@ -4526,6 +4533,7 @@ private fun BitChordApp(
                         onTabSelected = onTabSelected,
                         onActiveTabTap = onActiveTabTap,
                         scrollConnection = navBarScroll,
+                        song = if (glassActive && !onSearchTab) player.song else null,
                         isPlaying = player.isPlaying,
                         isLoading = playPauseBusy,
                         animationsActive = !showNowPlaying,
@@ -6695,6 +6703,7 @@ private fun NavBarSwitch(
     onTabSelected: (Int) -> Unit,
     onActiveTabTap: () -> Unit,
     scrollConnection: com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarScrollConnection,
+    song: com.music.bitchord.data.model.Song?,
     isPlaying: Boolean,
     isLoading: Boolean,
     animationsActive: Boolean,
@@ -6716,9 +6725,9 @@ private fun NavBarSwitch(
             selectedIndex = selectedIndex,
             onTabSelected = onTabSelected,
             scrollConnection = scrollConnection,
-            // The single slim mini player above the stack is the only player
-            // chrome — the bar keeps only its tabs.
-            song = null,
+            // The song is docked here off Search, so the bar can fold it into
+            // the tab row on scroll; on Search the slim player above owns it.
+            song = song,
             isPlaying = isPlaying,
             isLoading = isLoading,
             animationsActive = animationsActive,
@@ -6965,13 +6974,10 @@ private fun LiquidGlassSearchBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .padding(horizontal = NAV_BAR_GUTTER)
-            // Rise only partway toward the keyboard — docking at the full IME
-            // height pushed this bar halfway up the page. No navigation-bar
-            // inset here: the nav bar underneath already reserves that space,
-            // so adding it again opened a gap between the two.
-            .padding(bottom = NAV_BAR_LIFT + with(LocalDensity.current) {
-                (WindowInsets.ime.getBottom(this) * 0.15f).toDp()
-            })
+            // The whole bottom stack already rises with the keyboard; no
+            // navigation-bar or IME inset here, or a gap opens against the nav
+            // bar underneath.
+            .padding(bottom = NAV_BAR_LIFT)
             .fillMaxWidth()
             .height(56.dp)
             .clip(pillShape)
