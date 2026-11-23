@@ -37,10 +37,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
@@ -118,7 +120,7 @@ private val TRANSPORT_GAP = 8.dp
  * Vertical padding, which with the 40dp artwork sets the bar's height at 56dp
  * and so its pill radius at 28.
  */
-private val ROW_PADDING_VERTICAL = 8.dp
+private val ROW_PADDING_VERTICAL = 10.dp
 
 /**
  * Horizontal padding, deliberately larger than the vertical.
@@ -349,6 +351,35 @@ internal fun Modifier.playerDockArt(dock: PlayerDock?, corner: Dp): Modifier {
 /** The mini player's cover for a music video: 16:9 at the cover's 40dp height. */
 private val VIDEO_ART_WIDTH = 71.dp
 
+/** One gently-rounded rectangle: a pause bar, not a pill. */
+private fun roundedBarPath(x0: Float, y0: Float, x1: Float, y1: Float, r: Float) =
+    listOf(
+        androidx.compose.ui.graphics.vector.PathNode.MoveTo(x0 + r, y0),
+        androidx.compose.ui.graphics.vector.PathNode.LineTo(x1 - r, y0),
+        androidx.compose.ui.graphics.vector.PathNode.CurveTo(x1, y0, x1, y0, x1, y0 + r),
+        androidx.compose.ui.graphics.vector.PathNode.LineTo(x1, y1 - r),
+        androidx.compose.ui.graphics.vector.PathNode.CurveTo(x1, y1, x1, y1, x1 - r, y1),
+        androidx.compose.ui.graphics.vector.PathNode.LineTo(x0 + r, y1),
+        androidx.compose.ui.graphics.vector.PathNode.CurveTo(x0, y1, x0, y1, x0, y1 - r),
+        androidx.compose.ui.graphics.vector.PathNode.LineTo(x0, y0 + r),
+        androidx.compose.ui.graphics.vector.PathNode.CurveTo(x0, y0, x0, y0, x0 + r, y0),
+        androidx.compose.ui.graphics.vector.PathNode.Close,
+    )
+
+/** Pause glyph with rounded-rectangle bars, matching the full player's icon. */
+private val MiniPauseIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "mini_pause",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+    ).addPath(
+        pathData = roundedBarPath(6f, 5f, 10f, 19f, 1.2f) + roundedBarPath(14f, 5f, 18f, 19f, 1.2f),
+        fill = androidx.compose.ui.graphics.SolidColor(Color.White),
+    ).build()
+}
+
 /** Frosted mini player that rides just above the floating tab bar. */
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
@@ -502,7 +533,9 @@ fun MiniPlayer(
                         play = Icons.Rounded.PlayArrow,
                         pause = Icons.Rounded.Pause,
                         playPainter = rememberVectorPainter(Icons.Rounded.PlayArrow),
-                        pausePainter = rememberVectorPainter(Icons.Rounded.Pause),
+                        // Rounded-rectangle bars, like the full player, rather
+                        // than the material icon's fully-rounded pills.
+                        pausePainter = rememberVectorPainter(MiniPauseIcon),
                         contentDescription = stringResource(if (isPlaying) R.string.pause else R.string.play),
                         tint = Color.White,
                         modifier = Modifier.size(GLYPH_SIZE),

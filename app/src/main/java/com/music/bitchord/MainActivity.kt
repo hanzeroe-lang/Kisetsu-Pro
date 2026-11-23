@@ -4489,11 +4489,9 @@ private fun BitChordApp(
                             pull = playerSheetMotion.takeIf { !reducePlayerMotion },
                             autoMixArtwork = miniArtwork,
                             useGlass = glassActive,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = NAV_BAR_GUTTER),
+                            modifier = Modifier.fillMaxWidth(),
                         )
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(6.dp))
                     }
                     if (selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null) {
                         val focusManager = LocalFocusManager.current
@@ -6813,7 +6811,7 @@ private fun SearchBarStack(
         } else {
             CompactSearchPill(onClick = onOpen, hazeState = hazeState)
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(4.dp))
     }
 }
 
@@ -6958,10 +6956,11 @@ private fun LiquidGlassSearchBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(horizontal = NAV_BAR_GUTTER)
             // Rise only partway toward the keyboard — docking at the full IME
-            // height pushed this bar halfway up the page.
+            // height pushed this bar halfway up the page. No navigation-bar
+            // inset here: the nav bar underneath already reserves that space,
+            // so adding it again opened a gap between the two.
             .padding(bottom = NAV_BAR_LIFT + with(LocalDensity.current) {
                 (WindowInsets.ime.getBottom(this) * 0.15f).toDp()
             })
