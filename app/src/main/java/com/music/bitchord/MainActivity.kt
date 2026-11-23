@@ -4474,9 +4474,6 @@ private fun BitChordApp(
                         .align(Alignment.BottomCenter)
                         .widthIn(max = FLOATING_BAR_MAX_WIDTH)
                         .fillMaxWidth()
-                        // Raise the whole stack together with the keyboard so
-                        // the gaps between player, search and nav stay constant.
-                        .imePadding()
                         .onSizeChanged { floatingBarsHeight.intValue = it.height },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -6974,10 +6971,12 @@ private fun LiquidGlassSearchBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .padding(horizontal = NAV_BAR_GUTTER)
-            // The whole bottom stack already rises with the keyboard; no
-            // navigation-bar or IME inset here, or a gap opens against the nav
-            // bar underneath.
-            .padding(bottom = NAV_BAR_LIFT)
+            // Rise only partway toward the keyboard — docking at the full IME
+            // height pushed this bar halfway up the page. No navigation-bar
+            // inset here: the nav bar underneath already reserves that space.
+            .padding(bottom = NAV_BAR_LIFT + with(LocalDensity.current) {
+                (WindowInsets.ime.getBottom(this) * 0.15f).toDp()
+            })
             .fillMaxWidth()
             .height(56.dp)
             .clip(pillShape)

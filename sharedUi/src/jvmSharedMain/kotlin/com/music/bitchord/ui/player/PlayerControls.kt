@@ -663,9 +663,21 @@ internal fun TransportRow(
     val pauseVector = vectorResource(Res.drawable.ic_player_pause)
     val playPauseMotion = rememberExpandedPlayPauseMotion(
         isPlaying = isPlaying,
-        active = animationsActive && !isLoading && playVector.root.size > 0 && pauseVector.root.size > 0,
+        active = animationsActive && playVector.root.size > 0 && pauseVector.root.size > 0,
         reduceMotion = reduceAnimation,
     )
+    // Loading never swaps the glyph for a spinner — the button just breathes.
+    val loadingPulse: androidx.compose.runtime.State<Float>? = if (isLoading && !reduceAnimation) {
+        rememberInfiniteTransition(label = "playerLoadingPulse").animateFloat(
+            initialValue = 1f,
+            targetValue = 0.45f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 650, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "playerLoadingAlpha",
+        )
+    } else null
     Row(
         modifier = Modifier.fillMaxWidth(),
         // SpaceAround, not SpaceEvenly: the outer margins take half a gap, so
@@ -685,27 +697,16 @@ internal fun TransportRow(
             skipMotion = previousMotion,
             skipPrevious = true,
         )
-        if (isLoading) {
-            // Same footprint as the play/pause target — a smaller box here
-            // would shunt everything below it on every load.
-            Box(Modifier.size(playTouch), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(
-                    color = Color.White,
-                    strokeWidth = 3.dp,
-                    modifier = Modifier.size(if (compact) 30.dp else 38.dp),
-                )
-            }
-        } else {
-            TransportGlyph(
-                icon = if (isPlaying) Res.drawable.ic_player_pause else Res.drawable.ic_player_play,
-                contentDescription = stringResource(if (isPlaying) Res.string.pause else Res.string.play),
-                size = playSize,
-                touchSize = playTouch,
-                onClick = onPlayPause,
-                haptic = if (isPlaying) Haptic.Pause else Haptic.Resume,
-                playPauseMotion = playPauseMotion,
-            )
-        }
+        TransportGlyph(
+            icon = if (isPlaying) Res.drawable.ic_player_pause else Res.drawable.ic_player_play,
+            contentDescription = stringResource(if (isPlaying) Res.string.pause else Res.string.play),
+            size = playSize,
+            touchSize = playTouch,
+            onClick = onPlayPause,
+            haptic = if (isPlaying) Haptic.Pause else Haptic.Resume,
+            playPauseMotion = playPauseMotion,
+            modifier = Modifier.graphicsLayer { alpha = loadingPulse?.value ?: 1f },
+        )
         TransportGlyph(
             icon = Res.drawable.ic_player_next,
             contentDescription = stringResource(Res.string.widget_next),
@@ -1176,6 +1177,7 @@ private fun TransportGlyph(
     skipMotion: PlayerSkipMotion? = null,
     skipPrevious: Boolean = false,
     playPauseMotion: ExpandedPlayPauseMotion? = null,
+    modifier: Modifier = Modifier,
 ) {
     val haptics = rememberHaptics()
     val interactionSource = remember { MutableInteractionSource() }
@@ -1185,7 +1187,7 @@ private fun TransportGlyph(
         label = "transportAlpha",
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(touchSize)
             .then(
                 if (skipMotion != null) Modifier.playerSkipPressCircle(

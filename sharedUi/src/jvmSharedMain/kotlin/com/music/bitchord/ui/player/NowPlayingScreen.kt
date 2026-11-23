@@ -2285,7 +2285,7 @@ fun NowPlayingScreen(
                             shown = shown,
                             durationMs = durationMs,
                             loading = versionAligning || audioVersionSwitching,
-                            mixing = mixing && !scrub.scrubbing,
+                            mixing = (mixing || isLoading) && !scrub.scrubbing,
                             transitionWindow = transitionWindow
                                 ?.takeIf { !scrub.scrubbing && it.end > it.start }
                                 ?.let { it.start..it.end },
@@ -2550,7 +2550,7 @@ fun NowPlayingScreen(
                                     shown = shown,
                                     durationMs = durationMs,
                                     loading = versionAligning || audioVersionSwitching,
-                                    mixing = mixing && !scrub.scrubbing,
+                                    mixing = (mixing || isLoading) && !scrub.scrubbing,
                                     transitionWindow = transitionWindow
                                         ?.takeIf { !scrub.scrubbing && it.end > it.start }
                                         ?.let { it.start..it.end },
@@ -4527,7 +4527,7 @@ fun NowPlayingScreen(
                         shown = shown,
                         durationMs = durationMs,
                         loading = versionSwitching,
-                        mixing = mixing && !scrub.scrubbing,
+                        mixing = (mixing || isLoading) && !scrub.scrubbing,
                         // Hidden while scrubbing: the planner is still describing
                         // where the transition *would* be, and a marker sitting under
                         // a finger that is moving the playhead invites reading it as
