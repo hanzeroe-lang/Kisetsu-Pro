@@ -4426,12 +4426,9 @@ private fun BitChordApp(
                     viewModel.closeMoodGenre()
                     selectedTab = index
 
-                    if (index == TAB_SEARCH) {
-                        searchBarActive = true
-                        searchFieldFocused = false
-                    } else {
-                        searchBarActive = false
-                    }
+                    // Landing on Search shows Discover with a compact search
+                    // pill above the nav bar; the full bar opens on tap.
+                    searchBarActive = false
                 }
 
                 val haptics = rememberHaptics()
@@ -4440,10 +4437,7 @@ private fun BitChordApp(
                 /** Scroll the current tab's list back to top when the active tab is tapped. */
                 val onActiveTabTap: () -> Unit = fun() {
                     if (route != null || detail != null || selectedMoodGenre != null) return
-                    if (selectedTab == TAB_SEARCH) {
-                        searchBarActive = true
-                        return
-                    }
+                    if (selectedTab == TAB_SEARCH) return
                     haptics.play(Haptic.Select)
                     scrollJob?.cancel()
                     scrollJob = scrollScope.launch {
@@ -4473,6 +4467,32 @@ private fun BitChordApp(
                         if (active) {
                             val focusManager = LocalFocusManager.current
                             Column(Modifier.fillMaxWidth()) {
+                                player.song?.let { song ->
+                                    MiniPlayer(
+                                        song = song,
+                                        isPlaying = player.isPlaying,
+                                        isLoading = playPauseBusy,
+                                        animationsActive = !showNowPlaying,
+                                        hazeState = hazeState,
+                                        onPlayPause = { togglePlayPause() },
+                                        onNext = { controller?.seekToNextMediaItem() },
+                                        onPrevious = { controller?.seekToPrevious() },
+                                        onExpand = if (reducePlayerMotion) {
+                                            { showNowPlaying = true }
+                                        } else {
+                                            playerSheetMotion::open
+                                        },
+                                        controlsLocked = controlsLocked,
+                                        onBlockedControl = showHostOnlyNotice,
+                                        dock = activeDock,
+                                        pull = playerSheetMotion.takeIf { !reducePlayerMotion },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = NAV_BAR_GUTTER),
+                                        autoMixArtwork = miniArtwork,
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                }
                                 BottomSearchSuggestions(
                                     suggestions = searchSuggestions,
                                     onSuggestionClick = { term ->
@@ -4492,6 +4512,13 @@ private fun BitChordApp(
                                 )
                             }
                         } else {
+                            if (selectedTab == TAB_SEARCH) {
+                                CompactSearchPill(
+                                    onClick = { searchBarActive = true },
+                                    hazeState = hazeState,
+                                )
+                                Spacer(Modifier.height(8.dp))
+                            }
                             GlassNavBar(
                                 tabs = tabs,
                                 selectedIndex = selectedTab,
@@ -4582,6 +4609,13 @@ private fun BitChordApp(
                                 )
                             }
                         } else {
+                            if (selectedTab == TAB_SEARCH) {
+                                CompactSearchPill(
+                                    onClick = { searchBarActive = true },
+                                    hazeState = hazeState,
+                                )
+                                Spacer(Modifier.height(8.dp))
+                            }
                             FloatingBottomBar(
                                 tabs = tabs,
                                 selectedIndex = selectedTab,
@@ -6733,6 +6767,52 @@ private object PlayerSheetShape : Shape {
         Outline.Rectangle(Rect(0f, -size.height, size.width, size.height))
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
+@Composable
+private fun CompactSearchPill(
+    onClick: () -> Unit,
+    hazeState: HazeState,
+    modifier: Modifier = Modifier,
+) {
+    val pillShape = RoundedCornerShape(percent = 50)
+    val container = MaterialTheme.colorScheme.surface
+    val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
+    val useGlass = LocalLiquidGlassEnabled.current && isGlassSupported()
+    val onTint = MaterialTheme.colorScheme.onSurface
+    val surface = if (reduceDynamicBlur) {
+        Modifier.background(container, pillShape)
+    } else if (useGlass) {
+        Modifier.liquidGlass(shape = pillShape)
+    } else {
+        Modifier.optimizedHazeEffect(state = hazeState, style = HazeMaterials.regular(container))
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(horizontal = NAV_BAR_GUTTER)
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(pillShape)
+            .then(surface)
+            .border(GLASS_EDGE_WIDTH, GLASS_EDGE_COLOR, pillShape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp),
+    ) {
+        Icon(
+            Icons.Rounded.Search,
+            contentDescription = null,
+            tint = onTint.copy(alpha = 0.7f),
+            modifier = Modifier.size(20.dp),
+        )
+        Spacer(Modifier.width(12.dp))
+        Text(
+            text = "Search",
+            style = MaterialTheme.typography.bodyMedium,
+            color = onTint.copy(alpha = 0.6f),
+        )
+    }
+}
+
 @Composable
 private fun BottomSearchSuggestions(
     suggestions: List<String>,
@@ -6833,7 +6913,7 @@ private fun LiquidGlassSearchBar(
             // Rise only partway toward the keyboard — docking at the full IME
             // height pushed this bar halfway up the page.
             .padding(bottom = NAV_BAR_LIFT + with(LocalDensity.current) {
-                (WindowInsets.ime.getBottom(this) * 0.25f).toDp()
+                (WindowInsets.ime.getBottom(this) * 0.15f).toDp()
             })
             .fillMaxWidth()
             .height(56.dp)
