@@ -57,6 +57,8 @@ import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.artworkAt
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.ui.components.thumbnailBorder
+import com.music.bitchord.ui.components.isGlassSupported
+import com.music.bitchord.ui.components.liquidGlass
 import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.ui.haptics.rememberHaptics
 import com.music.bitchord.playback.MusicOnlyPlayback
@@ -370,6 +372,8 @@ fun MiniPlayer(
     animationsActive: Boolean = true,
     modifier: Modifier = Modifier,
     autoMixArtwork: (@Composable (String?, Modifier) -> Unit)? = null,
+    /** Draw the bar with liquid glass instead of the frosted haze effect. */
+    useGlass: Boolean = false,
 ) {
     val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
     val haptics = rememberHaptics()
@@ -406,6 +410,8 @@ fun MiniPlayer(
             .then(
                 if (reduceDynamicBlur) {
                     Modifier.background(MaterialTheme.colorScheme.surface)
+                } else if (useGlass && isGlassSupported()) {
+                    Modifier.liquidGlass(shape = shape)
                 } else {
                     Modifier.optimizedHazeEffect(
                         state = hazeState,

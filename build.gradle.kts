@@ -41,8 +41,8 @@ buildscript {
  * No "v" in the name â€” the in-app updater reads it as a number; the "v" is the
  * release tag's alone.
  */
-extra["kisetsuProVersionCode"] = 45
-extra["kisetsuProVersionName"] = "1.2.42"
+extra["kisetsuProVersionCode"] = 46
+extra["kisetsuProVersionName"] = "1.2.43"
 
 /*
  * Bump this by hand before cutting each sideloaded test build ("beta2",

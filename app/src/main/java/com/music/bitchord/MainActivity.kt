@@ -4437,7 +4437,10 @@ private fun BitChordApp(
                 /** Scroll the current tab's list back to top when the active tab is tapped. */
                 val onActiveTabTap: () -> Unit = fun() {
                     if (route != null || detail != null || selectedMoodGenre != null) return
-                    if (selectedTab == TAB_SEARCH) return
+                    if (selectedTab == TAB_SEARCH) {
+                        searchBarActive = true
+                        return
+                    }
                     haptics.play(Haptic.Select)
                     scrollJob?.cancel()
                     scrollJob = scrollScope.launch {
@@ -4448,6 +4451,17 @@ private fun BitChordApp(
                 val miniArtwork = rememberMiniAutoMixArtwork(player.song, player.queue, player.queueIndex)
                 val showBottomSearchBar = searchBarActive &&
                     selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null
+                // On Discover, scrolling down tucks the nav bar away so the
+                // compact search pill (and the page) have the room; scrolling
+                // back up springs it into place.
+                val navBarTucked by remember {
+                    derivedStateOf { navBarScroll.isInline && selectedTab == TAB_SEARCH && !showBottomSearchBar }
+                }
+                val navBarTuck by animateFloatAsState(
+                    targetValue = if (navBarTucked) 130f else 0f,
+                    animationSpec = tween(280),
+                    label = "navBarTuck",
+                )
                 if (glassActive) Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -4490,6 +4504,7 @@ private fun BitChordApp(
                                             .fillMaxWidth()
                                             .padding(horizontal = NAV_BAR_GUTTER),
                                         autoMixArtwork = miniArtwork,
+                                        useGlass = glassActive,
                                     )
                                     Spacer(Modifier.height(8.dp))
                                 }
@@ -4540,7 +4555,9 @@ private fun BitChordApp(
                                 onBlockedControl = showHostOnlyNotice,
                                 dock = activeDock,
                                 pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .graphicsLayer { translationY = navBarTuck },
                                 onActiveTabTap = onActiveTabTap,
                                 autoMixArtwork = miniArtwork,
                             )
@@ -4622,6 +4639,7 @@ private fun BitChordApp(
                                 hazeState = hazeState,
                                 onTabSelected = onTabSelected,
                                 onActiveTabTap = onActiveTabTap,
+                                modifier = Modifier.graphicsLayer { translationY = navBarTuck },
                             )
                         }
                     }
