@@ -609,7 +609,9 @@ private fun BitChordApp(
     // What folds [GlassNavBar] between its expanded and inline shapes. Held here
     // rather than inside the bar because the page's scroll is what drives it,
     // and the page is a sibling of the bar rather than a child.
-    val navBarScroll = rememberFloatingTabBarScrollConnection()
+    val navBarScroll = rememberFloatingTabBarScrollConnection(
+        inlineBehavior = com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarInlineBehavior.Never,
+    )
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     // Explore loads the first time it's shown, not at launch beside Home.
     LaunchedEffect(selectedTab) {
@@ -4422,6 +4424,7 @@ private fun BitChordApp(
                 // A tab is a fresh start: everything pushed over the old one —
                 // routes and release pages alike — goes with it.
                 val onTabSelected: (Int) -> Unit = { index ->
+                    val wasSearch = selectedTab == TAB_SEARCH
                     navigator.clear()
                     viewModel.closeMoodGenre()
                     selectedTab = index
@@ -4429,6 +4432,11 @@ private fun BitChordApp(
                     // Landing on Search shows Discover with a compact search
                     // pill above the nav bar; the full bar opens on tap.
                     searchBarActive = false
+                    if (index == TAB_SEARCH && !wasSearch) {
+                        // A fresh Search tab is Discover: drop any query and the
+                        // stale result set it left behind.
+                        viewModel.onQueryChange("")
+                    }
                 }
 
                 val haptics = rememberHaptics()
@@ -4451,17 +4459,6 @@ private fun BitChordApp(
                 val miniArtwork = rememberMiniAutoMixArtwork(player.song, player.queue, player.queueIndex)
                 val showBottomSearchBar = searchBarActive &&
                     selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null
-                // On Discover, scrolling down tucks the nav bar away so the
-                // compact search pill (and the page) have the room; scrolling
-                // back up springs it into place.
-                val navBarTucked by remember {
-                    derivedStateOf { navBarScroll.isInline && selectedTab == TAB_SEARCH && !showBottomSearchBar }
-                }
-                val navBarTuck by animateFloatAsState(
-                    targetValue = if (navBarTucked) 130f else 0f,
-                    animationSpec = tween(280),
-                    label = "navBarTuck",
-                )
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -4472,7 +4469,7 @@ private fun BitChordApp(
                 ) {
                     QueueActionNoticeHost(queueNotice)
                     player.song?.let { song ->
-                        MiniPlayer(
+                        SlimMiniPlayer(
                             song = song,
                             isPlaying = player.isPlaying,
                             isLoading = playPauseBusy,
@@ -4490,83 +4487,58 @@ private fun BitChordApp(
                             onBlockedControl = showHostOnlyNotice,
                             dock = activeDock,
                             pull = playerSheetMotion.takeIf { !reducePlayerMotion },
+                            autoMixArtwork = miniArtwork,
+                            useGlass = glassActive,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = NAV_BAR_GUTTER),
-                            autoMixArtwork = miniArtwork,
-                            useGlass = glassActive,
                         )
                         Spacer(Modifier.height(8.dp))
                     }
                     if (selectedTab == TAB_SEARCH && route == null && detail == null && selectedMoodGenre == null) {
-                        if (showBottomSearchBar) {
-                            val focusManager = LocalFocusManager.current
-                            BottomSearchSuggestions(
-                                suggestions = searchSuggestions,
-                                onSuggestionClick = { term ->
-                                    viewModel.searchFor(term)
-                                    focusManager.clearFocus()
-                                },
-                                onFill = viewModel::onQueryChange,
-                            )
-                            LiquidGlassSearchBar(
-                                query = query,
-                                onQueryChange = viewModel::onQueryChange,
-                                onClose = { searchBarActive = false },
-                                onSubmit = { viewModel.submitSearch() },
-                                focusRequester = searchFieldFocus,
-                                hazeState = hazeState,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        } else {
-                            CompactSearchPill(
-                                onClick = { searchBarActive = true },
-                                hazeState = hazeState,
-                            )
-                        }
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    val navBarModifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer { translationY = navBarTuck }
-                    if (glassActive) {
-                        GlassNavBar(
-                            tabs = tabs,
-                            selectedIndex = selectedTab,
-                            onTabSelected = onTabSelected,
-                            scrollConnection = navBarScroll,
-                            // The mini player above is the player on Search, so
-                            // the bar keeps only its tabs there — no double player.
-                            song = if (selectedTab == TAB_SEARCH) null else player.song,
-                            isPlaying = player.isPlaying,
-                            isLoading = playPauseBusy,
-                            animationsActive = !showNowPlaying,
-                            onPlayPause = { togglePlayPause() },
-                            onNext = { controller?.seekToNextMediaItem() },
-                            onPrevious = { controller?.seekToPrevious() },
-                            onExpand = if (reducePlayerMotion) {
-                                { showNowPlaying = true }
-                            } else {
-                                playerSheetMotion::open
+                        val focusManager = LocalFocusManager.current
+                        SearchBarStack(
+                            expanded = showBottomSearchBar,
+                            query = query,
+                            suggestions = searchSuggestions,
+                            onQueryChange = viewModel::onQueryChange,
+                            onSubmit = viewModel::submitSearch,
+                            onClose = { searchBarActive = false },
+                            onOpen = { searchBarActive = true },
+                            onSuggestionClick = { term ->
+                                viewModel.searchFor(term)
+                                focusManager.clearFocus()
                             },
-                            controlsLocked = controlsLocked,
-                            onBlockedControl = showHostOnlyNotice,
-                            dock = activeDock,
-                            pull = playerSheetMotion.takeIf { !reducePlayerMotion },
-                            modifier = navBarModifier,
-                            onActiveTabTap = onActiveTabTap,
-                            autoMixArtwork = miniArtwork,
-                        )
-                    } else {
-                        FloatingBottomBar(
-                            tabs = tabs,
-                            selectedIndex = selectedTab,
+                            focusRequester = searchFieldFocus,
                             hazeState = hazeState,
-                            onTabSelected = onTabSelected,
-                            onActiveTabTap = onActiveTabTap,
-                            modifier = navBarModifier,
                         )
                     }
+                    NavBarSwitch(
+                        glassActive = glassActive,
+                        tabs = tabs,
+                        selectedIndex = selectedTab,
+                        onTabSelected = onTabSelected,
+                        onActiveTabTap = onActiveTabTap,
+                        scrollConnection = navBarScroll,
+                        isPlaying = player.isPlaying,
+                        isLoading = playPauseBusy,
+                        animationsActive = !showNowPlaying,
+                        onPlayPause = { togglePlayPause() },
+                        onNext = { controller?.seekToNextMediaItem() },
+                        onPrevious = { controller?.seekToPrevious() },
+                        onExpand = if (reducePlayerMotion) {
+                            { showNowPlaying = true }
+                        } else {
+                            playerSheetMotion::open
+                        },
+                        controlsLocked = controlsLocked,
+                        onBlockedControl = showHostOnlyNotice,
+                        dock = activeDock,
+                        pull = playerSheetMotion.takeIf { !reducePlayerMotion },
+                        autoMixArtwork = miniArtwork,
+                        hazeState = hazeState,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
 
@@ -6707,6 +6679,142 @@ private const val SNAPSHOT_RELEASE_DELAY_MS = 400L
 private object PlayerSheetShape : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline =
         Outline.Rectangle(Rect(0f, -size.height, size.width, size.height))
+}
+
+@Composable
+private fun NavBarSwitch(
+    glassActive: Boolean,
+    tabs: List<com.music.bitchord.ui.components.BottomTab>,
+    selectedIndex: Int,
+    onTabSelected: (Int) -> Unit,
+    onActiveTabTap: () -> Unit,
+    scrollConnection: com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarScrollConnection,
+    isPlaying: Boolean,
+    isLoading: Boolean,
+    animationsActive: Boolean,
+    onPlayPause: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    onExpand: () -> Unit,
+    controlsLocked: Boolean,
+    onBlockedControl: () -> Unit,
+    dock: com.music.bitchord.ui.player.PlayerDock?,
+    pull: com.music.bitchord.ui.components.MiniPlayerPull?,
+    autoMixArtwork: (@Composable (String?, Modifier) -> Unit)?,
+    hazeState: HazeState,
+    modifier: Modifier = Modifier,
+) {
+    if (glassActive) {
+        GlassNavBar(
+            tabs = tabs,
+            selectedIndex = selectedIndex,
+            onTabSelected = onTabSelected,
+            scrollConnection = scrollConnection,
+            // The single slim mini player above the stack is the only player
+            // chrome — the bar keeps only its tabs.
+            song = null,
+            isPlaying = isPlaying,
+            isLoading = isLoading,
+            animationsActive = animationsActive,
+            onPlayPause = onPlayPause,
+            onNext = onNext,
+            onPrevious = onPrevious,
+            onExpand = onExpand,
+            controlsLocked = controlsLocked,
+            onBlockedControl = onBlockedControl,
+            dock = dock,
+            pull = pull,
+            modifier = modifier,
+            onActiveTabTap = onActiveTabTap,
+            autoMixArtwork = autoMixArtwork,
+        )
+    } else {
+        FloatingBottomBar(
+            tabs = tabs,
+            selectedIndex = selectedIndex,
+            hazeState = hazeState,
+            onTabSelected = onTabSelected,
+            onActiveTabTap = onActiveTabTap,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun SlimMiniPlayer(
+    song: com.music.bitchord.data.model.Song,
+    isPlaying: Boolean,
+    isLoading: Boolean,
+    animationsActive: Boolean,
+    hazeState: HazeState,
+    onPlayPause: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    onExpand: () -> Unit,
+    controlsLocked: Boolean,
+    onBlockedControl: () -> Unit,
+    dock: com.music.bitchord.ui.player.PlayerDock?,
+    pull: com.music.bitchord.ui.components.MiniPlayerPull?,
+    autoMixArtwork: (@Composable (String?, Modifier) -> Unit)?,
+    useGlass: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    MiniPlayer(
+        song = song,
+        isPlaying = isPlaying,
+        isLoading = isLoading,
+        animationsActive = animationsActive,
+        hazeState = hazeState,
+        onPlayPause = onPlayPause,
+        onNext = onNext,
+        onPrevious = onPrevious,
+        onExpand = onExpand,
+        controlsLocked = controlsLocked,
+        onBlockedControl = onBlockedControl,
+        dock = dock,
+        pull = pull,
+        modifier = modifier,
+        autoMixArtwork = autoMixArtwork,
+        useGlass = useGlass,
+    )
+}
+
+@OptIn(ExperimentalHazeMaterialsApi::class)
+@Composable
+private fun SearchBarStack(
+    expanded: Boolean,
+    query: String,
+    suggestions: List<String>,
+    onQueryChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    onClose: () -> Unit,
+    onOpen: () -> Unit,
+    onSuggestionClick: (String) -> Unit,
+    focusRequester: FocusRequester,
+    hazeState: HazeState,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.fillMaxWidth()) {
+        if (expanded) {
+            BottomSearchSuggestions(
+                suggestions = suggestions,
+                onSuggestionClick = onSuggestionClick,
+                onFill = onQueryChange,
+            )
+            LiquidGlassSearchBar(
+                query = query,
+                onQueryChange = onQueryChange,
+                onClose = onClose,
+                onSubmit = onSubmit,
+                focusRequester = focusRequester,
+                hazeState = hazeState,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        } else {
+            CompactSearchPill(onClick = onOpen, hazeState = hazeState)
+        }
+        Spacer(Modifier.height(8.dp))
+    }
 }
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
