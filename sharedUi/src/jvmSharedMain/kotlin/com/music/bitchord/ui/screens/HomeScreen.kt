@@ -477,8 +477,17 @@ private fun HomeTitle(
         ) {
             Text(
                 text = "Home",
-                style = style,
+                style = style.copy(fontWeight = FontWeight.Bold),
+                color = Color(0xFFE53935),
+            )
+            Text(
+                text = "actually",
+                style = style.copy(fontWeight = FontWeight.Light),
                 color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = "🎅",
+                style = style,
             )
             if (replayYear != null) {
                 Spacer(Modifier.width(14.dp))
