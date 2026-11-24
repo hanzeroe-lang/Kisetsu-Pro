@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.ui.haptics.rememberHaptics
+import com.music.bitchord.ui.components.shapes.ContinuousRoundedRectangle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -153,7 +154,7 @@ internal fun tabLabelStyle(): TextStyle =
  * Stiffness 320 puts the whole movement at roughly a third of a second, quick
  * enough that the tap and the arrival feel like one event.
  */
-internal val GlassSpring = spring<Float>(dampingRatio = 0.72f, stiffness = 320f)
+internal val GlassSpring = spring<Float>(dampingRatio = 0.82f, stiffness = 420f)
 
 /**
  * How far the indicator elongates along its travel, at full stride.
@@ -193,7 +194,7 @@ fun FloatingBottomBar(
     /** Called when the user taps the currently active tab (scroll-to-top). */
     onActiveTabTap: () -> Unit = {},
 ) {
-    val pillShape = RoundedCornerShape(percent = 50)
+    val pillShape = ContinuousRoundedRectangle(percent = 50)
     // A square with fully rounded corners is a circle, and it keeps the same
     // glass material the rest of the bar uses.
     val circleShape = RoundedCornerShape(percent = 50)

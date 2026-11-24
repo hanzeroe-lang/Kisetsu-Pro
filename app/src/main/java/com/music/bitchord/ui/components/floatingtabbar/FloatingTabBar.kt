@@ -117,6 +117,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.ui.components.GlassSpring
+import com.music.bitchord.ui.components.shapes.ContinuousRoundedRectangle
 import com.music.bitchord.ui.components.LocalGlassExport
 import com.music.bitchord.ui.components.backdrop.backdrops.layerBackdrop
 import com.music.bitchord.ui.components.backdrop.backdrops.rememberLayerBackdrop
@@ -1305,10 +1306,10 @@ object FloatingTabBarDefaults {
      */
     @Composable
     fun shapes(
-        tabBarShape: Shape = RoundedCornerShape(100),
-        tabShape: Shape = RoundedCornerShape(100),
+        tabBarShape: Shape = ContinuousRoundedRectangle(percent = 50),
+        tabShape: Shape = ContinuousRoundedRectangle(percent = 50),
         standaloneTabShape: Shape = CircleShape,
-        accessoryShape: Shape = RoundedCornerShape(100),
+        accessoryShape: Shape = ContinuousRoundedRectangle(percent = 50),
     ): FloatingTabBarShapes = FloatingTabBarShapes(
         tabBarShape = tabBarShape,
         tabShape = tabShape,

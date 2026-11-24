@@ -63,6 +63,7 @@ import com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarDefaults
 import com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarScrollConnection
 import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.ui.haptics.rememberHaptics
+import com.music.bitchord.ui.components.shapes.ContinuousRoundedRectangle
 import com.music.bitchord.playback.MusicOnlyPlayback
 import com.music.bitchord.ui.player.PlayerDock
 import com.music.bitchord.ui.player.rememberPlayerSkipMotion
@@ -121,7 +122,7 @@ fun GlassNavBar(
     // Held for the same reason [tabs] is. The glass factory below closes over
     // this shape, and a fresh RoundedCornerShape each pass means a fresh factory
     // lambda, which the tab bar sees as a changed argument and recomposes on.
-    val pillShape = remember { RoundedCornerShape(percent = 50) }
+    val pillShape = remember { ContinuousRoundedRectangle(percent = 50) }
     val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
     val neutralColor = if (isLight) Color.Black else Color.White
     val selectedColor = Color(0xFF007AFF)

@@ -425,7 +425,7 @@ fun MiniPlayer(
     // height if the row's contents ever change it — which is what keeps a pill
     // a pill instead of a rounded rectangle. Same idiom as [FloatingBottomBar]
     // directly below it, so the two shapes are the same family.
-    val shape = RoundedCornerShape(percent = 50)
+    val shape = com.music.bitchord.ui.components.shapes.ContinuousRoundedRectangle(percent = 50)
     val loadingPulse: androidx.compose.runtime.State<Float>? = if (isLoading && !reduceAnimation) {
         rememberInfiniteTransition(label = "miniLoadingPulse").animateFloat(
             initialValue = 1f,
