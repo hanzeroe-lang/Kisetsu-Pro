@@ -1619,7 +1619,7 @@ fun SettingsScreen(
                     },
                     valueRange = (AppSettings.DEFAULT_CACHE_LIMIT_BYTES / (1024 * 1024)).toFloat()..
                         CACHE_UNLIMITED_STOP_MB.toFloat(),
-                    steps = 19,
+                    steps = 20,
                 )
             }
             val clearSongCacheTitle = stringResource(R.string.clear_song_cache)
@@ -2348,9 +2348,10 @@ private const val CACHE_WARNING_MB = 2048
 
 /**
  * Where the cache limit slider's "Unlimited" stop sits: one 512MB step past
- * [AppSettings.MAX_CACHE_LIMIT_BYTES], so the fixed sizes keep their positions.
+ * [AppSettings.MAX_CACHE_LIMIT_BYTES], offset from the 32MB floor so every stop
+ * lands on a whole 512MB increment.
  */
-private const val CACHE_UNLIMITED_STOP_MB = 10 * 1024 + 512
+private const val CACHE_UNLIMITED_STOP_MB = 10 * 1024 + 544
 
 /** "512 MB", "2 GB", "2.5 GB" — whichever reads more naturally at that size. */
 private fun formatCacheSize(mb: Int): String {

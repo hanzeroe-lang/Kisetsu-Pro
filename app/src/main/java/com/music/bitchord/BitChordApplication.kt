@@ -277,7 +277,10 @@ class BitChordApplication : Application(), SingletonImageLoader.Factory, Configu
             .diskCache {
                 DiskCache.Builder()
                     .directory(cacheDir.resolve("image_cache"))
-                    .maxSizeBytes(100L * 1024 * 1024)
+                    // Artwork is small and easily re-fetched. 100 MB of covers was the
+                    // second-largest thing the app stored after the song cache, and it
+                    // made the app's storage look enormous in Android's settings.
+                    .maxSizeBytes(24L * 1024 * 1024)
                     .build()
             }
             // Covers arriving with a hard cut read as the list flickering as

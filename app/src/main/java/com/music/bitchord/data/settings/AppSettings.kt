@@ -2412,7 +2412,12 @@ object AppSettings {
         KEY_ONBOARDING_COMPLETE,
     )
 
-    const val DEFAULT_CACHE_LIMIT_BYTES = 512L * 1024 * 1024
+    /**
+     * Deliberately small: this cache is the difference between a few hundred megabytes of
+     * app storage and a phone-sized one. Listeners who want more can raise it in Settings,
+     * including to Unlimited.
+     */
+    const val DEFAULT_CACHE_LIMIT_BYTES = 32L * 1024 * 1024
     const val MAX_CACHE_LIMIT_BYTES = 10L * 1024 * 1024 * 1024
 
     /** The cache limit with no ceiling: only free storage bounds it. */
