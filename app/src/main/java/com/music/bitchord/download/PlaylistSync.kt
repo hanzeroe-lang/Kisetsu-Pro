@@ -75,8 +75,8 @@ object PlaylistSync {
     internal const val KEY_LIKED_ONLY = "liked_only"
 
     /** Android batches this with whatever else is waking the phone in the last [FLEX_HOURS]. */
-    private const val PERIOD_HOURS = 12L
-    private const val FLEX_HOURS = 4L
+    private const val PERIOD_HOURS = 24L
+    private const val FLEX_HOURS = 6L
 
     /** How stale the last whole check may be when the app comes to the front. */
     private const val CATCH_UP_MILLIS = 6L * 60 * 60 * 1000
