@@ -486,7 +486,7 @@ private fun HomeTitle(
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = "🎅",
+                text = "🌿",
                 style = style,
             )
             if (replayYear != null) {

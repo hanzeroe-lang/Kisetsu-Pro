@@ -236,7 +236,7 @@ private const val GLOW_ALPHA = 0.62f
  * of light now rather than a word's: a wide radius on something this small is
  * a smudge behind the text instead of a glow coming off it.
  */
-private val GLOW_RADIUS = 6.dp
+private val GLOW_RADIUS = 5.dp
 
 /**
  * Room reserved inside each copy of a line for the halo to spread into.
@@ -247,7 +247,7 @@ private val GLOW_RADIUS = 6.dp
  * out identically, and the list gives the width back by taking it off its own
  * padding and row spacing.
  */
-private val GLOW_ROOM = 10.dp
+private val GLOW_ROOM = 8.dp
 
 /** Applies group alpha while leaving [outset] available for draw overflow. */
 private fun Modifier.alphaLayerWithOutset(alpha: () -> Float, outset: Dp): Modifier = drawWithCache {
@@ -378,7 +378,7 @@ private val GAP_ROW_SPACING = 16.dp
  * further out, which is most of the list.
  */
 private val LINE_FALLOFF_ALPHA = floatArrayOf(1f, 0.8f, 0.7f, 0.58f, 0.46f)
-private val LINE_FALLOFF_BLUR = arrayOf(0.dp, 1.dp, 1.dp, 1.7.dp, 2.4.dp)
+private val LINE_FALLOFF_BLUR = arrayOf(0.dp, 1.dp, 1.dp, 1.4.dp, 1.8.dp)
 
 /**
  * The same falloff for a phone, where the sung line is read from the top and
@@ -524,7 +524,7 @@ internal sealed interface LyricsTranslationUiState {
 internal enum class LyricsDisplayMode { Original, Romanized, Translated }
 
 private const val TRANSLATION_MOTION_MS = 540
-private const val PARTICLES_PER_VOICE = 18
+private const val PARTICLES_PER_VOICE = 12
 
 private data class TranslationParticle(
     val anchor: Offset,
