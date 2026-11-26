@@ -118,6 +118,8 @@ fun GlassNavBar(
     /** Called when the user taps the currently active tab (scroll-to-top). */
     onActiveTabTap: () -> Unit = {},
     autoMixArtwork: (@Composable (String?, Modifier) -> Unit)? = null,
+    /** Convx's melt transition while the bar folds. */
+    meltEnabled: Boolean = true,
 ) {
     // Held for the same reason [tabs] is. The glass factory below closes over
     // this shape, and a fresh RoundedCornerShape each pass means a fresh factory
@@ -244,6 +246,7 @@ fun GlassNavBar(
         // Search is always its own detached circle, like Apple Music —
         // never merged into the tab pill.
         mergeStandaloneWhenExpanded = false,
+        meltEnabled = meltEnabled,
     ) {
         tabs.forEachIndexed { index, tab ->
             val isSelected = index == selectedIndex

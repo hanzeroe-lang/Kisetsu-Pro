@@ -95,6 +95,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -219,6 +220,8 @@ fun FloatingTabBar(
     elevations: FloatingTabBarElevations = FloatingTabBarDefaults.elevations(),
     contentKey: Any? = null,
     mergeStandaloneWhenExpanded: Boolean = false,
+    /** Convx's gooey melt: a soft blur while the bar folds between its two shapes. */
+    meltEnabled: Boolean = true,
     content: FloatingTabBarScope.() -> Unit
 ) {
     val scope = remember(contentKey) { FloatingTabBarScopeImpl().apply { content() } }
@@ -231,6 +234,8 @@ fun FloatingTabBar(
             transitionSpec = { fadeIn() togetherWith fadeOut() },
             contentAlignment = Alignment.BottomCenter
         ) { isInline ->
+            val folding = scrollConnection.isInline != isInline
+            Box(Modifier.blur(if (meltEnabled && folding) 4.dp else 0.dp)) {
             if (isInline) {
                 InlineBar(
                     scope = scope,
@@ -259,6 +264,7 @@ fun FloatingTabBar(
                     tabBarContentModifier = tabBarContentModifier,
                     animatedVisibilityScope = this@AnimatedContent
                 )
+            }
             }
         }
     }

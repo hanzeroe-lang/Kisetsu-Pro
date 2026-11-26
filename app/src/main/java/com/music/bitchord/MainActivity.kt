@@ -606,6 +606,8 @@ private fun BitChordApp(
     // below goes with them, which is the part that costs a draw pass.
     val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
     val progressiveBlur by AppSettings.progressiveBlur.collectAsStateWithLifecycle()
+    val convxNavBar by AppSettings.convxNavBar.collectAsStateWithLifecycle()
+    val navBarMelt by AppSettings.navBarMeltTransition.collectAsStateWithLifecycle()
     val glassSamplesBackdrop = glassActive && !reduceDynamicBlur
     // What folds [GlassNavBar] between its expanded and inline shapes. Held here
     // rather than inside the bar because the page's scroll is what drives it,
@@ -4525,12 +4527,14 @@ private fun BitChordApp(
                     }
                     NavBarSwitch(
                         glassActive = glassActive,
+                        convxNavBar = convxNavBar,
+                        navBarMelt = navBarMelt,
                         tabs = tabs,
                         selectedIndex = selectedTab,
                         onTabSelected = onTabSelected,
                         onActiveTabTap = onActiveTabTap,
                         scrollConnection = navBarScroll,
-                        song = if (glassActive && !onSearchTab) player.song else null,
+                        song = if ((glassActive || convxNavBar) && !onSearchTab) player.song else null,
                         isPlaying = player.isPlaying,
                         isLoading = playPauseBusy,
                         animationsActive = !showNowPlaying,
@@ -6695,6 +6699,8 @@ private object PlayerSheetShape : Shape {
 @Composable
 private fun NavBarSwitch(
     glassActive: Boolean,
+    convxNavBar: Boolean,
+    navBarMelt: Boolean,
     tabs: List<com.music.bitchord.ui.components.BottomTab>,
     selectedIndex: Int,
     onTabSelected: (Int) -> Unit,
@@ -6716,7 +6722,7 @@ private fun NavBarSwitch(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
-    if (glassActive) {
+    if (glassActive || convxNavBar) {
         GlassNavBar(
             tabs = tabs,
             selectedIndex = selectedIndex,
@@ -6739,6 +6745,7 @@ private fun NavBarSwitch(
             modifier = modifier,
             onActiveTabTap = onActiveTabTap,
             autoMixArtwork = autoMixArtwork,
+            meltEnabled = navBarMelt,
         )
     } else {
         FloatingBottomBar(

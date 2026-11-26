@@ -255,6 +255,8 @@ fun SettingsScreen(
     val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
     val disableBlendEffects by AppSettings.disableBlendEffects.collectAsStateWithLifecycle()
     val liquidGlass by AppSettings.liquidGlass.collectAsStateWithLifecycle()
+    val convxNavBar by AppSettings.convxNavBar.collectAsStateWithLifecycle()
+    val navBarMelt by AppSettings.navBarMeltTransition.collectAsStateWithLifecycle()
     val glassPerformance by AppSettings.glassPerformance.collectAsStateWithLifecycle()
     val glassFrost by AppSettings.glassFrost.collectAsStateWithLifecycle()
     val progressiveBlur by AppSettings.progressiveBlur.collectAsStateWithLifecycle()
@@ -1215,6 +1217,33 @@ fun SettingsScreen(
                     },
                     onClick = { AppSettings.setLiquidGlass(!liquidGlass) },
                 )
+            }
+            val convxNavBarTitle = "Convx navigation bar"
+            row(convxNavBarTitle, "nav bar", "convx", "bottom bar", "tabs") {
+                SettingsRow(
+                    icon = SfIcons.AutoAwesome,
+                    title = convxNavBarTitle,
+                    subtitle = if (convxNavBar) {
+                        "Floating Convx bar with scroll collapse and a detached Search circle."
+                    } else {
+                        "Original Kisetsu navigation bar."
+                    },
+                    trailing = {
+                        IosSwitch(
+                            checked = convxNavBar,
+                            onCheckedChange = AppSettings::setConvxNavBar,
+                        )
+                    },
+                    onClick = { AppSettings.setConvxNavBar(!convxNavBar) },
+                )
+                if (convxNavBar) {
+                    SettingsSubRow(
+                        title = "Melt transition",
+                        subtitle = "Soft gooey blur while the bar folds between compact and full size.",
+                        checked = navBarMelt,
+                        onCheckedChange = AppSettings::setNavBarMeltTransition,
+                    )
+                }
             }
             // One line each, like Direct Source Stream under Sources, and only
             // while Liquid Glass is on: they qualify the glass rather than standing

@@ -307,6 +307,10 @@ object AppSettings {
     val automixFilterSweep = MutableStateFlow(-1f)
     /** Keep an "Automix Analysis" button on the player at all times. */
     val showAutomixAnalysisButton = MutableStateFlow(false)
+    /** Use the Convx floating navigation bar; off restores the original Kisetsu bar. */
+    val convxNavBar = MutableStateFlow(true)
+    /** Convx's gooey melt during the bar's inline/expanded fold. */
+    val navBarMeltTransition = MutableStateFlow(true)
     private val _autoMixArtwork = MutableStateFlow(AutoMixArtworkPreferences())
     val autoMixArtwork = _autoMixArtwork.asStateFlow()
     val sleepTimerFadeOut = MutableStateFlow(true)
@@ -1087,6 +1091,8 @@ object AppSettings {
             if (it < 0f) -1f else it.coerceIn(0f, 1f)
         }
         showAutomixAnalysisButton.value = prefs.getBoolean(KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON, false)
+        convxNavBar.value = prefs.getBoolean(KEY_CONVX_NAV_BAR, true)
+        navBarMeltTransition.value = prefs.getBoolean(KEY_NAV_BAR_MELT, true)
         _autoMixArtwork.value = AutoMixArtworkPreferences(
             artTransition = prefs.getBoolean(KEY_AUTOMIX_ART_TRANSITION, false),
             miniPlayerTransition = prefs.getBoolean(KEY_AUTOMIX_MINI_ART_TRANSITION, false),
@@ -1472,6 +1478,16 @@ object AppSettings {
     fun setShowAutomixAnalysisButton(value: Boolean) {
         showAutomixAnalysisButton.value = value
         prefs.edit().putBoolean(KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON, value).apply()
+    }
+
+    fun setConvxNavBar(value: Boolean) {
+        convxNavBar.value = value
+        prefs.edit().putBoolean(KEY_CONVX_NAV_BAR, value).apply()
+    }
+
+    fun setNavBarMeltTransition(value: Boolean) {
+        navBarMeltTransition.value = value
+        prefs.edit().putBoolean(KEY_NAV_BAR_MELT, value).apply()
     }
 
     fun setAutoMixArtTransition(value: Boolean) {
@@ -2522,6 +2538,8 @@ object AppSettings {
     private const val KEY_AUTOMIX_BASS_SWAP = "automix_bass_swap_fraction"
     private const val KEY_AUTOMIX_FILTER_SWEEP = "automix_filter_sweep"
     private const val KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON = "show_automix_analysis_button"
+    private const val KEY_CONVX_NAV_BAR = "convx_nav_bar"
+    private const val KEY_NAV_BAR_MELT = "nav_bar_melt_transition"
     /** The lengths the Automix analysis panel offers. */
     val PHRASE_BAR_CHOICES = intArrayOf(0, 4, 8, 12, 16)
     private const val KEY_AUTOMIX_ART_TRANSITION = "automix_art_transition"
