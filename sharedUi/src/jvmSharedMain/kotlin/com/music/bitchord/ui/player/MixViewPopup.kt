@@ -21,6 +21,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -241,6 +242,23 @@ internal fun MixViewPopup(
                             interactionSource = remember { MutableInteractionSource() },
                             onClick = {},
                         )
+                        // Swiping anywhere on the sheet moves the sheet, not just
+                        // the grabber. The analysis lanes only take over after a
+                        // deliberate hold, so a quick swipe never edits them.
+                        .pointerInput(Unit) {
+                            var total = 0f
+                            detectVerticalDragGestures(
+                                onDragStart = { total = 0f },
+                                onDragEnd = {
+                                    when {
+                                        total < -60f -> expanded = true
+                                        total > 140f -> {
+                                            if (expanded) expanded = false else dismissing = true
+                                        }
+                                    }
+                                },
+                            ) { _, dy -> total += dy }
+                        }
                         .navigationBarsPadding(),
                 ) {
                     AutomixAnalysisPanel(
@@ -248,8 +266,6 @@ internal fun MixViewPopup(
                         progress = progress,
                         live = live,
                         onDismiss = { dismissing = true },
-                        onExpand = { expanded = true },
-                        onCollapse = { expanded = false },
                     )
                 }
             }

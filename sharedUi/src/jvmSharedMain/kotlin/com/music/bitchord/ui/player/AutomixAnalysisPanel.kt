@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -76,6 +73,9 @@ private const val OverlapEnd = 0.84f
 /** The phrase lengths the bars control can pick: Auto, then whole 4/4 phrases. */
 private val BarChoices = intArrayOf(0, 4, 8, 12, 16)
 
+/** How long a finger must rest on a lane before a drag edits it rather than moving the sheet. */
+private const val LONG_PRESS_MS = 220L
+
 @Composable
 internal fun AutomixAnalysisPanel(
     view: MixTransitionView?,
@@ -83,8 +83,6 @@ internal fun AutomixAnalysisPanel(
     live: Boolean,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    onExpand: () -> Unit = {},
-    onCollapse: () -> Unit = {},
 ) {
     val phraseBars by PlayerSettings.automixPhraseBars.collectAsStateWithLifecycle()
     val automixOn by PlayerSettings.smartFadeEnabled.collectAsStateWithLifecycle()
@@ -118,29 +116,14 @@ internal fun AutomixAnalysisPanel(
             .fillMaxSize()
             .clip(RoundedCornerShape(24.dp))
             .background(AnalysisBackground)
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // A generous drag target around the grabber: up grows the sheet, down
-        // collapses it, and a long downward flick dismisses it.
+        // The grabber is only a visual cue now: the whole sheet handles swipes.
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(34.dp)
-                .pointerInput(Unit) {
-                    var total = 0f
-                    detectVerticalDragGestures(
-                        onDragStart = { total = 0f },
-                        onDragEnd = {
-                            when {
-                                total < -70f -> onExpand()
-                                total > 130f -> onDismiss()
-                                else -> onCollapse()
-                            }
-                        },
-                    ) { _, dy -> total += dy }
-                },
+                .height(34.dp),
             contentAlignment = Alignment.Center,
         ) {
             Box(
@@ -398,6 +381,10 @@ private fun TransitionChart(
                         val down = awaitFirstDown()
                         val width = size.width.toFloat()
                         val laneHeight = size.height.toFloat()
+                        // A quick swipe belongs to the sheet. Only a hold-then-drag
+                        // (or a two-finger pinch) arms editing, so scrolling the
+                        // analysis never changes it by accident.
+                        var armed = false
                         var mode = ChartGesture.PAN
                         var last = down.position
                         var startDistance = 0f
@@ -420,6 +407,16 @@ private fun TransitionChart(
                             val event = awaitPointerEvent()
                             val pressed = event.changes.filter { it.pressed }
                             if (pressed.isEmpty()) break
+                            if (!armed) {
+                                val elapsed = pressed[0].uptimeMillis - down.uptimeMillis
+                                val moved = distance(pressed[0].position, down.position)
+                                when {
+                                    pressed.size >= 2 -> armed = true
+                                    elapsed >= LONG_PRESS_MS && moved < 12f -> armed = true
+                                    moved > 12f -> break // leave the gesture to the sheet
+                                    else -> continue
+                                }
+                            }
                             if (pressed.size >= 2 && mode != ChartGesture.ZOOM) {
                                 mode = ChartGesture.ZOOM
                                 startZoom = zoom
