@@ -307,7 +307,7 @@ internal fun PlayerScrubber(
             }
             val mixingShown by remember { derivedStateOf { mixPulse.cover > 0f } }
             if (showAutomixAnalysis) {
-                AutomixAnalysisButton(pulse, Modifier.align(Alignment.Center))
+                AutomixAnalysisButton(mixPulse, Modifier.align(Alignment.Center))
             } else if (mixingShown) {
                 MixingLabel(mixPulse, Modifier.align(Alignment.Center))
             }

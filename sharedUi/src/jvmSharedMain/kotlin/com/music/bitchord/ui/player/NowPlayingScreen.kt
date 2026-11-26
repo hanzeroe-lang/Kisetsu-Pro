@@ -379,6 +379,8 @@ private fun LegacyMeshBackdrop(
     modifier: Modifier,
     ambient: AutoMixAmbient,
     entry: QueueEntryIdentity?,
+    blurImage: ImageBitmap?,
+    blurKey: Any?,
 ) {
     val url = imageUrl ?: ambient.incoming?.resolvedUrl
     val settled = ambient.incoming?.palette
@@ -386,10 +388,16 @@ private fun LegacyMeshBackdrop(
     val snapKey = rememberAmbientSnapKey(requestedSnap)
     val seed = settled ?: cachedArtworkPalette(url).takeIf { ambient.cancelled || ambient.direct != null }
     val frame = canvasFrame()
-    val palette = key(snapKey) { rememberArtworkColors(url, frame, seed, canvasKey) }
+    // The legacy blobs now borrow the Simple theme's already-blurred cover: four
+    // patches of that bitmap are the cover's exact colours and lightness. The
+    // mesh's drift keeps them animated. Falls back to the old palette while the
+    // blur is still being prepared.
+    val exactPalette = key(blurKey) { meshPaletteFromBlur(blurImage) }
+    val palette = exactPalette ?: key(snapKey) { rememberArtworkColors(url, frame, seed, canvasKey) }
     val mix = ambient.mixFor(settled != null)
     MeshGradientBackground(
         palette = palette,
+        exactColors = exactPalette != null,
         trackKey = trackKey,
         modifier = modifier,
         mix = mix,
@@ -2009,6 +2017,7 @@ fun NowPlayingScreen(
     // reuse the same tiny pre-blurred bitmap instead of running a screen-sized
     // effect.
     val ambient = rememberAutoMixAmbient(coverEntry, remoteArt, artworkGate)
+    val fullBleedArtwork by PlayerSettings.fullBleedArtwork.collectAsStateWithLifecycle()
     val ambientBlurUrl = remoteArt ?: ambient.incoming?.resolvedUrl
     val blurSeed = ambient.incoming?.blur
     val blurSnapKey = rememberAmbientSnapKey(ambient.snapKey(blurSeed != null))
@@ -2017,7 +2026,8 @@ fun NowPlayingScreen(
         artPx = ART_PX,
         seed = blurSeed,
         currentSelectionOnly = ambient.direct != null,
-        prepare = playerTheme == PlayerTheme.SIMPLE || landscape || tabletArtworkBackdrop ||
+        prepare = playerTheme == PlayerTheme.SIMPLE || playerTheme == PlayerTheme.LEGACY ||
+            !fullBleedArtwork || landscape || tabletArtworkBackdrop ||
             lyricsOpen || queueOpen || playerPrewarmStage >= 1,
     )
     val blurMix = ambient.mixFor(blurSeed != null)
@@ -2718,7 +2728,7 @@ fun NowPlayingScreen(
                 // blurred cover fading in over it for the lyrics and queue, which
                 // have no sleeve for a mesh to carry on from.
                 val legacyMeshBackdrop = !tabletArtworkBackdrop && !spotifyCanvasPresentation &&
-                    playerTheme == PlayerTheme.LEGACY
+                    (playerTheme == PlayerTheme.LEGACY || !fullBleedArtwork)
                 val artworkMeshBackdrop = !tabletArtworkBackdrop && playerTheme == PlayerTheme.DEFAULT
                 val fullArtworkBackdropAlpha by animateFloatAsState(
                     targetValue = if (
@@ -2754,6 +2764,8 @@ fun NowPlayingScreen(
                             canvasFrame = { canvasFrame.takeIf { canvasOwnsAmbient } },
                             canvasKey = ambientCanvasKey,
                             trackKey = song.videoId,
+                            blurImage = currentFullArtworkBlurImage.value,
+                            blurKey = blurSnapKey,
                             modifier = Modifier
                                 .then(if (!frostOff) Modifier.hazeSource(queueHaze, zIndex = -1f) else Modifier)
                                 .graphicsLayer { alpha = 1f - fullArtworkBackdropAlpha },

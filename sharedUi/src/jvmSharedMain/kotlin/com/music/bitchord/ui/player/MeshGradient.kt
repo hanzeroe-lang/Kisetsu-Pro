@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import coil3.compose.LocalPlatformContext
+import com.music.bitchord.ui.graphics.argbPixels
 import com.music.bitchord.ui.graphics.FADE_CURVE_STOPS
 import com.music.bitchord.ui.graphics.forPixelAccess
 import com.music.bitchord.ui.graphics.paletteSwatches
@@ -135,6 +136,8 @@ internal fun MeshGradientBackground(
     colorFadeMillis: Int = 1400, paused: Boolean = false, mix: AutoMixAmbientMix?,
     snapKey: Any?, settled: Boolean, currentIsOutgoing: Boolean,
     directStill: Boolean = false,
+    /** Use the cover's exact colours and lightness instead of the v1.5 retune. */
+    exactColors: Boolean = false,
 ) {
     val reduceAnimation by PlayerSettings.reduceAnimation.collectAsStateWithLifecycle()
 
@@ -142,11 +145,11 @@ internal fun MeshGradientBackground(
     val held = remember(mix) {
         if (mix == null) null else lastDrawn.colors ?: run {
             val slots = (cachedArtworkPalette(mix.outgoingUrl)
-                ?: if (currentIsOutgoing) palette else MeshPalette(FallbackColors)).tunedSlots()
-            LegacyAmbientColors(slots, slots.first().dimmed())
+                ?: if (currentIsOutgoing) palette else MeshPalette(FallbackColors)).slots(exactColors)
+            LegacyAmbientColors(slots, baseFor(slots, exactColors))
         }
     }
-    val tuned = held?.slots ?: palette.tunedSlots()
+    val tuned = held?.slots ?: palette.slots(exactColors)
 
     // Each colour slot crossfades independently when the track (palette) changes,
     // unless "reduce animation" is on, in which case colours snap straight to target.
@@ -155,10 +158,10 @@ internal fun MeshGradientBackground(
         val slots = tuned.mapIndexed { index, color ->
             animateColorAsState(color, colorSpec, label = "meshColor$index")
         }
-        slots to animateColorAsState(held?.base ?: tuned.first().dimmed(), colorSpec, label = "meshBase")
+        slots to animateColorAsState(held?.base ?: baseFor(tuned, exactColors), colorSpec, label = "meshBase")
     }
     val target = remember(mix) {
-        mix?.prepared?.palette?.tunedSlots()?.let { LegacyAmbientColors(it, it.first().dimmed()) }
+        mix?.prepared?.palette?.slots(exactColors)?.let { LegacyAmbientColors(it, baseFor(it, exactColors)) }
     }
 
     // Read in the draw lambda, not here: an Animatable read during draw
@@ -208,7 +211,7 @@ internal fun MeshGradientBackground(
                 scaleY = 1.3f
             }
             .then(if (held == null || mix == null) Modifier.background(
-                if (directStill) tuned.first().dimmed() else baseColor.value,
+                if (directStill) baseFor(tuned, exactColors) else baseColor.value,
             ) else Modifier.drawBehind {
                 drawRect(ambientColor(held.base, target?.base, mix.ease()))
             })
@@ -226,7 +229,7 @@ internal fun MeshGradientBackground(
         val e = mix?.ease() ?: 0f
         val slots = held?.slots ?: if (directStill) tuned else animatedColors.map { it.value }
         if (held == null && trackKey != null) {
-            lastDrawn.colors = LegacyAmbientColors(slots, if (directStill) tuned.first().dimmed() else baseColor.value)
+            lastDrawn.colors = LegacyAmbientColors(slots, if (directStill) baseFor(tuned, exactColors) else baseColor.value)
         }
         slots.forEachIndexed { index, slot ->
             val color = ambientColor(slot, target?.slots?.get(index), e)
@@ -270,6 +273,17 @@ private class LegacyAmbientColors(val slots: List<Color>, val base: Color)
 
 private fun MeshPalette.tunedSlots(): List<Color> =
     (colors.ifEmpty { FallbackColors } + FallbackColors).take(4).map { it.tuned() }
+
+/** Exact cover colours for the legacy theme when it borrows the Simple profile. */
+private fun MeshPalette.slots(exact: Boolean): List<Color> =
+    if (exact) (colors.ifEmpty { FallbackColors } + FallbackColors).take(4) else tunedSlots()
+
+/** A dark base that keeps the cover's own hue and lightness relationship. */
+private fun baseFor(slots: List<Color>, exact: Boolean): Color {
+    if (!exact) return slots.firstOrNull()?.dimmed() ?: FallbackColors.first().dimmed()
+    val c = slots.firstOrNull() ?: FallbackColors.first()
+    return Color(c.red * 0.34f, c.green * 0.34f, c.blue * 0.34f, 1f)
+}
 
 private fun ambientColor(from: Color, to: Color?, e: Float): Color = when {
     to == null || e <= 0f -> from
@@ -411,6 +425,44 @@ private const val DRIFT_RADIANS = (PI * 0.45f).toFloat()
  * running Palette on a watch.
  */
 fun artworkMeshColors(bitmap: ImageBitmap): List<Color> = paletteOf(bitmap)
+
+/**
+ * The legacy theme's exact-colour profile: four small patches of the *already
+ * blurred* cover the Simple theme uses, with no Palette quantisation, saturation
+ * boost or lightness clamp. The drift and crossfade in [MeshGradientBackground]
+ * supply the animation on top of these colours.
+ */
+fun meshPaletteFromBlur(bitmap: ImageBitmap?): MeshPalette? {
+    if (bitmap == null) return null
+    val pixels = bitmap.argbPixels()
+    val w = bitmap.width
+    val h = bitmap.height
+    if (pixels.isEmpty() || w <= 0 || h <= 0) return null
+    fun patch(fx: Float, fy: Float): Color {
+        val cx = (fx * w).toInt().coerceIn(0, w - 1)
+        val cy = (fy * h).toInt().coerceIn(0, h - 1)
+        var r = 0
+        var g = 0
+        var b = 0
+        var n = 0
+        for (y in (cy - 3)..(cy + 3)) {
+            if (y !in 0 until h) continue
+            for (x in (cx - 3)..(cx + 3)) {
+                if (x !in 0 until w) continue
+                val c = pixels[y * w + x]
+                r += (c shr 16) and 0xFF
+                g += (c shr 8) and 0xFF
+                b += c and 0xFF
+                n++
+            }
+        }
+        if (n == 0) return FallbackColors.first()
+        return Color(r / n / 255f, g / n / 255f, b / n / 255f)
+    }
+    return MeshPalette(
+        listOf(patch(0.22f, 0.28f), patch(0.78f, 0.22f), patch(0.76f, 0.76f), patch(0.24f, 0.72f)),
+    )
+}
 
 /**
  * Four mesh colours drawn from the artwork.
