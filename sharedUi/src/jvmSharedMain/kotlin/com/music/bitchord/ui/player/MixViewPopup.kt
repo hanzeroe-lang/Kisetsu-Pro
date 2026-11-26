@@ -222,7 +222,7 @@ internal fun MixViewPopup(
                     .padding(vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                MixViewContent(view ?: PlaceholderView, progress, live)
+                AutomixAnalysisPanel(view, progress, live, onDismiss)
             }
         }
     }

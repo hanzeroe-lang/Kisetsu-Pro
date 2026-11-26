@@ -107,6 +107,7 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
         override val smartAnalysis get() = AppSettings.smartAnalysis
         override val automixDetail get() = AppSettings.automixDetail
         override val smartFadeEnabled get() = AppSettings.smartFadeEnabled
+        override val automixPhraseBars get() = AppSettings.automixPhraseBars
         override val autoMixArtwork get() = AppSettings.autoMixArtwork
         override val smartMixInProgress get() = AppSettings.smartMixInProgress
         override val smartMixBlend get() = AppSettings.smartMixBlend
@@ -121,6 +122,8 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
 
         override fun setLastPlayerScreen(value: LastPlayerScreen) = AppSettings.setLastPlayerScreen(value)
         override fun setLyricsOffsetMs(value: Int) = AppSettings.setLyricsOffsetMs(value)
+        override fun setSmartFadeEnabled(value: Boolean) = AppSettings.setSmartFadeEnabled(value)
+        override fun setAutomixPhraseBars(value: Int) = AppSettings.setAutomixPhraseBars(value)
         override fun setMixViewOpen(open: Boolean) {
             AppSettings.mixViewOpen.value = open
         }

@@ -292,6 +292,12 @@ object AppSettings {
      * See [com.music.bitchord.playback.smart.TransitionPlanner].
      */
     val smartFadeEnabled = MutableStateFlow(false)
+
+    /**
+     * Apple-style fixed phrase length for Automix overlaps: 0 lets the planner
+     * choose, 4/8/12/16 fix the overlap to whole bars of the outgoing grid.
+     */
+    val automixPhraseBars = MutableStateFlow(0)
     private val _autoMixArtwork = MutableStateFlow(AutoMixArtworkPreferences())
     val autoMixArtwork = _autoMixArtwork.asStateFlow()
     val sleepTimerFadeOut = MutableStateFlow(true)
@@ -1063,6 +1069,7 @@ object AppSettings {
         downloadLikedSongs.value = prefs.getBoolean(KEY_DOWNLOAD_LIKED_SONGS, false)
         crossfadeSeconds.value = prefs.getInt(KEY_CROSSFADE, 0)
         smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, false)
+        automixPhraseBars.value = sanitizePhraseBars(prefs.getInt(KEY_AUTOMIX_PHRASE_BARS, 0))
         _autoMixArtwork.value = AutoMixArtworkPreferences(
             artTransition = prefs.getBoolean(KEY_AUTOMIX_ART_TRANSITION, false),
             miniPlayerTransition = prefs.getBoolean(KEY_AUTOMIX_MINI_ART_TRANSITION, false),
@@ -1405,6 +1412,16 @@ object AppSettings {
         smartFadeEnabled.value = value
         prefs.edit().putBoolean(KEY_SMART_FADE, value).apply()
     }
+
+    /** 0 is adaptive; anything else must be a whole 4/4 phrase length. */
+    fun setAutomixPhraseBars(value: Int) {
+        val bars = sanitizePhraseBars(value)
+        automixPhraseBars.value = bars
+        prefs.edit().putInt(KEY_AUTOMIX_PHRASE_BARS, bars).apply()
+    }
+
+    private fun sanitizePhraseBars(value: Int): Int =
+        if (value in PHRASE_BAR_CHOICES) value else 0
 
     fun setAutoMixArtTransition(value: Boolean) {
         val previous = _autoMixArtwork.value
@@ -2449,6 +2466,9 @@ object AppSettings {
     private const val KEY_DOWNLOAD_LIKED_SONGS = "download_liked_songs"
     private const val KEY_CROSSFADE = "crossfade_seconds"
     private const val KEY_SMART_FADE = "smart_fade_enabled"
+    private const val KEY_AUTOMIX_PHRASE_BARS = "automix_phrase_bars"
+    /** The lengths the Automix analysis panel offers. */
+    val PHRASE_BAR_CHOICES = intArrayOf(0, 4, 8, 12, 16)
     private const val KEY_AUTOMIX_ART_TRANSITION = "automix_art_transition"
     private const val KEY_AUTOMIX_MINI_ART_TRANSITION = "automix_mini_art_transition"
     private const val KEY_SLEEP_TIMER_FADE_OUT = "sleep_timer_fade_out"

@@ -491,6 +491,13 @@ private fun incomingStartPoint(analysis: TrackAnalysis): Double =
 const val PHRASE_BARS_SHORT = 8
 const val PHRASE_BARS_LONG = 16
 
+/**
+ * Whole-bar phrase lengths the Automix analysis panel can ask for. Four and
+ * twelve sit between the original 8/16 presets; the planner accepts any of
+ * them, and rejects anything that is not a whole 4/4 phrase.
+ */
+private fun isPhraseBarLength(bars: Int): Boolean = bars in 4..16 && bars % 4 == 0
+
 /** Beats per bar in the 4/4 grid every phrase length is counted on. */
 private const val BEATS_PER_BAR = 4
 
@@ -1394,7 +1401,7 @@ private fun analysisReadyForTrack(analysis: TrackAnalysis, track: TransitionTrac
  *   of up to 10% to beat-match, an echo out where the outgoing track leaves
  *   singing, and another exit tried when the planned one sings over the
  *   incoming track. Off leaves every plan exactly as before.
- * @param phraseBars Apple-style Automix phrase length: `8` or `16` asks for a
+ * @param phraseBars Apple-style Automix phrase length: `4`, `8`, `12` or `16` asks for a
  *   mix whose overlap is exactly that many bars of the outgoing track's own
  *   4/4 grid, both edges snapped onto phrase boundaries or downbeats. `0` (the
  *   default) leaves the adaptive overlap above in charge. A pair that cannot
@@ -1601,7 +1608,7 @@ private fun planTransitionInner(
     // bar-aligned mix of exactly that many bars takes priority. A null answer
     // means the evidence will not support it, so the adaptive plan below runs
     // unchanged.
-    if (phraseBars == PHRASE_BARS_SHORT || phraseBars == PHRASE_BARS_LONG) {
+    if (isPhraseBarLength(phraseBars)) {
         phraseBarPlan(
             analysis = analysis,
             nextAnalysis = nextAnalysis,
