@@ -198,7 +198,7 @@ internal fun MixViewPopup(
                 // Three snap points: compact, medium, fullscreen. Every upward
                 // swipe takes one step; downward steps back, and down from the
                 // first step dismisses the sheet.
-                var sheetStep by remember { mutableIntStateOf(0) }
+                var sheetStep by remember { mutableIntStateOf(2) }
                 var dismissing by remember { mutableStateOf(false) }
                 val heightFraction by animateFloatAsState(
                     targetValue = when (sheetStep) {
@@ -273,6 +273,7 @@ internal fun MixViewPopup(
                         progress = progress,
                         live = live,
                         onDismiss = { dismissing = true },
+                        onBack = { dismissing = true },
                     )
                 }
             }

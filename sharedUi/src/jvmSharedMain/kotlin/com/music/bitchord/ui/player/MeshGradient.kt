@@ -217,13 +217,15 @@ internal fun MeshGradientBackground(
             })
             .blur(blurRadius),
     ) {
+        // Twelve smaller blobs spread over the whole screen, each with its own
+        // irrational drift, so the colour shifts continuously but the overlap
+        // of soft edges keeps the result smooth.
         val anchors = listOf(
-            Offset(0.20f, 0.25f),
-            Offset(0.80f, 0.20f),
-            Offset(0.75f, 0.80f),
-            Offset(0.25f, 0.75f),
+            Offset(0.12f, 0.14f), Offset(0.38f, 0.10f), Offset(0.64f, 0.16f), Offset(0.90f, 0.12f),
+            Offset(0.08f, 0.46f), Offset(0.34f, 0.42f), Offset(0.60f, 0.50f), Offset(0.88f, 0.44f),
+            Offset(0.14f, 0.82f), Offset(0.40f, 0.88f), Offset(0.66f, 0.80f), Offset(0.92f, 0.86f),
         )
-        val speeds = listOf(1f, -0.7f, 0.85f, -1.15f)
+        val speeds = listOf(1f, -0.7f, 0.85f, -1.15f, 0.63f, -0.91f, 1.24f, -0.58f, 0.77f, -1.33f, 0.94f, -0.82f)
         val drift = phase.value
 
         val e = mix?.ease() ?: 0f
@@ -232,13 +234,14 @@ internal fun MeshGradientBackground(
             lastDrawn.colors = LegacyAmbientColors(slots, if (directStill) baseFor(tuned, exactColors) else baseColor.value)
         }
         slots.forEachIndexed { index, slot ->
-            val color = ambientColor(slot, target?.slots?.get(index), e)
-            val anchor = anchors[index]
+            val color = ambientColor(slot, target?.slots?.getOrNull(index), e)
+            val anchor = anchors[index % anchors.size]
+            val speed = speeds[index % speeds.size]
             val center = Offset(
-                x = (anchor.x + 0.16f * cos(drift * speeds[index] + index * 1.7f)) * size.width,
-                y = (anchor.y + 0.16f * sin(drift * speeds[index] * 0.9f + index * 2.3f)) * size.height,
+                x = (anchor.x + 0.16f * cos(drift * speed + index * 1.7f)) * size.width,
+                y = (anchor.y + 0.16f * sin(drift * speed * 0.9f + index * 2.3f)) * size.height,
             )
-            val radius = size.maxDimension * 0.62f
+            val radius = size.maxDimension * (if (exactColors) 0.38f else 0.62f)
             drawCircle(
                 // Along smootherstep rather than a straight falloff: a straight one
                 // stops dead at the rim, and that corner showed as a ring where each
@@ -246,7 +249,7 @@ internal fun MeshGradientBackground(
                 brush = Brush.radialGradient(
                     colorStops = Array(FADE_CURVE_STOPS + 1) { i ->
                         val t = i / FADE_CURVE_STOPS.toFloat()
-                        t to color.copy(alpha = BLOB_ALPHA * (1f - smootherStep(t)))
+                        t to color.copy(alpha = (if (exactColors) 0.58f else BLOB_ALPHA) * (1f - smootherStep(t)))
                     },
                     center = center,
                     radius = radius,
@@ -276,7 +279,7 @@ private fun MeshPalette.tunedSlots(): List<Color> =
 
 /** Exact cover colours for the legacy theme when it borrows the Simple profile. */
 private fun MeshPalette.slots(exact: Boolean): List<Color> =
-    if (exact) (colors.ifEmpty { FallbackColors } + FallbackColors).take(4) else tunedSlots()
+    if (exact) colors.ifEmpty { FallbackColors } else tunedSlots()
 
 /** A dark base that keeps the cover's own hue and lightness relationship. */
 private fun baseFor(slots: List<Color>, exact: Boolean): Color {
@@ -459,9 +462,12 @@ fun meshPaletteFromBlur(bitmap: ImageBitmap?): MeshPalette? {
         if (n == 0) return FallbackColors.first()
         return Color(r / n / 255f, g / n / 255f, b / n / 255f)
     }
-    return MeshPalette(
-        listOf(patch(0.22f, 0.28f), patch(0.78f, 0.22f), patch(0.76f, 0.76f), patch(0.24f, 0.72f)),
-    )
+    // A grid of small patches instead of four broad ones: the Simple cover's
+    // whole colour spread reaches the mesh, so the blobs differ across the
+    // screen instead of sharing four averages.
+    val xs = listOf(0.12f, 0.38f, 0.62f, 0.88f)
+    val ys = listOf(0.16f, 0.50f, 0.84f)
+    return MeshPalette(ys.flatMap { y -> xs.map { x -> patch(x, y) } })
 }
 
 /**

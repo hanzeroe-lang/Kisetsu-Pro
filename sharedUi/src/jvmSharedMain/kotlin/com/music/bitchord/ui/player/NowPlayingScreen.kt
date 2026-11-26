@@ -401,8 +401,12 @@ private fun LegacyMeshBackdrop(
         trackKey = trackKey,
         modifier = modifier,
         mix = mix,
-        snapKey = snapKey,
-        settled = requestedSnap != null,
+        // The blurred cover's colours crossfade on song change: a stable key
+        // keeps the colour animations running instead of snapping to the new set.
+        snapKey = if (exactPalette != null) "legacy-exact" else snapKey,
+        settled = requestedSnap != null && exactPalette == null,
+        continuous = exactPalette != null,
+        driftMillis = if (exactPalette != null) 9_000 else 8_000,
         currentIsOutgoing = entry == mix?.outgoing,
         directStill = ambient.direct != null && frame == null,
     )

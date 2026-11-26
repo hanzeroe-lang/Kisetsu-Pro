@@ -307,7 +307,7 @@ internal fun PlayerScrubber(
             }
             val mixingShown by remember { derivedStateOf { mixPulse.cover > 0f } }
             if (showAutomixAnalysis) {
-                AutomixAnalysisButton(mixPulse, Modifier.align(Alignment.Center))
+                AutomixAnalysisButton(mixPulse, timeColor, Modifier.align(Alignment.Center))
             } else if (mixingShown) {
                 MixingLabel(mixPulse, Modifier.align(Alignment.Center))
             }
@@ -354,26 +354,12 @@ private fun MixingLabel(pulse: MixPulse, modifier: Modifier = Modifier) {
  * the editor is always one tap away when the setting is on.
  */
 @Composable
-private fun AutomixAnalysisButton(pulse: MixPulse, modifier: Modifier = Modifier) {
+private fun AutomixAnalysisButton(pulse: MixPulse, color: Color, modifier: Modifier = Modifier) {
+    // No slab, no rim, no bigger type: it is a timestamp that happens to be a
+    // button, sitting on the same type scale and colour as the two either side.
     Text(
         text = "Automix Analysis",
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
-            .drawBehind {
-                val shimmer = pulse.level.coerceIn(0f, 1f)
-                drawRoundRect(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.04f),
-                            Color.White.copy(alpha = 0.16f + 0.18f * shimmer),
-                            Color.White.copy(alpha = 0.04f),
-                        ),
-                        start = Offset(size.width * (-0.4f + shimmer * 1.4f), 0f),
-                        end = Offset(size.width * (0.5f + shimmer * 1.4f), 0f),
-                    ),
-                    cornerRadius = CornerRadius(10.dp.toPx()),
-                )
-            }
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
@@ -381,14 +367,9 @@ private fun AutomixAnalysisButton(pulse: MixPulse, modifier: Modifier = Modifier
             .graphicsLayer {
                 alpha = pulse.alpha(1f, restShare = 0.82f)
                 compositingStrategy = CompositingStrategy.ModulateAlpha
-            }
-            .additiveChrome(LocalPlayerChrome.current)
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.Medium,
-            fontSize = (MaterialTheme.typography.labelMedium.fontSize.value + BADGE_SIZE_BUMP).sp,
-        ),
-        color = chromeWhite(0.95f),
+            },
+        style = MaterialTheme.typography.labelMedium,
+        color = color,
         maxLines = 1,
     )
 }
@@ -621,9 +602,10 @@ internal fun BestPartPill(
         val chrome = LocalPlayerChrome.current
         Box(
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = 6.dp)
                 .clip(shape)
                 .glassFrost(hazeState, flat = reduceDynamicBlur || overlayOpen() || autoMixHold())
+                .background(discFill(chrome))
                 .clickable(role = Role.Button) {
                     val target = at ?: return@clickable
                     haptics.play(Haptic.Tap)
@@ -632,29 +614,14 @@ internal fun BestPartPill(
                 }
                 .semantics { contentDescription = description },
         ) {
-            // The star and ⋯ discs' own fill over the frost, so the three
-            // read as one material, then the rim over both.
-            Box(
-                Modifier
-                    .matchParentSize()
-                    .vibrantChrome(chrome)
-                    .background(discFill(chrome)),
-            )
-            Box(Modifier.matchParentSize().glassRim(shape))
+            // Flat fill only: no chromatic reflection, no glass rim.
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 12.dp, end = 15.dp, top = 7.dp, bottom = 7.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
             ) {
-                Icon(
-                    imageVector = BitChordIcons.MusicNote,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(15.dp),
-                )
-                Spacer(Modifier.width(6.dp))
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.W700,
                     color = Color.White,
                     maxLines = 1,
