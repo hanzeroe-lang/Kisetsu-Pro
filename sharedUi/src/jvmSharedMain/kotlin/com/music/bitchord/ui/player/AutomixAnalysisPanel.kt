@@ -84,7 +84,6 @@ internal fun AutomixAnalysisPanel(
     live: Boolean,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = onDismiss,
 ) {
     val phraseBars by PlayerSettings.automixPhraseBars.collectAsStateWithLifecycle()
     val automixOn by PlayerSettings.smartFadeEnabled.collectAsStateWithLifecycle()
@@ -137,26 +136,13 @@ internal fun AutomixAnalysisPanel(
             )
         }
         Spacer(Modifier.height(2.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(AnalysisChip)
-                    .clickable(onClick = onBack),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("‹", color = Color.White, fontSize = 24.sp)
-            }
-            Spacer(Modifier.width(10.dp))
-            Text(
-                text = "Automix analysis",
-                color = Color.White,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        Text(
+            text = "Automix analysis",
+            color = Color.White,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(14.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {

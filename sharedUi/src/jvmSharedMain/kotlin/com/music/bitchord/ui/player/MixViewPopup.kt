@@ -204,7 +204,7 @@ internal fun MixViewPopup(
                     targetValue = when (sheetStep) {
                         0 -> 0.58f
                         1 -> 0.78f
-                        else -> 0.98f
+                        else -> 1f // truly fullscreen: no sliver of player visible
                     },
                     animationSpec = tween(280, easing = FastOutSlowInEasing),
                     label = "automixSheetHeight",
@@ -222,15 +222,16 @@ internal fun MixViewPopup(
                         onDismiss()
                     }
                 }
+                val fullscreen = sheetStep == 2
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(maxHeight * heightFraction)
                         .offset { IntOffset(0, dismissOffset.roundToInt()) }
-                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-                        .clip(RoundedCornerShape(28.dp))
+                        .then(if (fullscreen) Modifier else Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp))
+                        .clip(RoundedCornerShape(if (fullscreen) 0.dp else 28.dp))
                         .then(
-                            if (reduceDynamicBlur) {
+                            if (reduceDynamicBlur || fullscreen) {
                                 Modifier.background(PopupColor)
                             } else {
                                 Modifier
@@ -266,14 +267,13 @@ internal fun MixViewPopup(
                                 },
                             ) { _, dy -> total += dy }
                         }
-                        .navigationBarsPadding(),
+                        .then(if (fullscreen) Modifier else Modifier.navigationBarsPadding()),
                 ) {
                     AutomixAnalysisPanel(
                         view = view,
                         progress = progress,
                         live = live,
                         onDismiss = { dismissing = true },
-                        onBack = { dismissing = true },
                     )
                 }
             }
