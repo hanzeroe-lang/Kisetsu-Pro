@@ -108,6 +108,9 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
         override val automixDetail get() = AppSettings.automixDetail
         override val smartFadeEnabled get() = AppSettings.smartFadeEnabled
         override val automixPhraseBars get() = AppSettings.automixPhraseBars
+        override val automixOverlapScale get() = AppSettings.automixOverlapScale
+        override val automixBassSwapFraction get() = AppSettings.automixBassSwapFraction
+        override val automixFilterSweep get() = AppSettings.automixFilterSweep
         override val autoMixArtwork get() = AppSettings.autoMixArtwork
         override val smartMixInProgress get() = AppSettings.smartMixInProgress
         override val smartMixBlend get() = AppSettings.smartMixBlend
@@ -124,6 +127,10 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
         override fun setLyricsOffsetMs(value: Int) = AppSettings.setLyricsOffsetMs(value)
         override fun setSmartFadeEnabled(value: Boolean) = AppSettings.setSmartFadeEnabled(value)
         override fun setAutomixPhraseBars(value: Int) = AppSettings.setAutomixPhraseBars(value)
+        override fun setAutomixOverlapScale(value: Float) = AppSettings.setAutomixOverlapScale(value)
+        override fun setAutomixBassSwapFraction(value: Float) = AppSettings.setAutomixBassSwapFraction(value)
+        override fun setAutomixFilterSweep(value: Float) = AppSettings.setAutomixFilterSweep(value)
+        override fun resetAutomixEdits() = AppSettings.resetAutomixEdits()
         override fun setMixViewOpen(open: Boolean) {
             AppSettings.mixViewOpen.value = open
         }

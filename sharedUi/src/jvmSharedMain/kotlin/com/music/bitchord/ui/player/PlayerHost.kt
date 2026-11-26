@@ -307,6 +307,9 @@ interface PlayerSettingsSource {
     val smartFadeEnabled: StateFlow<Boolean>
     /** Fixed phrase length chosen in the Automix analysis panel: 0 is adaptive. */
     val automixPhraseBars: StateFlow<Int> get() = MutableStateFlow(0)
+    val automixOverlapScale: StateFlow<Float> get() = MutableStateFlow(1f)
+    val automixBassSwapFraction: StateFlow<Float> get() = MutableStateFlow(-1f)
+    val automixFilterSweep: StateFlow<Float> get() = MutableStateFlow(-1f)
     val autoMixArtwork: StateFlow<AutoMixArtworkPreferences> get() = defaultAutoMixArtwork
     /** True only while an analysed Automix transition is audibly mixing two tracks. */
     val smartMixInProgress: StateFlow<Boolean>
@@ -329,6 +332,10 @@ interface PlayerSettingsSource {
     /** Stop Automix from the analysis panel. No-op on platforms without it. */
     fun setSmartFadeEnabled(value: Boolean) = Unit
     fun setAutomixPhraseBars(value: Int) = Unit
+    fun setAutomixOverlapScale(value: Float) = Unit
+    fun setAutomixBassSwapFraction(value: Float) = Unit
+    fun setAutomixFilterSweep(value: Float) = Unit
+    fun resetAutomixEdits() = Unit
     /** Whether the mix popup is up, so the host lays out [smartMixPreview] for it. */
     fun setMixViewOpen(open: Boolean)
 }

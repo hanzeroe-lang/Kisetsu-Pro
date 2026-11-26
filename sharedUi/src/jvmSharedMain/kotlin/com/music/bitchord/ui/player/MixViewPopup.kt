@@ -66,6 +66,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.contentDescription
@@ -184,45 +185,73 @@ internal fun MixViewPopup(
                 },
             )
             .background(ScrimColor.copy(alpha = ScrimColor.alpha * scrimAlpha)),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.BottomCenter,
     ) {
         AnimatedVisibility(
             visible = shown,
-            enter = fadeIn(tween(180)) + scaleIn(tween(220, easing = FastOutSlowInEasing), initialScale = 0.92f),
-            exit = fadeOut(tween(150)) + scaleOut(tween(150), targetScale = 0.95f),
+            enter = fadeIn(tween(180)) + slideInVertically(tween(260, easing = FastOutSlowInEasing)) { it / 2 },
+            exit = fadeOut(tween(150)) + slideOutVertically(tween(200)) { it / 2 },
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = PopupMaxWidth)
-                    .fillMaxWidth()
-                    .padding(horizontal = 26.dp)
-                    .clip(PopupShape)
-                    .then(
-                        if (reduceDynamicBlur) {
-                            Modifier.background(PopupColor)
-                        } else {
-                            Modifier
-                                .optimizedHazeEffect(
-                                    state = hazeState,
-                                    style = HazeMaterials.regular(PopupColor),
-                                ) {
-                                    // Laid beside the player, never in it, so every
-                                    // one of its sources — see [liveMenuFrost].
-                                    canDrawArea = { true }
-                                }
-                                .background(PopupColor.copy(alpha = 0.94f))
-                        },
+            BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+                val maxHeight = maxHeight
+                var expanded by remember { mutableStateOf(false) }
+                var dismissing by remember { mutableStateOf(false) }
+                val heightFraction by animateFloatAsState(
+                    targetValue = if (expanded) 0.94f else 0.66f,
+                    animationSpec = tween(280, easing = FastOutSlowInEasing),
+                    label = "automixSheetHeight",
+                )
+                val density = LocalDensity.current
+                val dismissPixels = with(density) { maxHeight.toPx() } * 0.45f
+                val dismissOffset by animateFloatAsState(
+                    targetValue = if (dismissing) dismissPixels else 0f,
+                    animationSpec = tween(220, easing = FastOutSlowInEasing),
+                    label = "automixSheetDismiss",
+                )
+                LaunchedEffect(dismissing) {
+                    if (dismissing) {
+                        delay(180)
+                        onDismiss()
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(maxHeight * heightFraction)
+                        .offset { IntOffset(0, dismissOffset.roundToInt()) }
+                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+                        .clip(RoundedCornerShape(28.dp))
+                        .then(
+                            if (reduceDynamicBlur) {
+                                Modifier.background(PopupColor)
+                            } else {
+                                Modifier
+                                    .optimizedHazeEffect(
+                                        state = hazeState,
+                                        style = HazeMaterials.regular(PopupColor),
+                                    ) {
+                                        canDrawArea = { true }
+                                    }
+                                    .background(PopupColor.copy(alpha = 0.96f))
+                            },
+                        )
+                        // Taps on the card are the card's, not the scrim's.
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = {},
+                        )
+                        .navigationBarsPadding(),
+                ) {
+                    AutomixAnalysisPanel(
+                        view = view,
+                        progress = progress,
+                        live = live,
+                        onDismiss = { dismissing = true },
+                        onExpand = { expanded = true },
+                        onCollapse = { expanded = false },
                     )
-                    // Taps on the card are the card's, not the scrim's.
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = {},
-                    )
-                    .padding(vertical = 14.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                AutomixAnalysisPanel(view, progress, live, onDismiss)
+                }
             }
         }
     }

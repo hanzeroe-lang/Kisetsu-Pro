@@ -1175,7 +1175,7 @@ class CrossfadeController(
         // The DJ planner is Automix now; there is no separate mode switch.
         val advanced = true
 
-        val plan = planTransition(
+        val rawPlan = planTransition(
             analysis = currentAnalysis,
             nextAnalysis = nextAnalysis,
             currentTrack = currentItem.toTransitionInfo(duration),
@@ -1187,6 +1187,29 @@ class CrossfadeController(
             advanced = advanced,
             phraseBars = AppSettings.automixPhraseBars.value,
         )
+        // The analysis panel lets the listener edit the overlap, the bass handoff
+        // and the filter ride. Those edits ride on top of the planner's answer
+        // rather than changing the analysis itself, so dragging a line has an
+        // audible effect on the very next blend.
+        var plan = rawPlan
+        if (!rawPlan.blocked) {
+            val scale = AppSettings.automixOverlapScale.value
+            if (scale != 1f && rawPlan.fadeSeconds > 0.0) {
+                val fade = (rawPlan.fadeSeconds * scale).coerceIn(0.5, rawPlan.fadeSeconds * 2.5)
+                plan = plan.copy(
+                    fadeSeconds = fade,
+                    transitionStart = (rawPlan.transitionEnd - fade).coerceAtLeast(0.0),
+                )
+            }
+            val swap = AppSettings.automixBassSwapFraction.value
+            if (swap >= 0f) {
+                plan = plan.copy(bassSwap = true, bassSwapFraction = swap.toDouble())
+            }
+            val sweep = AppSettings.automixFilterSweep.value
+            if (sweep >= 0f) {
+                plan = plan.copy(filterSweep = sweep.toDouble())
+            }
+        }
         // One line per distinct verdict rather than one per 250ms tick, so the
         // log says what the planner decided for this pair without burying it.
         val verdict = "${plan.reason}|${plan.transitionStyle}|fade=${plan.fadeMs}" +

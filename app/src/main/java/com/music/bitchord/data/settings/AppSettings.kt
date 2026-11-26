@@ -298,6 +298,13 @@ object AppSettings {
      * choose, 4/8/12/16 fix the overlap to whole bars of the outgoing grid.
      */
     val automixPhraseBars = MutableStateFlow(0)
+
+    /** User scaling of the planned overlap, applied after the planner runs. */
+    val automixOverlapScale = MutableStateFlow(1f)
+    /** Where the low end changes hands, or negative to leave the planner's answer alone. */
+    val automixBassSwapFraction = MutableStateFlow(-1f)
+    /** Filter ride strength, or negative to leave the planner's answer alone. */
+    val automixFilterSweep = MutableStateFlow(-1f)
     private val _autoMixArtwork = MutableStateFlow(AutoMixArtworkPreferences())
     val autoMixArtwork = _autoMixArtwork.asStateFlow()
     val sleepTimerFadeOut = MutableStateFlow(true)
@@ -1070,6 +1077,13 @@ object AppSettings {
         crossfadeSeconds.value = prefs.getInt(KEY_CROSSFADE, 0)
         smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, false)
         automixPhraseBars.value = sanitizePhraseBars(prefs.getInt(KEY_AUTOMIX_PHRASE_BARS, 0))
+        automixOverlapScale.value = prefs.getFloat(KEY_AUTOMIX_OVERLAP_SCALE, 1f).coerceIn(0.5f, 2f)
+        automixBassSwapFraction.value = prefs.getFloat(KEY_AUTOMIX_BASS_SWAP, -1f).let {
+            if (it < 0f) -1f else it.coerceIn(0.05f, 0.95f)
+        }
+        automixFilterSweep.value = prefs.getFloat(KEY_AUTOMIX_FILTER_SWEEP, -1f).let {
+            if (it < 0f) -1f else it.coerceIn(0f, 1f)
+        }
         _autoMixArtwork.value = AutoMixArtworkPreferences(
             artTransition = prefs.getBoolean(KEY_AUTOMIX_ART_TRANSITION, false),
             miniPlayerTransition = prefs.getBoolean(KEY_AUTOMIX_MINI_ART_TRANSITION, false),
@@ -1422,6 +1436,35 @@ object AppSettings {
 
     private fun sanitizePhraseBars(value: Int): Int =
         if (value in PHRASE_BAR_CHOICES) value else 0
+
+    fun setAutomixOverlapScale(value: Float) {
+        val scale = value.coerceIn(0.5f, 2f)
+        automixOverlapScale.value = scale
+        prefs.edit().putFloat(KEY_AUTOMIX_OVERLAP_SCALE, scale).apply()
+    }
+
+    fun setAutomixBassSwapFraction(value: Float) {
+        val fraction = if (value < 0f) -1f else value.coerceIn(0.05f, 0.95f)
+        automixBassSwapFraction.value = fraction
+        prefs.edit().putFloat(KEY_AUTOMIX_BASS_SWAP, fraction).apply()
+    }
+
+    fun setAutomixFilterSweep(value: Float) {
+        val sweep = if (value < 0f) -1f else value.coerceIn(0f, 1f)
+        automixFilterSweep.value = sweep
+        prefs.edit().putFloat(KEY_AUTOMIX_FILTER_SWEEP, sweep).apply()
+    }
+
+    fun resetAutomixEdits() {
+        automixOverlapScale.value = 1f
+        automixBassSwapFraction.value = -1f
+        automixFilterSweep.value = -1f
+        prefs.edit()
+            .putFloat(KEY_AUTOMIX_OVERLAP_SCALE, 1f)
+            .putFloat(KEY_AUTOMIX_BASS_SWAP, -1f)
+            .putFloat(KEY_AUTOMIX_FILTER_SWEEP, -1f)
+            .apply()
+    }
 
     fun setAutoMixArtTransition(value: Boolean) {
         val previous = _autoMixArtwork.value
@@ -2467,6 +2510,9 @@ object AppSettings {
     private const val KEY_CROSSFADE = "crossfade_seconds"
     private const val KEY_SMART_FADE = "smart_fade_enabled"
     private const val KEY_AUTOMIX_PHRASE_BARS = "automix_phrase_bars"
+    private const val KEY_AUTOMIX_OVERLAP_SCALE = "automix_overlap_scale"
+    private const val KEY_AUTOMIX_BASS_SWAP = "automix_bass_swap_fraction"
+    private const val KEY_AUTOMIX_FILTER_SWEEP = "automix_filter_sweep"
     /** The lengths the Automix analysis panel offers. */
     val PHRASE_BAR_CHOICES = intArrayOf(0, 4, 8, 12, 16)
     private const val KEY_AUTOMIX_ART_TRANSITION = "automix_art_transition"
