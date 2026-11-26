@@ -1224,7 +1224,7 @@ fun SettingsScreen(
                     icon = SfIcons.AutoAwesome,
                     title = convxNavBarTitle,
                     subtitle = if (convxNavBar) {
-                        "Floating Convx bar with scroll collapse and a detached Search circle."
+                        "Convx's iOS-style glass capsule bar with a detached Search circle."
                     } else {
                         "Original Kisetsu navigation bar."
                     },

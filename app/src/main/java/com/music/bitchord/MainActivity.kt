@@ -294,6 +294,7 @@ import com.music.bitchord.ui.components.FloatingBarsTapGuard
 import com.music.bitchord.ui.components.BottomTab
 import com.music.bitchord.ui.components.FLOATING_BAR_MAX_WIDTH
 import com.music.bitchord.ui.components.FloatingBottomBar
+import com.music.bitchord.ui.components.convxnav.ConvxNavBar
 import com.music.bitchord.ui.components.GlassNavBar
 import com.music.bitchord.ui.components.floatingtabbar.rememberFloatingTabBarScrollConnection
 import com.music.bitchord.ui.components.FrostedTopBar
@@ -6722,7 +6723,29 @@ private fun NavBarSwitch(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
-    if (glassActive || convxNavBar) {
+    if (convxNavBar) {
+        ConvxNavBar(
+            tabs = tabs,
+            selectedIndex = selectedIndex,
+            onTabSelected = onTabSelected,
+            scrollConnection = scrollConnection,
+            song = song,
+            isPlaying = isPlaying,
+            isLoading = isLoading,
+            animationsActive = animationsActive,
+            onPlayPause = onPlayPause,
+            onNext = onNext,
+            onPrevious = onPrevious,
+            onExpand = onExpand,
+            controlsLocked = controlsLocked,
+            onBlockedControl = onBlockedControl,
+            dock = dock,
+            pull = pull,
+            autoMixArtwork = autoMixArtwork,
+            hazeState = hazeState,
+            modifier = modifier,
+        )
+    } else if (glassActive) {
         GlassNavBar(
             tabs = tabs,
             selectedIndex = selectedIndex,
