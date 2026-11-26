@@ -195,10 +195,17 @@ internal fun MixViewPopup(
         ) {
             BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                 val maxHeight = maxHeight
-                var expanded by remember { mutableStateOf(false) }
+                // Three snap points: compact, medium, fullscreen. Every upward
+                // swipe takes one step; downward steps back, and down from the
+                // first step dismisses the sheet.
+                var sheetStep by remember { mutableIntStateOf(0) }
                 var dismissing by remember { mutableStateOf(false) }
                 val heightFraction by animateFloatAsState(
-                    targetValue = if (expanded) 0.94f else 0.66f,
+                    targetValue = when (sheetStep) {
+                        0 -> 0.58f
+                        1 -> 0.78f
+                        else -> 0.98f
+                    },
                     animationSpec = tween(280, easing = FastOutSlowInEasing),
                     label = "automixSheetHeight",
                 )
@@ -251,9 +258,9 @@ internal fun MixViewPopup(
                                 onDragStart = { total = 0f },
                                 onDragEnd = {
                                     when {
-                                        total < -60f -> expanded = true
+                                        total < -60f -> sheetStep = (sheetStep + 1).coerceAtMost(2)
                                         total > 140f -> {
-                                            if (expanded) expanded = false else dismissing = true
+                                            if (sheetStep > 0) sheetStep -= 1 else dismissing = true
                                         }
                                     }
                                 },
@@ -815,6 +822,15 @@ private fun camelotOf(key: String): Camelot? {
  */
 object MixViewRequest {
     var open by mutableStateOf(false)
+}
+
+/**
+ * Asked by the analysis panel's Instant mix button. The controller watches the
+ * token from its next tick and starts a blend from the current playhead.
+ */
+object InstantMixRequest {
+    var token by mutableIntStateOf(0)
+    fun fire() { token++ }
 }
 
 /** How long the popup waits on a first plan before saying there is nothing to show. */

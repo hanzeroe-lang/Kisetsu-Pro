@@ -310,6 +310,8 @@ interface PlayerSettingsSource {
     val automixOverlapScale: StateFlow<Float> get() = MutableStateFlow(1f)
     val automixBassSwapFraction: StateFlow<Float> get() = MutableStateFlow(-1f)
     val automixFilterSweep: StateFlow<Float> get() = MutableStateFlow(-1f)
+    /** Keep the Automix Analysis button on the player, with its shine, always. */
+    val showAutomixAnalysisButton: StateFlow<Boolean> get() = MutableStateFlow(false)
     val autoMixArtwork: StateFlow<AutoMixArtworkPreferences> get() = defaultAutoMixArtwork
     /** True only while an analysed Automix transition is audibly mixing two tracks. */
     val smartMixInProgress: StateFlow<Boolean>
@@ -336,6 +338,7 @@ interface PlayerSettingsSource {
     fun setAutomixBassSwapFraction(value: Float) = Unit
     fun setAutomixFilterSweep(value: Float) = Unit
     fun resetAutomixEdits() = Unit
+    fun setShowAutomixAnalysisButton(value: Boolean) = Unit
     /** Whether the mix popup is up, so the host lays out [smartMixPreview] for it. */
     fun setMixViewOpen(open: Boolean)
 }

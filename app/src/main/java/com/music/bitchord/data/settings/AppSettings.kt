@@ -291,7 +291,7 @@ object AppSettings {
      *
      * See [com.music.bitchord.playback.smart.TransitionPlanner].
      */
-    val smartFadeEnabled = MutableStateFlow(false)
+    val smartFadeEnabled = MutableStateFlow(true)
 
     /**
      * Apple-style fixed phrase length for Automix overlaps: 0 lets the planner
@@ -305,6 +305,8 @@ object AppSettings {
     val automixBassSwapFraction = MutableStateFlow(-1f)
     /** Filter ride strength, or negative to leave the planner's answer alone. */
     val automixFilterSweep = MutableStateFlow(-1f)
+    /** Keep an "Automix Analysis" button on the player at all times. */
+    val showAutomixAnalysisButton = MutableStateFlow(false)
     private val _autoMixArtwork = MutableStateFlow(AutoMixArtworkPreferences())
     val autoMixArtwork = _autoMixArtwork.asStateFlow()
     val sleepTimerFadeOut = MutableStateFlow(true)
@@ -1075,7 +1077,7 @@ object AppSettings {
         syncDownloadedPlaylists.value = prefs.getBoolean(KEY_SYNC_DOWNLOADED_PLAYLISTS, false)
         downloadLikedSongs.value = prefs.getBoolean(KEY_DOWNLOAD_LIKED_SONGS, false)
         crossfadeSeconds.value = prefs.getInt(KEY_CROSSFADE, 0)
-        smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, false)
+        smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, true)
         automixPhraseBars.value = sanitizePhraseBars(prefs.getInt(KEY_AUTOMIX_PHRASE_BARS, 0))
         automixOverlapScale.value = prefs.getFloat(KEY_AUTOMIX_OVERLAP_SCALE, 1f).coerceIn(0.5f, 2f)
         automixBassSwapFraction.value = prefs.getFloat(KEY_AUTOMIX_BASS_SWAP, -1f).let {
@@ -1084,6 +1086,7 @@ object AppSettings {
         automixFilterSweep.value = prefs.getFloat(KEY_AUTOMIX_FILTER_SWEEP, -1f).let {
             if (it < 0f) -1f else it.coerceIn(0f, 1f)
         }
+        showAutomixAnalysisButton.value = prefs.getBoolean(KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON, false)
         _autoMixArtwork.value = AutoMixArtworkPreferences(
             artTransition = prefs.getBoolean(KEY_AUTOMIX_ART_TRANSITION, false),
             miniPlayerTransition = prefs.getBoolean(KEY_AUTOMIX_MINI_ART_TRANSITION, false),
@@ -1464,6 +1467,11 @@ object AppSettings {
             .putFloat(KEY_AUTOMIX_BASS_SWAP, -1f)
             .putFloat(KEY_AUTOMIX_FILTER_SWEEP, -1f)
             .apply()
+    }
+
+    fun setShowAutomixAnalysisButton(value: Boolean) {
+        showAutomixAnalysisButton.value = value
+        prefs.edit().putBoolean(KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON, value).apply()
     }
 
     fun setAutoMixArtTransition(value: Boolean) {
@@ -2513,6 +2521,7 @@ object AppSettings {
     private const val KEY_AUTOMIX_OVERLAP_SCALE = "automix_overlap_scale"
     private const val KEY_AUTOMIX_BASS_SWAP = "automix_bass_swap_fraction"
     private const val KEY_AUTOMIX_FILTER_SWEEP = "automix_filter_sweep"
+    private const val KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON = "show_automix_analysis_button"
     /** The lengths the Automix analysis panel offers. */
     val PHRASE_BAR_CHOICES = intArrayOf(0, 4, 8, 12, 16)
     private const val KEY_AUTOMIX_ART_TRANSITION = "automix_art_transition"

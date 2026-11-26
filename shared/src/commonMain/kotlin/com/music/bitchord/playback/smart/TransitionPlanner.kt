@@ -84,7 +84,7 @@ private const val AUTO_FALLBACK_SECONDS = 8.0
 private const val MIX_WINDOW_SECONDS = 30.0
 
 /** Below this a track would spend too much of itself transitioning to be worth planning. */
-private const val MIN_SMART_DURATION_SECONDS = 45.0
+private const val MIN_SMART_DURATION_SECONDS = 20.0
 
 /** Leave enough incoming material after a calibrated handoff to avoid landing in its outro. */
 private const val MIN_INCOMING_CLEARANCE_SECONDS = 5.0
@@ -1528,10 +1528,6 @@ private fun planTransitionInner(
             transitionStyle = TransitionStyle.GAPLESS,
             reason = if (started) "same-album-gapless" else "before-gapless-window",
         )
-    }
-
-    if (isSpokenOrLive(currentTrack) || isSpokenOrLive(nextTrack)) {
-        return blocked("blocked-speech-or-live")
     }
 
     if (!analysisReadyForTrack(analysis, currentTrack) ||

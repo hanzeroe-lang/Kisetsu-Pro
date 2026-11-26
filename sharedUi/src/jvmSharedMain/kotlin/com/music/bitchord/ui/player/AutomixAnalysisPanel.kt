@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -101,7 +102,8 @@ internal fun AutomixAnalysisPanel(
     }
     val preset = when {
         !automixOn -> "Fade"
-        phraseBars > 0 -> "Custom"
+        phraseBars == 4 -> "Smooth"
+        phraseBars == 16 -> "Fade"
         else -> "Auto"
     }
 
@@ -181,6 +183,8 @@ internal fun AutomixAnalysisPanel(
             TransitionChart(
                 view, progress, live, top = true,
                 overlapScale = overlapScale, bassSwap = bassSwap, filterSweep = filterSweep,
+                phraseBars = phraseBars,
+                onBars = ::setBars,
                 onResize = { scale -> PlayerSettings.setAutomixOverlapScale(scale) },
                 onSwap = { value -> PlayerSettings.setAutomixBassSwapFraction(value) },
                 onSweep = { value -> PlayerSettings.setAutomixFilterSweep(value) },
@@ -189,6 +193,8 @@ internal fun AutomixAnalysisPanel(
             TransitionChart(
                 view, progress, live, top = false,
                 overlapScale = overlapScale, bassSwap = bassSwap, filterSweep = filterSweep,
+                phraseBars = phraseBars,
+                onBars = ::setBars,
                 onResize = { scale -> PlayerSettings.setAutomixOverlapScale(scale) },
                 onSwap = { value -> PlayerSettings.setAutomixBassSwapFraction(value) },
                 onSweep = { value -> PlayerSettings.setAutomixFilterSweep(value) },
@@ -220,7 +226,18 @@ internal fun AutomixAnalysisPanel(
                 Spacer(Modifier.width(8.dp))
                 Text("›", color = AnalysisSecondary, fontSize = 19.sp)
             }
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(8.dp))
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF3A2A10))
+                    .clickable { InstantMixRequest.fire() }
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("Instant mix", color = OverlapColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            }
+            Spacer(Modifier.width(8.dp))
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
@@ -229,12 +246,12 @@ internal fun AutomixAnalysisPanel(
                         PlayerSettings.setSmartFadeEnabled(false)
                         onDismiss()
                     }
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(Modifier.size(11.dp).clip(RoundedCornerShape(2.dp)).background(HandoffColor))
-                Spacer(Modifier.width(9.dp))
-                Text("Stop", color = HandoffColor, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.width(7.dp))
+                Text("Stop", color = HandoffColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             }
         }
         Spacer(Modifier.height(10.dp))
@@ -259,14 +276,18 @@ internal fun AutomixAnalysisPanel(
             PresetChip("✦  Auto", preset == "Auto", Modifier.weight(1f)) {
                 PlayerSettings.setSmartFadeEnabled(true)
                 setBars(0)
+                PlayerSettings.resetAutomixEdits()
             }
-            PresetChip("Custom", preset == "Custom", Modifier.weight(1f)) {
+            PresetChip("Smooth cut", preset == "Smooth", Modifier.weight(1f)) {
                 PlayerSettings.setSmartFadeEnabled(true)
-                setBars(12)
+                setBars(4)
+                PlayerSettings.setAutomixFilterSweep(0f)
             }
-            PresetChip("Fade", preset == "Fade", Modifier.weight(1f)) {
-                PlayerSettings.setSmartFadeEnabled(false)
-                setBars(0)
+            PresetChip("Fade handoff", preset == "Fade", Modifier.weight(1f)) {
+                PlayerSettings.setSmartFadeEnabled(true)
+                setBars(16)
+                PlayerSettings.setAutomixBassSwapFraction(0.7f)
+                PlayerSettings.setAutomixFilterSweep(1f)
             }
         }
         Spacer(Modifier.height(12.dp))
@@ -355,6 +376,8 @@ private fun TransitionChart(
     overlapScale: Float,
     bassSwap: Float,
     filterSweep: Float,
+    phraseBars: Int,
+    onBars: (Int) -> Unit,
     onResize: (Float) -> Unit,
     onSwap: (Float) -> Unit,
     onSweep: (Float) -> Unit,
@@ -364,6 +387,12 @@ private fun TransitionChart(
     var scale by remember { mutableFloatStateOf(overlapScale) }
     var swap by remember { mutableFloatStateOf(if (bassSwap < 0f) 0.7f else bassSwap) }
     var sweep by remember { mutableFloatStateOf(if (filterSweep < 0f) 0.35f else filterSweep) }
+    var barIndex by remember {
+        mutableIntStateOf(BarChoices.indexOf(phraseBars).let { if (it < 0) 0 else it })
+    }
+    LaunchedEffect(phraseBars) {
+        barIndex = BarChoices.indexOf(phraseBars).let { if (it < 0) 0 else it }
+    }
     LaunchedEffect(overlapScale) { scale = overlapScale }
     LaunchedEffect(bassSwap) { if (bassSwap >= 0f) swap = bassSwap }
     LaunchedEffect(filterSweep) { if (filterSweep >= 0f) sweep = filterSweep }
@@ -393,6 +422,7 @@ private fun TransitionChart(
                         val startScale = scale
                         val startSwap = swap
                         val startSweep = sweep
+                        val startBarIndex = barIndex
                         if (down.position.x withinHandlesOf width) {
                             mode = if (abs(down.position.x - width * OverlapStart) <
                                 abs(down.position.x - width * OverlapEnd)
@@ -447,7 +477,13 @@ private fun TransitionChart(
                                     sweep = (startSweep + (down.position.y - pressed[0].position.y) / laneHeight).coerceIn(0f, 1f)
                                 }
                                 ChartGesture.PAN -> {
-                                    if (zoom > 1f) {
+                                    if (top) {
+                                        // The top lane's bars are themselves a control:
+                                        // hold and slide sideways to change the phrase.
+                                        barIndex = (startBarIndex +
+                                            ((pressed[0].position.x - down.position.x) / 64f).roundToInt())
+                                            .coerceIn(0, BarChoices.lastIndex)
+                                    } else if (zoom > 1f) {
                                         pan = (startPan - (pressed[0].position.x - down.position.x) / (width * zoom))
                                             .coerceIn(0f, 1f - 1f / zoom)
                                     }
@@ -457,6 +493,7 @@ private fun TransitionChart(
                             event.changes.forEach { it.consume() }
                         }
                         if (scale != overlapScale) onResize(scale)
+                        if (top && barIndex != startBarIndex) onBars(BarChoices[barIndex])
                         if (!top && swap != bassSwap) onSwap(swap)
                         if (!top && sweep != filterSweep) onSweep(sweep)
                     }
@@ -501,6 +538,13 @@ private fun TransitionChart(
 
             if (top) {
                 drawGainCurve(view, w, h, scale)
+                val barX = w * (0.06f + 0.88f * (barIndex / BarChoices.lastIndex.toFloat()))
+                drawRoundRect(
+                    HandoffColor.copy(alpha = 0.95f),
+                    topLeft = Offset(barX - 9f, h - 10f),
+                    size = Size(18f, 5f),
+                    cornerRadius = CornerRadius(2f),
+                )
             } else {
                 drawWaveforms(view, w, h, zoom, pan)
                 drawFadeCurves(view, w, h, scale, swap, sweep)

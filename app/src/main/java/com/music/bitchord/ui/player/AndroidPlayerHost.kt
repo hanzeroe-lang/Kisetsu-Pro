@@ -111,6 +111,7 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
         override val automixOverlapScale get() = AppSettings.automixOverlapScale
         override val automixBassSwapFraction get() = AppSettings.automixBassSwapFraction
         override val automixFilterSweep get() = AppSettings.automixFilterSweep
+        override val showAutomixAnalysisButton get() = AppSettings.showAutomixAnalysisButton
         override val autoMixArtwork get() = AppSettings.autoMixArtwork
         override val smartMixInProgress get() = AppSettings.smartMixInProgress
         override val smartMixBlend get() = AppSettings.smartMixBlend
@@ -131,6 +132,8 @@ class AndroidPlayerHost(context: Context) : PlayerHost {
         override fun setAutomixBassSwapFraction(value: Float) = AppSettings.setAutomixBassSwapFraction(value)
         override fun setAutomixFilterSweep(value: Float) = AppSettings.setAutomixFilterSweep(value)
         override fun resetAutomixEdits() = AppSettings.resetAutomixEdits()
+        override fun setShowAutomixAnalysisButton(value: Boolean) =
+            AppSettings.setShowAutomixAnalysisButton(value)
         override fun setMixViewOpen(open: Boolean) {
             AppSettings.mixViewOpen.value = open
         }

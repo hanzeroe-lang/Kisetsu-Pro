@@ -15,6 +15,7 @@ import com.music.bitchord.data.settings.MixBlend
 import com.music.bitchord.data.settings.MixDeck
 import com.music.bitchord.data.settings.MixTransitionView
 import com.music.bitchord.playback.audio.bitperfect.BitPerfectOutput
+import com.music.bitchord.ui.player.InstantMixRequest
 import com.music.bitchord.data.settings.SmartAnalysis
 import com.music.bitchord.data.settings.TrackAnalysisState
 import com.music.bitchord.data.settings.TransitionWindow
@@ -937,6 +938,11 @@ class CrossfadeController(
         publishAnalysisState()
         publishAutomixDetail()
         expireMixPreview()
+        val instantToken = InstantMixRequest.token
+        if (instantToken != lastInstantMixToken) {
+            lastInstantMixToken = instantToken
+            instantMixRequested = true
+        }
 
         if (easing != null && phase == Phase.IDLE) driveEase()
 
@@ -1192,7 +1198,23 @@ class CrossfadeController(
         // rather than changing the analysis itself, so dragging a line has an
         // audible effect on the very next blend.
         var plan = rawPlan
-        if (!rawPlan.blocked) {
+        val instant = instantMixRequested
+        if (instant) {
+            instantMixRequested = false
+            val now = active().currentPosition / 1000.0
+            val length = duration / 1000.0
+            val fade = plan.fadeSeconds.coerceIn(1.0, (length - now).coerceAtLeast(1.0))
+            plan = plan.copy(
+                transitionStart = now,
+                transitionEnd = (now + fade).coerceAtMost(length),
+                fadeSeconds = fade,
+                shouldStart = true,
+                blocked = false,
+                markerVisible = true,
+                reason = "instant-mix",
+            )
+        }
+        if (!instant && !rawPlan.blocked) {
             val scale = AppSettings.automixOverlapScale.value
             if (scale != 1f && rawPlan.fadeSeconds > 0.0) {
                 val fade = (rawPlan.fadeSeconds * scale).coerceIn(0.5, rawPlan.fadeSeconds * 2.5)
@@ -1235,7 +1257,7 @@ class CrossfadeController(
         val loop = loopPlanFor(
             player, currentItem, nextItem, currentAnalysis, nextAnalysis, duration, nextDuration, analysisState,
         )
-        if (loop != null && nextStreamReady(nextItem)) {
+        if (!instant && loop != null && nextStreamReady(nextItem)) {
             val loopStartMs = (loop.out.loopStart * 1000).roundToLong()
             AppSettings.smartTransitionWindow.value = TransitionWindow(
                 start = (loopStartMs.toFloat() / duration).coerceIn(0f, 1f),
@@ -3006,6 +3028,8 @@ class CrossfadeController(
 
     private var lastSmartPlan: TransitionPlan? = null
     private var lastSmartPlanStartMs = 0L
+    private var lastInstantMixToken = 0
+    private var instantMixRequested = false
 
     /**
      * The detailed Automix line under the stream stats: both songs' analysis

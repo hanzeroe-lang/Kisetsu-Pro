@@ -236,6 +236,7 @@ fun SettingsScreen(
     val metered by AppSettings.meteredConnection.collectAsStateWithLifecycle()
     val crossfade by AppSettings.crossfadeSeconds.collectAsStateWithLifecycle()
     val smartFade by AppSettings.smartFadeEnabled.collectAsStateWithLifecycle()
+    val showAutomixAnalysisButton by AppSettings.showAutomixAnalysisButton.collectAsStateWithLifecycle()
     val automixModels by AutomixModels.state.collectAsStateWithLifecycle()
     val automixPerformance by AppSettings.automixPerformanceMode.collectAsStateWithLifecycle()
     val skipSilence by AppSettings.skipSilence.collectAsStateWithLifecycle()
@@ -861,6 +862,15 @@ fun SettingsScreen(
                             subtitle = stringResource(R.string.automix_mini_art_transition_subtitle),
                             checked = artwork.miniPlayerTransition,
                             onCheckedChange = AppSettings::setAutoMixMiniPlayerTransition,
+                            enabled = !bitPerfectReady,
+                            titleMaxLines = 2,
+                            subtitleEndPadding = 12.dp,
+                        )
+                        SettingsSubRow(
+                            title = "Always show Automix Analysis",
+                            subtitle = "Keeps the shining Automix Analysis button on the player, so you can open the editor any time.",
+                            checked = showAutomixAnalysisButton,
+                            onCheckedChange = AppSettings::setShowAutomixAnalysisButton,
                             enabled = !bitPerfectReady,
                             titleMaxLines = 2,
                             subtitleEndPadding = 12.dp,

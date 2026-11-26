@@ -104,6 +104,7 @@ import androidx.compose.ui.composed
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.CornerRadius
@@ -243,6 +244,7 @@ internal fun PlayerScrubber(
     // canvas needs.
     val mixBlend = PlayerSettings.smartMixBlend.collectAsStateWithLifecycle()
     val reduceAnimation by PlayerSettings.reduceAnimation.collectAsStateWithLifecycle()
+    val showAutomixAnalysis by PlayerSettings.showAutomixAnalysisButton.collectAsStateWithLifecycle()
     // One clock for the bar and the "Mixing" label, so they breathe on the same beat.
     val mixPulse = rememberMixPulse({ mixBlend.value }, enabled = !reduceAnimation)
     Column(Modifier.fillMaxWidth()) {
@@ -299,12 +301,14 @@ internal fun PlayerScrubber(
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .graphicsLayer { alpha = 1f - mixPulse.cover },
+                    .graphicsLayer { alpha = if (showAutomixAnalysis) 0f else 1f - mixPulse.cover },
             ) {
                 centerLabel()
             }
             val mixingShown by remember { derivedStateOf { mixPulse.cover > 0f } }
-            if (mixingShown) {
+            if (showAutomixAnalysis) {
+                AutomixAnalysisButton(pulse, Modifier.align(Alignment.Center))
+            } else if (mixingShown) {
                 MixingLabel(mixPulse, Modifier.align(Alignment.Center))
             }
         }
@@ -340,6 +344,51 @@ private fun MixingLabel(pulse: MixPulse, modifier: Modifier = Modifier) {
             fontSize = (MaterialTheme.typography.labelMedium.fontSize.value + BADGE_SIZE_BUMP).sp,
         ),
         color = chromeWhite(0.85f),
+        maxLines = 1,
+    )
+}
+
+/**
+ * A permanently available "Automix Analysis" button. It breathes with the mix
+ * pulse and carries a travelling sheen, but stays readable between beats so
+ * the editor is always one tap away when the setting is on.
+ */
+@Composable
+private fun AutomixAnalysisButton(pulse: MixPulse, modifier: Modifier = Modifier) {
+    Text(
+        text = "Automix Analysis",
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .drawBehind {
+                val shimmer = pulse.level.coerceIn(0f, 1f)
+                drawRoundRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.04f),
+                            Color.White.copy(alpha = 0.16f + 0.18f * shimmer),
+                            Color.White.copy(alpha = 0.04f),
+                        ),
+                        start = Offset(size.width * (-0.4f + shimmer * 1.4f), 0f),
+                        end = Offset(size.width * (0.5f + shimmer * 1.4f), 0f),
+                    ),
+                    cornerRadius = CornerRadius(10.dp.toPx()),
+                )
+            }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) { MixViewRequest.open = true }
+            .graphicsLayer {
+                alpha = pulse.alpha(1f, restShare = 0.82f)
+                compositingStrategy = CompositingStrategy.ModulateAlpha
+            }
+            .additiveChrome(LocalPlayerChrome.current)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Medium,
+            fontSize = (MaterialTheme.typography.labelMedium.fontSize.value + BADGE_SIZE_BUMP).sp,
+        ),
+        color = chromeWhite(0.95f),
         maxLines = 1,
     )
 }
