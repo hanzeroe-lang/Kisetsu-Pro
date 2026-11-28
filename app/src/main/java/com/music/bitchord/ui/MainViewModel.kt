@@ -14,7 +14,7 @@ import com.music.bitchord.data.AppUpdateChecker
 import com.music.bitchord.data.LocalMediaRepository
 import com.music.bitchord.data.LikeState
 import com.music.bitchord.data.YtMusicRepository
-import com.music.bitchord.data.event.KisetsuEvent
+import com.music.bitchord.data.event.SpotifyEvent
 import com.music.bitchord.data.model.SPOTIFY_MISSING_PREFIX
 import com.music.bitchord.data.model.SPOTIFY_PENDING_PREFIX
 import com.music.bitchord.data.spotify.SPOTIFY_PAGE_PREFIX
@@ -148,17 +148,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val homeLoadGeneration = AtomicLong(0L)
 
     /**
-     * The Kisetsu Picks shelf's tracks, resolved from [KisetsuEvent]'s queries.
+     * The Spotify Picks shelf's tracks, resolved from [SpotifyEvent]'s queries.
      *
      * The shelf is a search, not a stored playlist: each card asks YouTube
      * Music for its song and keeps the best hit, so the row never points at a
      * video that has been taken down. Empty until the first pass lands, and
      * the home screen simply omits the shelf while it is.
      */
-    private val _kisetsuPicks = MutableStateFlow<List<Song>>(emptyList())
-    val kisetsuPicks: StateFlow<List<Song>> = _kisetsuPicks.asStateFlow()
-    private var kisetsuPicksPhase: Boolean? = null
-    private var kisetsuPicksJob: Job? = null
+    private val _SpotifyPicks = MutableStateFlow<List<Song>>(emptyList())
+    val SpotifyPicks: StateFlow<List<Song>> = _SpotifyPicks.asStateFlow()
+    private var SpotifyPicksPhase: Boolean? = null
+    private var SpotifyPicksJob: Job? = null
 
     private val _explore = MutableStateFlow<UiState<List<MoodGenreSection>>>(UiState.Loading)
     val explore: StateFlow<UiState<List<MoodGenreSection>>> = _explore.asStateFlow()
@@ -1730,18 +1730,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
      * The season is remembered with the result: when 1 November flips the
      * theme the next call re-resolves rather than reusing October's tracks.
      */
-    fun loadKisetsuPicks() {
-        val halloween = KisetsuEvent.halloween
-        if (kisetsuPicksPhase == halloween) return
-        if (kisetsuPicksJob?.isActive == true) return
-        kisetsuPicksJob = viewModelScope.launch {
+    fun loadSpotifyPicks() {
+        val halloween = SpotifyEvent.halloween
+        if (SpotifyPicksPhase == halloween) return
+        if (SpotifyPicksJob?.isActive == true) return
+        SpotifyPicksJob = viewModelScope.launch {
             var songs = runCatching { buildFlowQueue(FlowEngine.INITIAL_TRACKS) }
                 .getOrDefault(emptyList())
                 .filter { it.videoId.isNotBlank() }
             if (songs.size < FLOW_PICKS_MINIMUM) {
                 val gate = Semaphore(4)
                 val fallback = coroutineScope {
-                    KisetsuEvent.picksQueries.map { query ->
+                    SpotifyEvent.picksQueries.map { query ->
                         async {
                             gate.withPermit {
                                 runCatching {
@@ -1766,8 +1766,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             // An empty pass is a network failure, not a row with no songs:
             // leave the phase unset so the next visit asks again.
             if (songs.isNotEmpty()) {
-                _kisetsuPicks.value = songs
-                kisetsuPicksPhase = halloween
+                _SpotifyPicks.value = songs
+                SpotifyPicksPhase = halloween
             }
         }
     }
@@ -1780,8 +1780,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
      * keeps it on the device. Named with the day it was taken, so each save is
      * its own snapshot and one quietly never replaced the other.
      */
-    fun saveKisetsuPicksAsPlaylist(onResult: ((title: String, savedLocally: Boolean) -> Unit)? = null) {
-        val picks = _kisetsuPicks.value
+    fun saveSpotifyPicksAsPlaylist(onResult: ((title: String, savedLocally: Boolean) -> Unit)? = null) {
+        val picks = _SpotifyPicks.value
         if (picks.isEmpty()) return
         val title = "Top Picks for You . " +
             java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault())
@@ -1890,14 +1890,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             if (identity != listenerKey()) return@onSuccess
             homeContinuation = feed.continuation
             homeSeenTitles.clear()
-            // The personal station ("Kisetsu Radio - Your personal station") is a
+            // The personal station ("Nottify Radio - Your personal station") is a
             // Spotify-wardrobe shelf. Off Spotify mode it is the Apple style, and
             // there it does not belong at the head of the listener's feed - it is
             // hidden entirely rather than merely restyled.
             val appleStyle = !AppSettings.spotifyMode.value
             val shelves = feed.shelves.withoutRepeatsOf(emptyList())
                 .filter { homeSeenTitles.add(it.title.lowercase(Locale.ROOT)) }
-                .filter { !appleStyle || !it.title.lowercase(Locale.ROOT).contains("kisetsu radio", ignoreCase = true) }
+                .filter { !appleStyle || !it.title.lowercase(Locale.ROOT).contains("Nottify radio", ignoreCase = true) }
             if (shelves.isNotEmpty()) _home.value = UiState.Success(shelves)
         }
         recent?.await()?.onSuccess { shelf ->
@@ -1922,7 +1922,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     val existing = (_home.value as? UiState.Success)?.data ?: emptyList()
                     val added = feed.shelves.withoutRepeatsOf(existing)
                         .filter { homeSeenTitles.add(it.title.lowercase(Locale.ROOT)) }
-                        .filter { !appleStyle || !it.title.lowercase(Locale.ROOT).contains("kisetsu radio", ignoreCase = true) }
+                        .filter { !appleStyle || !it.title.lowercase(Locale.ROOT).contains("Nottify radio", ignoreCase = true) }
                     // A page with nothing new signals the feed has looped back on
                     // itself rather than run dry with a token still attached -
                     // treat it the same as exhausted so scrolling can't spin here.

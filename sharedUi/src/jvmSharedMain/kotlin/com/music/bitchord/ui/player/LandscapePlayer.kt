@@ -60,7 +60,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.data.canvas.CanvasArtwork
-import com.music.bitchord.data.event.KisetsuEvent
+import com.music.bitchord.data.event.SpotifyEvent
 import com.music.bitchord.data.model.LikeStatus
 import com.music.bitchord.data.model.Song
 
@@ -459,7 +459,7 @@ internal fun LandscapeCredits(
         // download against either.
         if (signedIn && song.localUri == null) {
             val liked = likeStatus == LikeStatus.LIKE
-            if (KisetsuEvent.halloween) {
+            if (SpotifyEvent.halloween) {
                 PumpkinLikeButton(
                     label = stringResource(
                         if (liked) Res.string.remove_from_liked else Res.string.like,

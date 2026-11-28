@@ -91,7 +91,7 @@ fun MonthlyRecapEntry(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color.White.copy(alpha = 0.10f))
             .clickable { onOpen(month) }
             .padding(18.dp),
@@ -249,7 +249,7 @@ private fun MonthlySlide(slide: MSlide, summary: ReplaySummary, onPlaySong: (Son
                         model = slide.song.thumbnailUrl?.artworkAt(600),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(220.dp).clip(RoundedCornerShape(20.dp)).background(Color.White.copy(alpha = 0.1f)),
+                        modifier = Modifier.size(220.dp).clip(RoundedCornerShape(22.dp)).background(Color.White.copy(alpha = 0.1f)),
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(slide.song.title, color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Black, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -328,7 +328,7 @@ private fun MonthlyRecapSharePage(summary: ReplaySummary, onDismiss: () -> Unit)
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                 val image = poster
                 if (image != null) {
-                    Image(bitmap = image.asImageBitmap(), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f).clip(RoundedCornerShape(16.dp)))
+                    Image(bitmap = image.asImageBitmap(), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f).clip(RoundedCornerShape(18.dp)))
                 } else {
                     CircularProgressIndicator(color = Color.White)
                 }
@@ -341,7 +341,7 @@ private fun MonthlyRecapSharePage(summary: ReplaySummary, onDismiss: () -> Unit)
                     accent = false,
                     enabled = ready && !saved,
                     modifier = Modifier.weight(1f),
-                ) { val image = poster ?: return@ShareAction; scope.launch { saved = saveToGallery(context, image, summary.label, "kisetsu-recap") } }
+                ) { val image = poster ?: return@ShareAction; scope.launch { saved = saveToGallery(context, image, summary.label, "Nottify-recap") } }
                 ShareAction(
                     label = "Share",
                     icon = Icons.Rounded.IosShare,
@@ -381,7 +381,7 @@ private suspend fun renderMonthlyPoster(summary: ReplaySummary): Bitmap = withCo
         while (s.isNotEmpty() && p.measureText("$s.") > maxW) s = s.dropLast(1)
         return "$s."
     }
-    draw("KISETSU MONTHLY RECAP", 80f, 170f, 34f, 0xE6FFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
+    draw("NOTTIFY MONTHLY RECAP", 80f, 170f, 34f, 0xE6FFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
     draw(fit(summary.label, 120f, 920f), 80f, 360f, 120f, 0xFFFFFFFF.toInt())
     var y = 520f
     fun stat(label: String, value: String) {
@@ -395,6 +395,6 @@ private suspend fun renderMonthlyPoster(summary: ReplaySummary): Bitmap = withCo
     stat("Top artist", summary.artists.firstOrNull()?.title ?: "-")
     stat("Top song", summary.songs.firstOrNull()?.let { "${it.song.title} . ${it.song.artist}" } ?: "-")
     stat("Different songs", "${summary.distinctSongs}")
-    draw("KISETSU  .  ${summary.label.uppercase(Locale.ROOT)}", 80f, h - 110f, 30f, 0xCCFFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
+    draw("NOTTIFY  .  ${summary.label.uppercase(Locale.ROOT)}", 80f, h - 110f, 30f, 0xCCFFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
     bmp
 }

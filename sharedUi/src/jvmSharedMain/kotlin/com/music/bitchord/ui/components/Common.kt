@@ -91,7 +91,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.material3.CircularProgressIndicator
 import com.music.bitchord.data.model.artworkAt
 import com.music.bitchord.data.model.displayArtist
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Shape
@@ -539,17 +539,17 @@ private fun SongRowContent(
             }
         } else {
             Box(Modifier.size(52.dp)) {
-                if (song.needsKisetsuRadioCover()) {
+                if (song.needsSpotifyRadioCover()) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .thumbnailBorder(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(10.dp))
+                            .thumbnailBorder(RoundedCornerShape(10.dp))
                             .background(Color(0xFFFA2D48)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Image(
-                            painter = painterResource(Res.drawable.kisetsu_logo_foreground),
+                            painter = painterResource(Res.drawable.Spotify_logo_foreground),
                             contentDescription = null,
                             modifier = Modifier.size(28.dp),
                         )
@@ -560,8 +560,8 @@ private fun SongRowContent(
                         contentDescription = null,
                         modifier = Modifier
                             .matchParentSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .thumbnailBorder(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(10.dp))
+                            .thumbnailBorder(RoundedCornerShape(10.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                     )
                 }
@@ -708,7 +708,7 @@ fun SearchPlayingBars(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(24.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(Color.Black.copy(alpha = 0.52f)),
         contentAlignment = Alignment.Center,
     ) {
@@ -815,7 +815,7 @@ fun SignInBanner(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = PAGE_GUTTER, vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(onClick = onSignIn)
             .padding(horizontal = 14.dp, vertical = 10.dp),

@@ -227,6 +227,7 @@ fun SettingsScreen(
     val smartFade by AppSettings.smartFadeEnabled.collectAsStateWithLifecycle()
     val automixPerformance by AppSettings.automixPerformanceMode.collectAsStateWithLifecycle()
     val automixEngine by AppSettings.automixEngine.collectAsStateWithLifecycle()
+    val wrappedCoverAds by AppSettings.wrappedCoverAds.collectAsStateWithLifecycle()
     val skipSilence by AppSettings.skipSilence.collectAsStateWithLifecycle()
     val dolbyAtmos by AppSettings.dolbyAtmos.collectAsStateWithLifecycle()
     val spatialAudio by AppSettings.spatialAudio.collectAsStateWithLifecycle()
@@ -354,7 +355,7 @@ fun SettingsScreen(
     val podcastBookmarksEnabled by AppSettings.podcastBookmarksEnabled.collectAsStateWithLifecycle()
     val hideVolumeBar by AppSettings.hideVolumeBar.collectAsStateWithLifecycle()
     val hideSongStatus by AppSettings.hideSongStatus.collectAsStateWithLifecycle()
-    // Kisetsu v7.2 customisation.
+    // Spotify v7.2 customisation.
     val hidePlayerTopLine by AppSettings.hidePlayerTopLine.collectAsStateWithLifecycle()
     val showSeekPreviewTimes by AppSettings.showSeekPreviewTimes.collectAsStateWithLifecycle()
     val showLyricsPreview by AppSettings.showLyricsPreview.collectAsStateWithLifecycle()
@@ -415,6 +416,7 @@ fun SettingsScreen(
     var picking by remember { mutableStateOf<QualityTarget?>(null) }
     var pickingDownloadQuality by remember { mutableStateOf(false) }
     var pickingAutomixPerformance by remember { mutableStateOf(false) }
+    var showAutomixAnalysis by remember { mutableStateOf(false) }
     // What the last export or import did, shown on the row that did it rather
     // than as a toast: a backup is the one action here whose outcome nobody can
     // check by looking at the app afterwards. Held per direction, or an import's
@@ -541,7 +543,6 @@ fun SettingsScreen(
     val categories = listOf(
         SettingsCategory("account", "Account", "Integrations and sign-in", Icons.Rounded.Person),
         SettingsCategory("appearance", "Appearance", "Theme, player, and display", Icons.Rounded.Palette),
-        SettingsCategory("ui_updates", "UI updates", "New UI features and experiments (all toggleable)", Icons.Rounded.AutoAwesome),
         SettingsCategory("audio", "Audio & Playback", "Quality, playback, and haptics", Icons.Rounded.MusicNote),
         SettingsCategory("downloads", "Downloads", "Download quality and behavior", Icons.Rounded.Download),
         SettingsCategory("library", "Library & Storage", "Local music, cache, and storage", Icons.Rounded.Storage),
@@ -694,7 +695,7 @@ fun SettingsScreen(
             // decides which version of a track gets fetched, the same question
             // the two rows above answer, and not how one is played back.
             //
-            // Kisetsu v7.2: always offered. The decode still depends on the
+            // Spotify v7.2: always offered. The decode still depends on the
             // device - see [DeviceCodecs.playsDolbyAtmos] - but hiding the
             // switch on a phone with no E-AC-3 decoder only made the feature
             // look absent from the app. The subtitle says what is actually
@@ -918,6 +919,14 @@ fun SettingsScreen(
                     subtitle = stringResource(R.string.automix_performance_subtitle),
                     value = automixPerformance.localizedLabel(),
                     onClick = { pickingAutomixPerformance = true },
+                )
+            }
+            row("Automix analysis", "automix", "analysis", "dj", "blend") {
+                SettingsRow(
+                    icon = Icons.Rounded.Tune,
+                    title = "Automix analysis",
+                    subtitle = "See the beat grid, overlap and fade for the next handoff",
+                    onClick = { showAutomixAnalysis = true },
                 )
             }
             val skipSilenceTitle = stringResource(R.string.skip_silence)
@@ -1175,6 +1184,24 @@ fun SettingsScreen(
                 )
             }
 
+            row("Wrapped cover ads", "wrapped", "cover", "album", "advert") {
+                SettingsRow(
+                    icon = Icons.Rounded.AutoAwesome,
+                    title = "Wrapped cover ads",
+                    subtitle = "Show the Nottify Wrapped advert in place of some album covers.",
+                    trailing = {
+                        Switch(
+                            checked = wrappedCoverAds,
+                            onCheckedChange = AppSettings::setWrappedCoverAds,
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                checkedBorderColor = MaterialTheme.colorScheme.primary,
+                            ),
+                        )
+                    },
+                    onClick = { AppSettings.setWrappedCoverAds(!wrappedCoverAds) },
+                )
+            }
             row("Colored nav bar", "navbar", "nav bar", "color", "accent", "tint") {
                 SettingsRow(
                     icon = Icons.Rounded.Palette,
@@ -1212,7 +1239,7 @@ fun SettingsScreen(
                     onClick = { AppSettings.setSloplessMode(!sloplessMode) },
                 )
             }
-            val spotifyAlgorithmTitle = "Spotify algorithm"
+            val spotifyAlgorithmTitle = "Nottify algorithm"
             row(spotifyAlgorithmTitle, "spotify", "algorithm", "recommendations", "radio", "autoplay", "ads") {
                 SettingsRow(
                     icon = Icons.Rounded.AutoAwesome,
@@ -1494,11 +1521,11 @@ fun SettingsScreen(
                     onClick = { showInvincibleDialog = true },
                 )
             }
-            row("Kisetsu brand theme", "welcome", "switzerland", "swiss", "theme", "brand", "blue", "pink", "orange") {
+            row("Nottify brand theme", "welcome", "switzerland", "swiss", "theme", "brand", "blue", "pink", "orange") {
                 SettingsRow(
                     icon = Icons.Rounded.Palette,
-                    title = "Kisetsu brand theme",
-                    subtitle = "Bold blue, pink, and orange Kisetsu colour scheme with Deezer Product typography.",
+                    title = "Nottify brand theme",
+                    subtitle = "Bold blue, pink, and orange Spotify colour scheme with Deezer Product typography.",
                     trailing = {
                         Switch(
                             checked = welcomeToSwitzerland,
@@ -1607,7 +1634,7 @@ fun SettingsScreen(
                     onClick = { AppSettings.setProgressivePageBlur(!progressivePageBlur) },
                 )
             }
-            val playerBgTitle = "Spotify player background"
+            val playerBgTitle = "Nottify player background"
             row(playerBgTitle, "player", "background", "apple", "mesh", "dynamic", "legacy", "gradient", "album", "blur") {
                 SettingsRow(
                     icon = Icons.Rounded.Animation,
@@ -2583,7 +2610,7 @@ fun SettingsScreen(
         if (searchQuery.isBlank()) {
         Text(
             text = buildAnnotatedString {
-                append("Kisetsu $version\nðŸŒ¸")
+                append("Nottify $version\nðŸŒ¸")
             },
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -2653,6 +2680,16 @@ fun SettingsScreen(
                     pickingAutomixPerformance = false
                 },
             )
+        }
+    }
+
+    if (showAutomixAnalysis) {
+        ModalBottomSheet(
+            onDismissRequest = { showAutomixAnalysis = false },
+            containerColor = androidx.compose.ui.graphics.Color(0xFF0F0F0F),
+            dragHandle = null,
+        ) {
+            com.music.bitchord.ui.components.AutomixAnalysisSheet()
         }
     }
 
@@ -2880,8 +2917,8 @@ fun SettingsScreen(
             AccentOption("youtube_coral", "YouTube Coral"),
             AccentOption("white", "White"),
             AccentOption("blossom", "Cherry Blossom"),
-            AccentOption("spotify", "Spotify Green"),
-            AccentOption("orange", "Kisetsu Orange"),
+            AccentOption("spotify", "Nottify Green"),
+            AccentOption("orange", "Nottify Orange"),
             AccentOption("apple", "Apple Music Red"),
         )
         AlertDialog(
@@ -2900,7 +2937,7 @@ fun SettingsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .clickable {
                                     AppSettings.setAccentPreset(option.key)
                                     showAccentDialog = false
@@ -2999,12 +3036,12 @@ fun SettingsScreen(
                                 maxLines = 1,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(14.dp))
                                     .background(option.tint)
                                     .border(
                                         width = if (selected) 2.dp else 0.dp,
                                         color = if (selected) Color.White else Color.Transparent,
-                                        shape = RoundedCornerShape(12.dp),
+                                        shape = RoundedCornerShape(14.dp),
                                     )
                                     .clickable {
                                         AppSettings.setInvincibleTheme(option.key)
@@ -3031,7 +3068,7 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .clickable {
                                     AppSettings.setInvincibleBannerMinimised(false)
                                     showInvincibleDialog = false
@@ -3047,7 +3084,7 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .clickable {
                                     AppSettings.setInvincibleTheme("off")
                                     showInvincibleDialog = false
@@ -3078,7 +3115,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     FontOptionRow(
-                        label = "Spotify Mix (Default)",
+                        label = "Nottify Mix (Default)",
                         selected = appFont == "spotify_mix",
                         onClick = { AppSettings.setAppFont("spotify_mix"); showFontDialog = false },
                     )
@@ -3111,7 +3148,7 @@ fun SettingsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -3162,7 +3199,7 @@ private fun FontOptionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(vertical = 9.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -3183,14 +3220,14 @@ private fun FontOptionRow(
 }
 
 private fun appFontLabel(choice: String, uploaded: Set<String>): String = when {
-    choice == "spotify_mix" -> "Spotify Mix (Default)"
+    choice == "spotify_mix" -> "Nottify Mix (Default)"
     choice == "deezer_product" -> "Deezer Product"
     choice == "netflix_sans" -> "Netflix Sans"
     choice == "youtube_sans" -> "YouTube Sans"
     choice == "apple_garamond" -> "Garamond Condensed"
     choice == "system" -> "System default"
     choice.startsWith("uploaded:") -> choice.removePrefix("uploaded:")
-    else -> "Spotify Mix (Default)"
+    else -> "Nottify Mix (Default)"
 }
 
 private fun appSettingsLikeLabel(style: String): String = when (style) {
@@ -3218,8 +3255,8 @@ private fun accentPresetLabel(name: String): String = when (name) {
     "youtube_magenta" -> "YouTube Magenta"
     "youtube_coral" -> "YouTube Coral"
     "white" -> "White"
-    "spotify" -> "Spotify Green"
-    "orange" -> "Kisetsu Orange"
+    "spotify" -> "Nottify Green"
+    "orange" -> "Nottify Orange"
     "apple" -> "Apple Music Red"
     "custom" -> "Custom"
     "blossom" -> "Cherry Blossom"
@@ -3650,7 +3687,7 @@ private fun DownloadQualitySheet(
 
 // ---- Building blocks --------------------------------------------------------
 
-internal val GroupShape = RoundedCornerShape(20.dp)
+internal val GroupShape = RoundedCornerShape(22.dp)
 internal val GROUP_INSET = 16.dp
 internal val ROW_INSET = 16.dp
 internal val ICON_SIZE = 22.dp
@@ -3698,7 +3735,7 @@ private class SettingsGroupScope(
     /**
      * One searchable setting. [keywords] is everything somebody might type
      * looking for it: its title at least, plus whatever its subtitle or the
-     * controls under it say that the title doesn't - "Spotify", say, for the
+     * controls under it say that the title doesn't - "Nottify", say, for the
      * canvas link that lives under Animated cover art.
      *
      * [divided] is false for the rows drawn as part of the row above them
@@ -3710,9 +3747,22 @@ private class SettingsGroupScope(
         divided: Boolean = true,
         content: @Composable () -> Unit,
     ) {
+        // Slimmed-down settings: Discover experiments, Netflix/cinematic
+        // modes, slopless mode and update controls are no longer shown.
+        val hidden = keywords.any { k ->
+            k?.lowercase()?.let { s ->
+                s.contains("discover") || s.contains("netflix") || s.contains("cinematic") ||
+                    s.contains("slopless") || s.contains("update") ||
+                    s.contains("droplet") || s.contains("jar") || s.contains("timestamps") ||
+                    s.contains("preview") || s.contains("playing from") || s.contains("caption") ||
+                    s.contains("brand") || s.contains("switzerland") || s.contains("app icon") ||
+                    s.contains("invincible") || s.contains("dock") || s.contains("corners") ||
+                    s.contains("home:")
+            } ?: false
+        }
         // The header counts for every row beneath it: searching "playback"
         // should turn up the playback group entire, not nothing at all.
-        if (search.matches(header, *keywords)) entries += Entry(divided, content)
+        if (!hidden && search.matches(header, *keywords)) entries += Entry(divided, content)
     }
 }
 

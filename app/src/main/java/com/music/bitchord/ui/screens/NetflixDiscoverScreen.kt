@@ -57,7 +57,7 @@ import com.music.bitchord.data.YtMusicRepository
 import com.music.bitchord.data.model.SearchResult
 import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.artworkAt
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.data.settings.DiscoverSave
 import com.music.bitchord.data.settings.DiscoverSaves
 import com.music.bitchord.data.sources.RadioApi
@@ -94,8 +94,8 @@ fun NetflixDiscoverScreen(
     modifier: Modifier = Modifier,
 ) {
     val art = rememberRemoteArtworkUrl(currentSong)
-    val kisetsu = currentSong?.needsKisetsuRadioCover() == true
-    val palette = rememberArtworkPalette(if (kisetsu) null else art, dark = true)
+    val Spotify = currentSong?.needsSpotifyRadioCover() == true
+    val palette = rememberArtworkPalette(if (Spotify) null else art, dark = true)
     val accent = palette.accent
 
     var query by rememberSaveable { mutableStateOf("") }
@@ -233,7 +233,7 @@ fun NetflixDiscoverScreen(
                     }
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(18.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White.copy(alpha = 0.10f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.08f),
@@ -416,7 +416,7 @@ private fun NetflixJumpBackInHero(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .height(220.dp)
             .pressScale(pressedScale = 1.015f)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(if (art.isNullOrBlank()) Color(0xFFFA2D48) else Color(0xFF1A1A1F))
             .clickable(onClick = onClick)
     ) {
@@ -450,7 +450,7 @@ private fun NetflixJumpBackInHero(
             Text(subtitle, color = Color.White.copy(alpha = 0.85f), fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(2.dp))
             Box(
-                modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color.White).padding(horizontal = 14.dp, vertical = 8.dp),
+                modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White).padding(horizontal = 14.dp, vertical = 8.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(Icons.Rounded.PlayArrow, contentDescription = null, tint = Color.Black, modifier = Modifier.size(18.dp))
@@ -492,7 +492,7 @@ private fun NPosterCard(
         modifier = Modifier
             .width(150.dp)
             .pressScale(pressedScale = 1.03f)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
     ) {
         val isRadioNoArt = art.isNullOrBlank() && (subtitle.contains("radio", ignoreCase = true) || title.isNotBlank())
@@ -500,7 +500,7 @@ private fun NPosterCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(2f / 3f)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(if (art.isNullOrBlank()) Color(0xFFFA2D48) else Color(0xFF1C1C22))
         ) {
             if (art.isNullOrBlank()) {

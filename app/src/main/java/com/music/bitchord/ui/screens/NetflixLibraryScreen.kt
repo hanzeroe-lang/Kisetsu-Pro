@@ -61,7 +61,7 @@ import com.music.bitchord.data.model.LibraryPage
 import com.music.bitchord.data.model.ShelfItem
 import com.music.bitchord.data.model.UiState
 import com.music.bitchord.data.model.artworkAt
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.ui.components.MessageState
 import com.music.bitchord.ui.components.PullToRefresh
 import com.music.bitchord.ui.components.pressScale
@@ -99,7 +99,7 @@ fun NetflixLibraryScreen(
     podcastListenLaterItems: List<ShelfItem> = emptyList(),
     recentlyPlayedItems: List<ShelfItem> = emptyList(),
     insightItems: List<ShelfItem> = emptyList(),
-    insightTitle: String = "Kisetsu picks",
+    insightTitle: String = "Nottify picks",
     downloadStatusText: String? = null,
     /** Opens the full Spotify library screen. */
     onOpenSpotify: () -> Unit = {},
@@ -138,14 +138,14 @@ fun NetflixLibraryScreen(
             when (state) {
                 is UiState.Loading -> {
                     item(key = "nlib-hero-loading") {
-                        Box(Modifier.fillMaxWidth().padding(12.dp).height(320.dp).clip(RoundedCornerShape(22.dp)).background(subtle))
+                        Box(Modifier.fillMaxWidth().padding(12.dp).height(320.dp).clip(RoundedCornerShape(24.dp)).background(subtle))
                     }
                     item(key = "nlib-loading") {
                         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                             repeat(3) {
-                                Box(Modifier.width(180.dp).height(18.dp).clip(RoundedCornerShape(8.dp)).background(subtle))
+                                Box(Modifier.width(180.dp).height(18.dp).clip(RoundedCornerShape(10.dp)).background(subtle))
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    repeat(3) { Box(Modifier.size(140.dp, 210.dp).clip(RoundedCornerShape(12.dp)).background(subtle)) }
+                                    repeat(3) { Box(Modifier.size(140.dp, 210.dp).clip(RoundedCornerShape(14.dp)).background(subtle)) }
                                 }
                             }
                         }
@@ -217,16 +217,16 @@ fun NetflixLibraryScreen(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                         ) {
                             if (onImportSpotifyPlaylist != null) {
-                                OutlinedButton(onClick = onImportSpotifyPlaylist, shape = RoundedCornerShape(10.dp)) { Text("Import Spotify") }
+                                OutlinedButton(onClick = onImportSpotifyPlaylist, shape = RoundedCornerShape(12.dp)) { Text("Import Spotify") }
                             }
                             if (onOpenDiscover != null) {
-                                OutlinedButton(onClick = onOpenDiscover, shape = RoundedCornerShape(10.dp)) {
+                                OutlinedButton(onClick = onOpenDiscover, shape = RoundedCornerShape(12.dp)) {
                                     Icon(Icons.Rounded.Explore, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(Modifier.width(6.dp))
                                     Text("Discover")
                                 }
                             }
-                            OutlinedButton(onClick = onRefresh, shape = RoundedCornerShape(10.dp)) {
+                            OutlinedButton(onClick = onRefresh, shape = RoundedCornerShape(12.dp)) {
                                 Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text("Refresh")
@@ -306,7 +306,7 @@ fun NetflixLibraryScreen(
                                         Column(Modifier.fillMaxWidth()) {
                                             NetflixLibraryRail(shelf.title, shelf.items, onShelfItemClick, onShelfItemLongPress)
                                             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                                OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                                OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                             }
                                         }
                                     }
@@ -319,7 +319,7 @@ fun NetflixLibraryScreen(
                                     Column(Modifier.fillMaxWidth()) {
                                         NetflixLibraryRail(merged.title.ifBlank { "Playlists" }, merged.items, onShelfItemClick, onShelfItemLongPress)
                                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                            OutlinedButton(onClick = { onShowAll(merged) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                            OutlinedButton(onClick = { onShowAll(merged) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                         }
                                     }
                                 }
@@ -333,7 +333,7 @@ fun NetflixLibraryScreen(
                                     Column(Modifier.fillMaxWidth()) {
                                         NetflixLibraryRail(shelf.title, shelf.items, onShelfItemClick, onShelfItemLongPress)
                                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                         }
                                     }
                                 } else item(key = "nlib-artists-empty") { Text("No artists yet.", color = onBg.copy(alpha = 0.7f), modifier = Modifier.padding(16.dp)) }
@@ -344,7 +344,7 @@ fun NetflixLibraryScreen(
                                     Column(Modifier.fillMaxWidth()) {
                                         NetflixLibraryRail(shelf.title, shelf.items, onShelfItemClick, onShelfItemLongPress)
                                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                         }
                                     }
                                 } else item(key = "nlib-albums-empty") { Text("No albums yet.", color = onBg.copy(alpha = 0.7f), modifier = Modifier.padding(16.dp)) }
@@ -355,7 +355,7 @@ fun NetflixLibraryScreen(
                                     Column(Modifier.fillMaxWidth()) {
                                         NetflixLibraryRail(shelf.title, shelf.items, onShelfItemClick, onShelfItemLongPress)
                                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                            OutlinedButton(onClick = { onShowAll(shelf) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                         }
                                     }
                                 } else item(key = "nlib-songs-empty") { Text("No songs shelf available.", color = onBg.copy(alpha = 0.7f), modifier = Modifier.padding(16.dp)) }
@@ -366,7 +366,7 @@ fun NetflixLibraryScreen(
                                     Column(Modifier.fillMaxWidth()) {
                                         NetflixLibraryRail(dl.title, dl.items, onShelfItemClick, onShelfItemLongPress)
                                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                                            OutlinedButton(onClick = { onShowAll(dl) }, shape = RoundedCornerShape(10.dp)) { Text("Show all") }
+                                            OutlinedButton(onClick = { onShowAll(dl) }, shape = RoundedCornerShape(12.dp)) { Text("Show all") }
                                         }
                                     }
                                 }
@@ -444,7 +444,7 @@ private fun NetflixLibraryLinks(
                     modifier = Modifier
                         .fillMaxWidth()
                         .pressScale(pressedScale = 1.015f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .background(onBg.copy(alpha = 0.08f))
                         .clickable { onClick(link.item) }
                         .padding(horizontal = 14.dp, vertical = 12.dp),
@@ -453,7 +453,7 @@ private fun NetflixLibraryLinks(
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .background(onBg.copy(alpha = 0.10f)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -512,7 +512,7 @@ private fun NetflixLibraryHero(
             .fillMaxWidth()
             .height(360.dp)
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(22.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(Color(0xFF141414))
     ) {
         if (art != null) {
@@ -546,13 +546,13 @@ private fun NetflixLibraryHero(
                 Button(
                     onClick = onPrimary,
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Icon(if (heroItem != null) Icons.Rounded.PlayArrow else Icons.Rounded.Refresh, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text(primaryLabel, fontWeight = FontWeight.Bold)
                 }
-                OutlinedButton(onClick = onSecondary, shape = RoundedCornerShape(10.dp)) {
+                OutlinedButton(onClick = onSecondary, shape = RoundedCornerShape(12.dp)) {
                     Icon(Icons.Rounded.Add, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text(secondaryLabel)
@@ -583,12 +583,12 @@ private fun NetflixLibraryRail(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(items, key = { (it.videoId ?: it.browseId ?: it.title) + "|" + (it.subtitle ?: "") + "|" + it.hashCode() }) { item ->
-                val radioCover = item.needsKisetsuRadioCover() || (item.thumbnailUrl.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
+                val radioCover = item.needsSpotifyRadioCover() || (item.thumbnailUrl.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
                 Column(
                     modifier = Modifier
                         .width(150.dp)
                         .pressScale(pressedScale = 1.03f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .combinedClickable(
                             onClick = { onItemClick(item) },
                             onLongClick = { onItemLongPress(item) },
@@ -598,7 +598,7 @@ private fun NetflixLibraryRail(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(2f / 3f)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
                             .background(if (radioCover) Color(0xFFFA2D48) else MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         if (radioCover) {

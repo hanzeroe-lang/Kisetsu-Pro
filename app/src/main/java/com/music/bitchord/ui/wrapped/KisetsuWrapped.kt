@@ -80,7 +80,7 @@ private const val SLIDE_MS = 7_000L
  * the slideshow. Shown only when this year actually has listening behind it.
  */
 @Composable
-fun KisetsuWrappedEntry(
+fun SpotifyWrappedEntry(
     onOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -89,14 +89,14 @@ fun KisetsuWrappedEntry(
         modifier = modifier
             .fillMaxWidth()
             .height(180.dp)
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(26.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.60f))
             .clickable(onClick = onOpen)
             .padding(20.dp),
     ) {
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
             Text(
-                text = "KISETSU WRAPPED",
+                text = "NOTTIFY WRAPPED",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
@@ -127,7 +127,7 @@ private fun wrappedYear(summary: ReplaySummary): String =
     }
 
 /**
- * Kisetsu Wrapped: the year's listening as an animated full-screen slideshow,
+ * Spotify Wrapped: the year's listening as an animated full-screen slideshow,
  * in the shape people know from Spotify's own Wrapped - a run of loud,
  * gradient-backed cards that each give one fact the whole screen, tap through
  * and turn by themselves.
@@ -150,7 +150,7 @@ private fun wrappedYear(summary: ReplaySummary): String =
  * there when someone reaches for it.
  */
 @Composable
-fun KisetsuWrappedStories(
+fun SpotifyWrappedStories(
     onClose: () -> Unit,
     onPlaySong: (com.music.bitchord.data.model.Song, String) -> Unit,
     modifier: Modifier = Modifier,
@@ -165,7 +165,7 @@ fun KisetsuWrappedStories(
         }
     }
     summary?.let { data ->
-        KisetsuWrappedPager(
+        SpotifyWrappedPager(
             summary = data,
             onClose = onClose,
             onPlaySong = onPlaySong,
@@ -220,7 +220,7 @@ private fun palettes(count: Int): List<Palette> = listOf(
 ).let { base -> List(count) { base[it % base.size] } }
 
 @Composable
-private fun KisetsuWrappedPager(
+private fun SpotifyWrappedPager(
     summary: ReplaySummary,
     onClose: () -> Unit,
     onPlaySong: (com.music.bitchord.data.model.Song, String) -> Unit,
@@ -486,7 +486,7 @@ private fun SpinningArtwork(url: String?, sizeDp: Int) {
 @Composable
 private fun TitleCard(summary: ReplaySummary) {
     Kicker("Your year in music")
-    Headline("Kisetsu\nWrapped\n'${wrappedYear(summary)}", size = 64)
+    Headline("Nottify\nWrapped\n'${wrappedYear(summary)}", size = 64)
     Spacer(Modifier.height(18.dp))
     Text(
         text = "Every number on the next few cards was earned one play at a time.",
@@ -553,7 +553,7 @@ private fun TopSongCard(
         modifier = Modifier
             .clip(CircleShape)
             .background(Color.White)
-            .clickable { onPlaySong(entry.song, "Kistify Wrapped") }
+            .clickable { onPlaySong(entry.song, "Nottify Wrapped") }
             .padding(horizontal = 18.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -588,7 +588,7 @@ private fun TopSongsCard(summary: ReplaySummary, from: Int, to: Int) {
                     model = entry.song.thumbnailUrl?.artworkAt(ROW_ART_PX),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.18f)),
+                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.18f)),
                 )
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -740,7 +740,7 @@ private fun OutroCard(
             modifier = Modifier
                 .clip(CircleShape)
                 .background(Color.White)
-                .clickable { onPlaySong(top.song, "Kistify Wrapped") }
+                .clickable { onPlaySong(top.song, "Nottify Wrapped") }
                 .padding(horizontal = 18.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),

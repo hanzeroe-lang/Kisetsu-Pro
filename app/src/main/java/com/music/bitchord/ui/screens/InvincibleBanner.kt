@@ -117,12 +117,12 @@ private fun SkinTab(
         textAlign = TextAlign.Center,
         maxLines = 1,
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(color)
             .border(
                 width = if (selected) 2.dp else 0.dp,
                 color = if (selected) Color.White else Color.Transparent,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(14.dp),
             )
             .clickable { AppSettings.setInvincibleTheme(key) }
             .padding(vertical = 11.dp),

@@ -1,7 +1,7 @@
 package com.music.bitchord.ui.screens
 
-import com.music.bitchord.data.event.KisetsuEvent
-import com.music.bitchord.data.event.KisetsuGreeting
+import com.music.bitchord.data.event.SpotifyEvent
+import com.music.bitchord.data.event.SpotifyGreeting
 import androidx.compose.ui.text.font.FontWeight
 import com.music.bitchord.R
 
@@ -47,7 +47,7 @@ import com.music.bitchord.data.model.artworkAt
 import com.music.bitchord.data.model.ROW_ART_PX
 import com.music.bitchord.data.studio.ScoredPick
 import com.music.bitchord.data.studio.StudioMood
-import com.music.bitchord.ui.components.KisetsuRadioBanner
+import com.music.bitchord.ui.components.SpotifyRadioBanner
 import com.music.bitchord.ui.icons.BitChordIcons
 
 /**
@@ -102,7 +102,7 @@ fun CreateHubScreen(
         // The time-of-day greeting that used to ride under the home heading
         // now lives on Create, where it sits beside the actions.
         Text(
-            text = KisetsuGreeting.lineAt(seasonalEmoji = KisetsuEvent.emoji),
+            text = SpotifyGreeting.lineAt(seasonalEmoji = SpotifyEvent.emoji),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
@@ -164,7 +164,7 @@ private fun HubCard(
     Box(
         modifier = modifier
             .aspectRatio(1.15f)
-            .background(tone.surfaceContainerHigh, RoundedCornerShape(14.dp))
+            .background(tone.surfaceContainerHigh, RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(14.dp),
         contentAlignment = Alignment.TopStart,
@@ -212,7 +212,7 @@ private fun MusicStudioPanel(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(
                 Brush.verticalGradient(listOf(tone.surfaceContainerHigh, tone.surfaceContainer)),
             )
@@ -233,7 +233,7 @@ private fun MusicStudioPanel(
             modifier = Modifier.padding(top = 2.dp),
         )
         Text(
-            text = "Pick a mood. Kisetsu drafts the rest - your library, your recents, and a few new colours to finish.",
+            text = "Pick a mood. Nottify drafts the rest - your library, your recents, and a few new colours to finish.",
             style = MaterialTheme.typography.bodyMedium,
             color = tone.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
@@ -395,7 +395,7 @@ private fun FlowDraft(
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(10.dp)),
             )
             Column(
                 modifier = Modifier

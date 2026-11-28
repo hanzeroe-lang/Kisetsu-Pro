@@ -49,7 +49,7 @@ fun TomsStationCard(
     ownerName: String = "",
     artworkUrl: String? = null,
 ) {
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(12.dp)
     Box(
         modifier = modifier
             .width(260.dp)
@@ -120,7 +120,7 @@ fun TomsStationCard(
 }
 
 /**
- * Kisetsu Radio, rebranded in v9.0 as "Tom's Station" — the personal station
+ * Spotify Radio, rebranded in v9.0 as "Tom's Station" — the personal station
  * keeps its home at the top of Create and of Library as a full-width plate.
  *
  * The station used to open the home screen as the biggest thing on it, which
@@ -130,12 +130,12 @@ fun TomsStationCard(
  * one tap without the home feed leading with it.
  */
 @Composable
-fun KisetsuRadioBanner(
+fun SpotifyRadioBanner(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     artworkUrl: String? = null,
 ) {
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(14.dp)
     val tone = MaterialTheme.colorScheme
     Box(
         modifier = modifier

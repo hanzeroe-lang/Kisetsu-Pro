@@ -113,7 +113,7 @@
             android:theme="@style/Theme.BitChord">
             <!--
               Launcher icon is provided by activity-alias entries below
-              (KisetsuLauncher/SpotifyLauncher) so users can switch icons and we
+              (SpotifyLauncher/SpotifyLauncher) so users can switch icons and we
               never expose two MAIN/LAUNCHER entries (which causes double icons).
             -->
 
@@ -234,29 +234,13 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.BitChord" />
 
-        <!-- Launcher alias: default Kisetsu icon -->
+        <!-- Launcher alias: default Spotify icon -->
         <activity-alias
-            android:name=".KisetsuLauncher"
+            android:name=".SpotifyLauncher"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:label="@string/app_name"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.APP_MUSIC" />
-            </intent-filter>
-        </activity-alias>
-
-        <!-- Launcher alias: Spotify icon (black + green) -->
-        <activity-alias
-            android:name=".SpotifyLauncher"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher_spotify"
-            android:roundIcon="@mipmap/ic_launcher_spotify_round"
             android:label="@string/app_name"
             android:targetActivity=".MainActivity">
             <intent-filter>

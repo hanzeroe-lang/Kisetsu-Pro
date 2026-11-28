@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kistify</string>
+    <string name="app_name">Kisetsu Pro</string>
     <string name="playback_channel_name">Reproduciendo</string>
     <string name="download_channel_name">Descargas</string>
     <string name="download_channel_description">Canciones guardadas en tu carpeta Música</string>
@@ -105,10 +105,10 @@
     <string name="dolby_atmos_open_failed">No se pudieron abrir los ajustes de Dolby Atmos</string>
     <string name="update_available">Actualización disponible: v%1$s</string>
     <string name="software_update">Actualización de software</string>
-    <string name="update_available_body">kisetsu %1$s está disponible para descargar.</string>
-    <string name="update_downloading_body">Descargando kisetsu %1$s…</string>
-    <string name="update_ready_body">kisetsu %1$s está listo para instalar.</string>
-    <string name="update_failed_body">No se pudo descargar kisetsu %1$s.</string>
+    <string name="update_available_body">Nottify %1$s está disponible para descargar.</string>
+    <string name="update_downloading_body">Descargando Nottify %1$s…</string>
+    <string name="update_ready_body">Nottify %1$s está listo para instalar.</string>
+    <string name="update_failed_body">No se pudo descargar Nottify %1$s.</string>
     <string name="download_now">Descargar ahora</string>
     <string name="install_now">Instalar ahora</string>
     <string name="later">Más tarde</string>
@@ -136,7 +136,7 @@
     <string name="widget_previous">Anterior</string>
     <string name="widget_artwork">Portada del álbum</string>
     <string name="widget_nothing_played">Aún no se ha reproducido nada</string>
-    <string name="widget_open_bitchord">Abrir Kistify</string>
+    <string name="widget_open_bitchord">Abrir Nottify</string>
     <string name="widget_preview_title">Título de la canción</string>
     <string name="widget_preview_artist">Artista</string>
     <string name="widget_pill_label">Reproduciendo 4×1</string>
@@ -163,7 +163,7 @@
     <string name="cancel_all">Cancelar todo</string>
     <string name="language">Idioma</string>
     <string name="app_language">Idioma de la aplicación</string>
-    <string name="app_language_description">Elige el idioma que usa Kistify.</string>
+    <string name="app_language_description">Elige el idioma que usa Nottify.</string>
     <string name="english">Inglés</string>
     <string name="spanish">Español</string>
     <string name="french">Francés</string>
@@ -264,10 +264,10 @@
     <string name="beta">Beta</string>
     <string name="refresh_rate">Frecuencia de actualización</string>
     <string name="high_performance_before_enabling">Antes de activarlo</string>
-    <string name="high_performance_battery_warning">Primero configura el uso de batería de Kistify como Sin restricciones. Las frecuencias altas usan más batería, CPU y GPU, y pueden calentar el dispositivo.</string>
+    <string name="high_performance_battery_warning">Primero configura el uso de batería de Nottify como Sin restricciones. Las frecuencias altas usan más batería, CPU y GPU, y pueden calentar el dispositivo.</string>
     <string name="open_battery_settings">Abrir ajustes de batería</string>
     <string name="enable_high_performance_title">¿Activar el modo de alto rendimiento?</string>
-    <string name="enable_high_performance_confirmation">Actívalo solo si el uso de batería de Kistify está configurado como Sin restricciones. Android aún puede limitar la frecuencia si el dispositivo está caliente o tiene poca batería.</string>
+    <string name="enable_high_performance_confirmation">Actívalo solo si el uso de batería de Nottify está configurado como Sin restricciones. Android aún puede limitar la frecuencia si el dispositivo está caliente o tiene poca batería.</string>
     <string name="enable">Activar</string>
     <string name="not_yet">Ahora no</string>
     <string name="activity">Actividad</string>
@@ -302,7 +302,7 @@
     <string name="discord_presence_footer">La tarjeta se actualiza al cambiar la canción, la posición o el estado de reproducción. Se borra cuando la reproducción se detiene.</string>
     <string name="discord_show_audio_quality">Mostrar calidad de audio</string>
     <string name="discord_show_audio_quality_subtitle">Especificaciones Hi-Res, sin pérdida y Dolby en la tarjeta de estado</string>
-    <string name="discord_sign_in_footer">El inicio de sesión abre la página de Discord. No se escribe nada dentro de Kistify.</string>
+    <string name="discord_sign_in_footer">El inicio de sesión abre la página de Discord. No se escribe nada dentro de Nottify.</string>
     <string name="discord_token">Token de Discord</string>
     <string name="discord_token_description">Pega el token de tu cuenta de Discord. Se guarda cifrado en este dispositivo y solo se envía a Discord.</string>
     <string name="discord_token_rejected">Discord rechazó ese token.</string>
@@ -337,7 +337,7 @@
     <string name="downloads_finished">Descargas · finalizadas</string>
     <string name="downloading_progress">Descargando · %1$d%%</string>
     <string name="starting">Iniciando</string>
-    <string name="saved_to_bitchord_folder">Guardada en Music/BitChord</string>
+    <string name="saved_to_bitchord_folder">Guardada en Music/Nottify</string>
     <string name="nothing_downloading">No hay descargas activas</string>
     <string name="nothing_to_explore">No hay nada para explorar ahora</string>
     <string name="no_youtube_music_results">No hay resultados de YouTube Music</string>
@@ -397,7 +397,7 @@
         <item quantity="one">Registro copiado · %1$d línea</item>
         <item quantity="other">Registro copiado · %1$d líneas</item>
     </plurals>
-    <string name="integrate_spotify_canvas">Configurar Spotify Canvas</string>
+    <string name="integrate_spotify_canvas">Configurar Nottify Canvas</string>
     <string name="lastfm_login">Inicio de sesión en Last.fm</string>
     <string name="lastfm_login_description">Inicia sesión con tu cuenta de Last.fm para activar el scrobbling.</string>
     <string name="lastfm_now_playing_subtitle">Actualiza Last.fm con lo que estás escuchando</string>
@@ -463,7 +463,7 @@
     <string name="signing_in">Iniciando sesión…</string>
     <string name="sleep_timer">Temporizador</string>
     <string name="sources_no_lossless">Ninguna fuente activa ofrece audio sin pérdida. Agrega un módulo personalizado para reproducir archivos sin pérdida disponibles sin transcodificarlos.</string>
-    <string name="sources_order_footer">Si una fuente no tiene una canción o no responde, Kistify prueba la siguiente. Las fuentes situadas antes de YouTube pueden reemplazar su grabación si devuelven una versión mejor.</string>
+    <string name="sources_order_footer">Si una fuente no tiene una canción o no responde, Nottify prueba la siguiente. Las fuentes situadas antes de YouTube pueden reemplazar su grabación si devuelven una versión mejor.</string>
     <string name="sources_order_header">Fuentes, en orden de prioridad</string>
     <string name="sources_quality_capped">Esta conexión está configurada por debajo de calidad Alta, así que el audio se transcodifica para respetar ese límite. Las descargas no cambian.</string>
     <string name="jiosaavn_mismatch_warning">Puede elegir la versión equivocada de una canción. Actívalo bajo tu propio riesgo.</string>
@@ -476,13 +476,13 @@
     <string name="upgrade_length_slack_footer">Una tolerancia mayor acepta más coincidencias de fuentes; una menor es más estricta. El valor predeterminado es 3 segundos.</string>
     <string name="seconds_short">%1$d s</string>
     <string name="spdc_token">Token sp_dc</string>
-    <string name="spotify_canvas_setup">Configuración de Spotify Canvas</string>
-    <string name="spotify_canvas_setup_description">Para usar Spotify Canvas, proporciona tu cookie sp_dc de Spotify.</string>
+    <string name="spotify_canvas_setup">Configuración de Nottify Canvas</string>
+    <string name="spotify_canvas_setup_description">Para usar Nottify Canvas, proporciona tu cookie sp_dc de Nottify.</string>
     <string name="spotify_canvas_setup_steps">1. Inicia sesión en open.spotify.com desde un navegador.\n2. Abre las herramientas de desarrollo, entra en Aplicación y luego en Cookies.\n3. Copia el valor de la cookie sp_dc.\n4. Pégalo abajo.</string>
     <string name="spotify_canvas_auto_hide">Ocultar controles automáticamente</string>
-    <string name="spotify_canvas_auto_hide_subtitle">Contrae el medio reproductor tras 5 segundos mientras se reproduce Spotify Canvas</string>
-    <string name="prioritize_spotify_canvas">Priorizar Spotify Canvas</string>
-    <string name="prioritize_spotify_canvas_subtitle">Probar Spotify antes que Apple Music y otros proveedores de portadas animadas</string>
+    <string name="spotify_canvas_auto_hide_subtitle">Contrae el medio reproductor tras 5 segundos mientras se reproduce Nottify Canvas</string>
+    <string name="prioritize_spotify_canvas">Priorizar Nottify Canvas</string>
+    <string name="prioritize_spotify_canvas_subtitle">Probar Nottify antes que Apple Music y otros proveedores de portadas animadas</string>
     <string name="status">Estado</string>
     <string name="status_dialog_message">Lo que muestra tu cuenta mientras la presencia está activa.</string>
     <string name="status_dnd">No molestar</string>
@@ -509,7 +509,7 @@
     <string name="biggest_day_note">Tu día con más actividad fue el %1$s, con %2$s de reproducción.</string>
     <string name="close_replay">Cerrar Replay</string>
     <string name="couldnt_draw_picture">No se pudo crear la imagen</string>
-    <string name="default_replay_holder">Oyente de Kistify</string>
+    <string name="default_replay_holder">Oyente de Nottify</string>
     <string name="different_albums">Álbumes diferentes</string>
     <string name="genres_pending">Los géneros aparecerán cuando aumente tu historial de reproducción</string>
     <string name="hour_am">%1$d a. m.</string>
@@ -539,7 +539,7 @@
     <string name="replay_artist_end"> no dejó de aparecer.</string>
     <string name="replay_artist_focus">Un artista</string>
     <string name="replay_artist_start">Durante todo el mes, </string>
-    <string name="replay_empty_description">Escucha un poco más y Kistify convertirá tu historial en un Replay.</string>
+    <string name="replay_empty_description">Escucha un poco más y Nottify convertirá tu historial en un Replay.</string>
     <string name="replay_genre_end"> definieron tu sonido.</string>
     <string name="replay_genre_focus">Tus géneros</string>
     <string name="replay_genre_start">En conjunto, </string>
@@ -574,7 +574,7 @@
     <string name="top_song">Canción principal</string>
     <string name="when_you_listen_the_most">Cuándo escuchas más</string>
     <string name="your_biggest_day">Tu día con más actividad: %1$s</string>
-    <string name="your_listening_experience">Kistify Wrapped</string>
+    <string name="your_listening_experience">Nottify Wrapped</string>
     <string name="your_lyrics_card">Tu tarjeta de letra</string>
     <string name="your_replay">Tu Replay</string>
     <plurals name="replay_artist_count">
@@ -604,7 +604,7 @@
     <string name="webdav_subtitle">Música en tu servidor</string>
     <string name="webdav_not_configured">Conecta un servidor en Fuentes</string>
     <string name="webdav_empty">No se encontraron archivos de audio en el servidor WebDAV. Revisa la URL en Ajustes.</string>
-    <string name="webdav_description">Conecta Kistify a una carpeta de música WebDAV: tu directorio de música de Nextcloud o cualquier servidor compatible con WebDAV.</string>
+    <string name="webdav_description">Conecta Nottify a una carpeta de música WebDAV: tu directorio de música de Nextcloud o cualquier servidor compatible con WebDAV.</string>
     <string name="webdav_server_url">URL del servidor</string>
     <string name="webdav_server_url_hint">https://cloud.example.com/remote.php/dav/files/user/Music</string>
     <string name="webdav_disconnect">Desconectar</string>
@@ -621,7 +621,7 @@
     <string name="smb_subtitle">Música en una carpeta compartida</string>
     <string name="smb_not_configured">Conecta una carpeta compartida en Fuentes</string>
     <string name="smb_empty">No se encontraron archivos de audio en la carpeta SMB. Revisa el servidor en Fuentes.</string>
-    <string name="smb_description">Conecta Kistify a una carpeta de música compartida: un NAS o una carpeta compartida de Windows por SMB.</string>
+    <string name="smb_description">Conecta Nottify a una carpeta de música compartida: un NAS o una carpeta compartida de Windows por SMB.</string>
     <string name="smb_server_hint">nas.local or 192.168.1.10:4445</string>
     <string name="smb_share_hint">Nombre del recurso, p. ej. Music</string>
     <string name="smb_folder_hint">Carpeta (opcional)</string>
@@ -670,7 +670,7 @@
     </plurals>
     <string name="no_local_albums">Todavía no hay archivos asociados a un álbum o playlist. Descarga un álbum o una playlist completa para que aparezca aquí.</string>
     <string name="play_your_replay">Reproducir tu Replay</string>
-    <string name="counted_on_device_with_bitchord">Calculado en este dispositivo con Kistify</string>
+    <string name="counted_on_device_with_bitchord">Calculado en este dispositivo con Nottify</string>
     <string name="this_month">Este mes</string>
     <string name="this_year">Este año</string>
     <string name="all_time">Todo el tiempo</string>
@@ -738,7 +738,7 @@
     <string name="listen_together_code">Código de la fiesta</string>
     <string name="listen_together_code_footer">Dilo en voz alta o envíalo. La O y la I no se usan, así que una «o» siempre es un cero.</string>
     <string name="copy_code">Copiar código</string>
-    <string name="listen_together_share_text">Escucha conmigo en Kistify — código de fiesta %1$s</string>
+    <string name="listen_together_share_text">Escucha conmigo en Nottify — código de fiesta %1$s</string>
     <string name="listen_together_now_playing">Reproduciendo</string>
     <string name="listen_together_nothing_playing">Todavía no suena nada</string>
     <string name="listen_together_listening">Escuchando · %1$d de %2$d</string>
@@ -775,7 +775,7 @@
     <string name="listen_together_custom_server_dialog_message">Esta fiesta está alojada en un servidor externo:\n\n%1$s\n\n¿Quieres cambiar tu servidor de fiestas y unirte a la fiesta %2$s?</string>
     <string name="listen_together_custom_server_switch_and_join">Cambiar y unirse</string>
     <string name="listen_together_official_server_dialog_title">¿Cambiar al servidor oficial?</string>
-    <string name="listen_together_official_server_dialog_message">Esta fiesta está alojada en el servidor oficial de Kistify.\n\n¿Quieres volver al servidor oficial y unirte a la fiesta %1$s?</string>
+    <string name="listen_together_official_server_dialog_message">Esta fiesta está alojada en el servidor oficial de Nottify.\n\n¿Quieres volver al servidor oficial y unirte a la fiesta %1$s?</string>
     <string name="listen_together_switch_failed_stayed_in_party">No se pudo unir a la fiesta: %1$s. Sigues en la fiesta %2$s.</string>
     <string name="listen_together_switch_failed">No se pudo unir a la fiesta: %1$s.</string>
     <string name="listen_together_ping">%1$d ms</string>
@@ -806,9 +806,9 @@
 
     <string name="add_addon">Añadir un complemento</string>
 
-    <string name="add_addon_detail">Apunta Kistify a un servidor de complementos que alojes o te hayan compartido</string>
+    <string name="add_addon_detail">Apunta Nottify a un servidor de complementos que alojes o te hayan compartido</string>
 
-    <string name="addon_url_description">Pega la URL del complemento, ya sea la raíz o manifest.json. Kistify leerá qué puede buscar y reproducir.</string>
+    <string name="addon_url_description">Pega la URL del complemento, ya sea la raíz o manifest.json. Nottify leerá qué puede buscar y reproducir.</string>
 
     <string name="advanced_options">Opciones avanzadas</string>
 
@@ -944,7 +944,7 @@
 
     <string name="source_skipped_by_quality">No usado en %1$s · la calidad está establecida en %2$s</string>
 
-    <string name="source_unrecognised">Kistify no pudo reconocer ese enlace</string>
+    <string name="source_unrecognised">Nottify no pudo reconocer ese enlace</string>
 
     <string name="revert_to_original">Revertir al original</string>
 
@@ -997,7 +997,7 @@
 
     <string name="auto_login_title">Sign in to YouTube on your phone</string>
 
-    <string name="auto_login_subtitle">Open Kistify on your phone to sign in</string>
+    <string name="auto_login_subtitle">Open Nottify on your phone to sign in</string>
 
     <string name="auto_empty_recents_title">No recent songs</string>
 
@@ -1033,7 +1033,7 @@
     <string name="smart_version_alignment">Alineación de audio inteligente</string>
     <string name="smart_version_alignment_subtitle">Analiza las formas de onda para encontrar el momento exacto de reproducción correspondiente</string>
 
-    <string name="equalizer_footer">Shapes the sound inside Kistify, before it reaches the system.</string>
+    <string name="equalizer_footer">Shapes the sound inside Nottify, before it reaches the system.</string>
 
     <string name="equalizer_dynamic">Dynamic</string>
 
@@ -1076,7 +1076,7 @@
 
     <string name="system_equalizer_subtitle">Your device\'s own panel</string>
 
-    <string name="system_equalizer_footer">Runs after Kistify\'s, on the whole audio session. Using both applies both.</string>
+    <string name="system_equalizer_footer">Runs after Nottify\'s, on the whole audio session. Using both applies both.</string>
 
     <string name="eq_preset_flat">Flat</string>
 
@@ -1232,7 +1232,7 @@
     <string name="song_cache_unlimited_subtitle">Sin límite. El audio en caché puede crecer hasta llenar tu almacenamiento.</string>
     <string name="clear_song_cache_title">¿Borrar caché de canciones?</string>
     <string name="clear_song_cache_warning">Se eliminarán todas las canciones en caché y la carpeta de canciones en caché quedará vacía. Se volverán a transmitir la próxima vez que las reproduzcas.</string>
-    <string name="import_spotify">Importar de Spotify</string>
+    <string name="import_spotify">Importar de Nottify</string>
     <string name="import_spotify_subtitle">Desde un enlace de playlist</string>
     <string name="local_playlist_subtitle">%1$d canciones · En este dispositivo</string>
     <string name="lossless_output_permission_denied">El permiso de dispositivos cercanos está desactivado</string>
@@ -1240,7 +1240,7 @@
     <string name="recent_album">Álbum reciente</string>
     <string name="recent_ep">EP reciente</string>
     <string name="recent_single">Sencillo reciente</string>
-    <string name="spotify">Spotify</string>
+    <string name="spotify">Nottify</string>
     <string name="spotify_connect_subtitle">Inicia sesión para cargar tus playlists. La reproducción usa YouTube Music.</string>
     <string name="spotify_disconnect">Desconectar</string>
     <string name="spotify_empty_playlists">No hay playlists en esta cuenta</string>
@@ -1251,16 +1251,16 @@
     <string name="spotify_import_done">Se importó «%1$s»</string>
     <string name="spotify_import_empty_playlist">No hay canciones en esta playlist</string>
     <string name="spotify_import_failed">No se pudo importar la playlist: %1$s</string>
-    <string name="spotify_import_fetching">Leyendo la playlist de Spotify…</string>
+    <string name="spotify_import_fetching">Leyendo la playlist de Nottify…</string>
     <string name="spotify_import_hint">open.spotify.com/playlist/…</string>
-    <string name="spotify_import_invalid">Ese no es un enlace de playlist de Spotify.</string>
+    <string name="spotify_import_invalid">Ese no es un enlace de playlist de Nottify.</string>
     <string name="spotify_import_local_fallback">No se pudo crear en YouTube Music, así que «%1$s» se guardó en este dispositivo.</string>
     <string name="spotify_import_matching">Buscando canciones %1$d de %2$d</string>
     <string name="spotify_import_none">No se encontró ninguna de esas canciones en YouTube Music.</string>
-    <string name="spotify_import_title">Importar playlist de Spotify</string>
+    <string name="spotify_import_title">Importar playlist de Nottify</string>
     <string name="spotify_import_unmatched">%1$d canciones no se encontraron en YouTube Music</string>
-    <string name="spotify_library_subtitle">Tus playlists de Spotify</string>
-    <string name="spotify_sign_in">Iniciar sesión con Spotify</string>
+    <string name="spotify_library_subtitle">Tus playlists de Nottify</string>
+    <string name="spotify_sign_in">Iniciar sesión con Nottify</string>
     <string name="spotify_track_unavailable">No se encontró esa canción en YouTube Music</string>
     <string name="sing">Sing</string>
     <string name="sing_title">Sing</string>

@@ -107,7 +107,7 @@ fun ReplayScreen(
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
     landingPage: ReplayStoryPage = ReplayStoryPage.INTRO,
-    /** Opens Kisetsu Wrapped from the poster at the head of the page. */
+    /** Opens Spotify Wrapped from the poster at the head of the page. */
     onOpenWrapped: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -168,7 +168,7 @@ fun ReplayScreen(
         ) {
             onOpenWrapped?.let { open ->
                 item("wrapped-entry") {
-                    com.music.bitchord.ui.wrapped.KisetsuWrappedEntry(
+                    com.music.bitchord.ui.wrapped.SpotifyWrappedEntry(
                         onOpen = open,
                         modifier = Modifier.padding(
                             start = PAGE_GUTTER + 4.dp,
@@ -292,7 +292,7 @@ private fun PeriodPicker(selected: ReplayPeriod, onSelect: (ReplayPeriod) -> Uni
     val textColor = if (dark) Color.White else Color.Black
     Row(
         Modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(textColor.copy(alpha = 0.10f))
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -310,7 +310,7 @@ private fun PeriodPicker(selected: ReplayPeriod, onSelect: (ReplayPeriod) -> Uni
                 fontWeight = FontWeight.W700,
                 color = if (active) if (dark) Color.Black else Color.White else textColor.copy(alpha = 0.75f),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(background)
                     .clickable { onSelect(period) }
                     .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -393,7 +393,7 @@ private fun ReplayActionRow(icon: ImageVector, label: String, dark: Boolean, onC
         Modifier
             .padding(horizontal = PAGE_GUTTER + 4.dp, vertical = 18.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(textColor.copy(alpha = 0.12f))
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -460,7 +460,7 @@ private fun SectionTitle(text: String, dark: Boolean) {
 private fun ReplayChartRow(row: ReplayRow, circular: Boolean, dark: Boolean, onClick: () -> Unit) {
     val textColor = if (dark) Color.White else Color.Black
     val textVariant = if (dark) Color.White.copy(alpha = 0.55f) else Color.Black.copy(alpha = 0.55f)
-    val shape = if (circular) CircleShape else RoundedCornerShape(6.dp)
+    val shape = if (circular) CircleShape else RoundedCornerShape(8.dp)
     Row(
         Modifier
             .fillMaxWidth()
@@ -556,7 +556,7 @@ private fun StatTile(label: String, value: String, dark: Boolean, modifier: Modi
     val textColor = if (dark) Color.White else Color.Black
     Column(
         modifier
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(textColor.copy(alpha = 0.09f))
             .padding(vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -695,7 +695,7 @@ private fun ServerConnectionLine(connection: ServerConnectionState) {
 private const val INVITE_SHEET_DELAY_MS = 1_000L
 
 /** The six cells of [PartyCodeField], and the Join button under them. */
-internal val CODE_CELL_SHAPE = RoundedCornerShape(12.dp)
+internal val CODE_CELL_SHAPE = RoundedCornerShape(14.dp)
 
 /**
  * The party code, entered as six cells rather than one box.

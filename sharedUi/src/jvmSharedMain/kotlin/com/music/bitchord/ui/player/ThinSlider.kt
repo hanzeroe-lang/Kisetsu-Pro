@@ -142,7 +142,7 @@ fun ThinSlider(
         modifier = modifier
             .fillMaxWidth()
             // Generous invisible touch target — the visible bar is only ~7dp.
-            .height(activeHeight + 22.dp)
+            .height(activeHeight + 40.dp)
             // One gesture loop for both taps and drags. Two separate detectors
             // — a drag one plus a tap one — meant taps never landed: the drag
             // detector took the pointer and a tap has no drag to report.

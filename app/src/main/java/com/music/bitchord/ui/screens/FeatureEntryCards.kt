@@ -41,7 +41,7 @@ import java.time.YearMonth
 import java.util.Locale
 
 @Composable
-fun KisetsuMomentsStrip(
+fun SpotifyMomentsStrip(
     onOpenChronicle: () -> Unit,
     onOpenOnThisDay: () -> Unit,
     onOpenPersona: () -> Unit,
@@ -140,7 +140,7 @@ private fun MomentChip(
 ) {
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.07f))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 12.dp),

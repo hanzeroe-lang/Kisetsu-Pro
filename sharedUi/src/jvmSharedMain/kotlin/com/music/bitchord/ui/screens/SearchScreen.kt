@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.focus.FocusRequester
@@ -90,6 +91,7 @@ import com.music.bitchord.ui.components.songListSkeleton
 import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.ui.haptics.rememberHaptics
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun SearchScreen(
@@ -468,12 +470,12 @@ private fun TopResultCard(
                 Box(
                     modifier = Modifier
                         .size(72.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFFFA2D48)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
-                        painter = painterResource(Res.drawable.kisetsu_logo_foreground),
+                        painter = painterResource(Res.drawable.Spotify_logo_foreground),
                         contentDescription = null,
                         modifier = Modifier.size(38.dp),
                     )
@@ -482,7 +484,7 @@ private fun TopResultCard(
                 AsyncImage(
                     model = song.thumbnailUrl?.artworkAt(ROW_ART_PX),
                     contentDescription = null,
-                    modifier = Modifier.size(72.dp).clip(RoundedCornerShape(10.dp)),
+                    modifier = Modifier.size(72.dp).clip(RoundedCornerShape(12.dp)),
                 )
             }
             Spacer(Modifier.width(14.dp))
@@ -707,13 +709,13 @@ private fun TypeaheadSongRow(
                 Box(
                     modifier = Modifier
                         .size(52.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .thumbnailBorder(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .thumbnailBorder(RoundedCornerShape(10.dp))
                         .background(Color(0xFFFA2D48)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
-                        painter = painterResource(Res.drawable.kisetsu_logo_foreground),
+                        painter = painterResource(Res.drawable.Spotify_logo_foreground),
                         contentDescription = null,
                         modifier = Modifier.size(28.dp),
                     )
@@ -724,8 +726,8 @@ private fun TypeaheadSongRow(
                     contentDescription = null,
                     modifier = Modifier
                         .size(52.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .thumbnailBorder(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .thumbnailBorder(RoundedCornerShape(10.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                 )
             }
@@ -824,13 +826,13 @@ private fun RecentSearchEntityRow(
                 Box(
                     modifier = Modifier
                         .size(52.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .thumbnailBorder(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .thumbnailBorder(RoundedCornerShape(10.dp))
                         .background(Color(0xFFFA2D48)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
-                        painter = painterResource(Res.drawable.kisetsu_logo_foreground),
+                        painter = painterResource(Res.drawable.Spotify_logo_foreground),
                         contentDescription = null,
                         modifier = Modifier.size(28.dp),
                     )
@@ -841,8 +843,8 @@ private fun RecentSearchEntityRow(
                     contentDescription = null,
                     modifier = Modifier
                         .size(52.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .thumbnailBorder(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
+                        .thumbnailBorder(RoundedCornerShape(10.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                 )
             }
@@ -896,7 +898,7 @@ private fun BrowseRow(item: BrowseItem, onClick: () -> Unit, onLongPress: (() ->
             .padding(horizontal = PAGE_GUTTER, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val shape = if (item.type == BrowseType.ARTIST) CircleShape else RoundedCornerShape(8.dp)
+        val shape = if (item.type == BrowseType.ARTIST) CircleShape else RoundedCornerShape(10.dp)
         if (item.thumbnailUrl.isNullOrBlank() && item.type == BrowseType.ARTIST) {
             Box(
                 modifier = Modifier
@@ -907,7 +909,7 @@ private fun BrowseRow(item: BrowseItem, onClick: () -> Unit, onLongPress: (() ->
                 contentAlignment = Alignment.Center,
             ) {
                 Image(
-                    painter = painterResource(Res.drawable.kisetsu_logo_foreground),
+                    painter = painterResource(Res.drawable.Spotify_logo_foreground),
                     contentDescription = null,
                     modifier = Modifier.size(30.dp),
                 )

@@ -83,7 +83,7 @@ import com.music.bitchord.data.model.UiState
 import java.util.Calendar
 import java.util.Locale
 import com.music.bitchord.data.model.artworkAt
-import com.music.bitchord.data.event.KisetsuEvent
+import com.music.bitchord.data.event.SpotifyEvent
 import com.music.bitchord.ui.components.HERO_CARD_RATIO
 import com.music.bitchord.ui.components.MessageState
 import com.music.bitchord.ui.components.PAGE_GUTTER
@@ -153,7 +153,7 @@ fun HomeScreen(
     currentSong: Song? = null,
     isPlaying: Boolean = false,
     /**
-     * Saves the Kisetsu Picks row as a playlist. Null hides the little Save
+     * Saves the Spotify Picks row as a playlist. Null hides the little Save
      * button beside that row's heading — the desktop, and any feed without a
      * season, has nowhere to put the tracks.
      */
@@ -202,7 +202,7 @@ fun HomeScreen(
             }
             if (title != null) {
                 item { HomeTitle(title, onOpenReplay = { /* open replay */ }) }
-                if (KisetsuEvent.halloweenDay) {
+                if (SpotifyEvent.halloweenDay) {
                     item(key = "halloween") { HalloweenGreeting() }
                 }
             }
@@ -300,14 +300,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.itemsIndexedShelves(
     // The hero treatment belongs to the feed's first real shelf, not to the
     // curated Picks row that sits above it during an event.
     val heroIndex = shelves.indexOfFirst {
-        !it.title.equals(KisetsuEvent.PICKS_TITLE, ignoreCase = true)
+        !it.title.equals(SpotifyEvent.PICKS_TITLE, ignoreCase = true)
     }
     shelves.forEachIndexed { index, shelf ->
         item(key = "shelf:$index:${shelf.title}") {
             val openItem: (ShelfItem) -> Unit = { item -> onItemClick(item, shelf.title) }
-            // Kisetsu Picks is a curated row, never the big hero card: its
+            // Spotify Picks is a curated row, never the big hero card: its
             // cards are songs, and a square is the right shape for a track.
-            val picks = shelf.title.equals(KisetsuEvent.PICKS_TITLE, ignoreCase = true)
+            val picks = shelf.title.equals(SpotifyEvent.PICKS_TITLE, ignoreCase = true)
             if (shelf.title.equals(RECENTS_TITLE, ignoreCase = true)) {
                 RecentShelf(
                     shelf = shelf,
@@ -424,7 +424,7 @@ private fun RecentSectionHeader(
 }
 
 /**
- * The little pill beside the Kisetsu Picks heading.
+ * The little pill beside the Spotify Picks heading.
  *
  * Saving the row is a one-tap action, not a page: the picks already exist, the
  * button just writes them to a playlist. Kept small and outlined so it reads
@@ -504,8 +504,8 @@ fun CompactTrackRow(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(140.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .thumbnailBorder(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(18.dp))
+                    .thumbnailBorder(RoundedCornerShape(18.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             )
             if (isCurrent && isPlaying) SearchPlayingBars(Modifier.align(Alignment.Center))
@@ -569,9 +569,9 @@ private fun HomeTitle(title: String, onOpenReplay: (() -> Unit)? = null, modifie
 /**
  * The greeting that only exists on 31 October.
  *
- * It rides directly under the home heading, ahead of Kisetsu Picks, so the
+ * It rides directly under the home heading, ahead of Spotify Picks, so the
  * event announces itself once and then gets out of the way. Nothing is stored:
- * the card is composed only while [KisetsuEvent.halloweenDay] is true, and the
+ * the card is composed only while [SpotifyEvent.halloweenDay] is true, and the
  * next launch after midnight simply never draws it.
  */
 @Composable
@@ -580,7 +580,7 @@ private fun HalloweenGreeting() {
         modifier = Modifier
             .padding(horizontal = PAGE_GUTTER, vertical = 6.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(
                 Brush.linearGradient(
                     listOf(
@@ -600,7 +600,7 @@ private fun HalloweenGreeting() {
             )
             Spacer(Modifier.height(3.dp))
             Text(
-                text = "Kisetsu Picks has the soundtrack tonight.",
+                text = "Nottify Picks has the soundtrack tonight.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.80f),
             )
@@ -916,7 +916,7 @@ private fun HeroCard(
         if (item.videoId?.startsWith("src:") == true && item.thumbnailUrl.isNullOrBlank()) {
             Box(Modifier.fillMaxSize().background(Color(0xFFFA2D48)), contentAlignment = Alignment.Center) {
                 Image(
-                    painter = painterResource(com.music.bitchord.sharedui.resources.Res.drawable.kisetsu_logo_foreground),
+                    painter = painterResource(com.music.bitchord.sharedui.resources.Res.drawable.Spotify_logo_foreground),
                     contentDescription = null,
                     modifier = Modifier.size(88.dp),
                 )
@@ -987,7 +987,7 @@ internal fun Shelf(
     leadingCard: (@Composable () -> Unit)? = null,
     currentSong: Song? = null,
     isPlaying: Boolean = false,
-    /** An extra control beside the heading, e.g. Kisetsu Picks' Save. */
+    /** An extra control beside the heading, e.g. Spotify Picks' Save. */
     headerAction: (@Composable () -> Unit)? = null,
 ) {
     Column(Modifier.padding(bottom = 26.dp)) {
@@ -1032,7 +1032,7 @@ internal fun NewShelfCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
@@ -1084,7 +1084,7 @@ private fun ServiceCard(colors: List<Color>, trackKey: String, icon: ImageVector
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(14.dp)),
         contentAlignment = Alignment.Center,
     ) {
         MeshGradientBackground(
@@ -1103,7 +1103,7 @@ private fun ServiceCard(colors: List<Color>, trackKey: String, icon: ImageVector
 }
 
 /**
- * Kisetsu v7.2's cover for Liked Music: a blossom-pink wash with the heart at
+ * Spotify v7.2's cover for Liked Music: a blossom-pink wash with the heart at
  * its centre, so the page reads as the listener's own collection rather than
  * as another algorithmic playlist.
  */
@@ -1122,7 +1122,7 @@ private fun LikedSongsCard() {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(14.dp)),
         contentAlignment = Alignment.Center,
     ) {
         MeshGradientBackground(
@@ -1169,7 +1169,7 @@ internal fun ShelfCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(14.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     MeshGradientBackground(
@@ -1206,7 +1206,7 @@ internal fun ShelfCard(
                 trackKey = "local:smb",
                 icon = Icons.Rounded.Storage,
             )
-            // Kisetsu v7.2: the heart the liked songs deserve, instead of a
+            // Spotify v7.2: the heart the liked songs deserve, instead of a
             // cropped still from whichever track YouTube picked for the
             // generated playlist cover.
             "LM", "VLLM" -> LikedSongsCard()
@@ -1246,18 +1246,18 @@ internal fun ShelfCard(
                         .thumbnailBorder(artShape)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                 ) {
-                    val kisetsuRadio = item.videoId?.startsWith("src:") == true && effectiveThumb.isNullOrBlank() && playlistCovers[item.browseId] == null
-                    if (kisetsuRadio) {
+                    val SpotifyRadio = item.videoId?.startsWith("src:") == true && effectiveThumb.isNullOrBlank() && playlistCovers[item.browseId] == null
+                    if (SpotifyRadio) {
                         Box(Modifier.fillMaxSize().background(Color(0xFFFA2D48)), contentAlignment = Alignment.Center) {
                             androidx.compose.foundation.Image(
-                                painter = org.jetbrains.compose.resources.painterResource(com.music.bitchord.sharedui.resources.Res.drawable.kisetsu_logo_foreground),
+                                painter = org.jetbrains.compose.resources.painterResource(com.music.bitchord.sharedui.resources.Res.drawable.Spotify_logo_foreground),
                                 contentDescription = null,
                                 modifier = Modifier.size(56.dp),
                             )
                         }
                     } else {
                         AsyncImage(
-                            // Kisetsu v7.2: a cover the listener picked beats
+                            // Spotify v7.2: a cover the listener picked beats
                             // whichever track YouTube chose for the playlist.
                             model = playlistCovers[item.browseId]
                                 ?: effectiveThumb.artworkAt(CARD_ART_PX),

@@ -19,7 +19,7 @@ object FlowRules {
     const val FLOW_BROWSE_ID = "bitchord:flow"
 
     /** Synthetic shelf title for the Home entry point. */
-    const val FLOW_SHELF_TITLE = "Kisetsu Radio — Your personal station"
+    const val FLOW_SHELF_TITLE = "Spotify Radio — Your personal station"
 
     fun isUnlocked(favTrackCount: Int, favArtistCount: Int): Boolean =
         (favTrackCount + favArtistCount >= UNLOCK_FAV_TOTAL) ||

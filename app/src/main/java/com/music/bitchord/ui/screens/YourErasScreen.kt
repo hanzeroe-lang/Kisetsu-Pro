@@ -1,4 +1,4 @@
-﻿package com.music.bitchord.ui.screens
+package com.music.bitchord.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -102,7 +102,7 @@ fun YourErasScreen(
                 }
             }
             eras.isEmpty() -> item {
-                Column(Modifier.padding(16.dp).clip(RoundedCornerShape(20.dp)).background(Color(0xFF121826)).padding(20.dp)) {
+                Column(Modifier.padding(16.dp).clip(RoundedCornerShape(22.dp)).background(Color(0xFF121826)).padding(20.dp)) {
                     Text("No eras yet", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Text("Listen for a while and your chapters will appear here.", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
@@ -159,7 +159,7 @@ private fun EraCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color(0xFF121826)),
     ) {
         Box(Modifier.fillMaxWidth().height(140.dp)) {
@@ -184,7 +184,7 @@ private fun EraCard(
                     model = topSong.thumbnailUrl?.artworkAt(120),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)),
+                    modifier = Modifier.size(44.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {

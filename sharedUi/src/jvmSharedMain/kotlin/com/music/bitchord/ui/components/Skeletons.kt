@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 /** How long one highlight sweep takes to cross a placeholder. */
 private const val SHIMMER_PERIOD_MS = 1400
 
-private val BlockShape = RoundedCornerShape(6.dp)
-private val LineShape = RoundedCornerShape(4.dp)
+private val BlockShape = RoundedCornerShape(8.dp)
+private val LineShape = RoundedCornerShape(6.dp)
 
 // Ragged widths, so a run of rows reads as text rather than as a barcode.
 private val TitleWidths = listOf(0.68f, 0.46f, 0.58f, 0.74f, 0.52f)
@@ -120,7 +120,7 @@ fun SongRowSkeleton(index: Int = 0, circular: Boolean = false, modifier: Modifie
             .padding(horizontal = PAGE_GUTTER, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ShimmerBox(Modifier.size(52.dp), if (circular) CircleShape else RoundedCornerShape(8.dp))
+        ShimmerBox(Modifier.size(52.dp), if (circular) CircleShape else RoundedCornerShape(10.dp))
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             SkeletonLine(fraction = TitleWidths[index % TitleWidths.size], height = 14.dp)
@@ -165,7 +165,7 @@ private fun HeroShelfSkeleton() {
                 items(2) {
                     ShimmerBox(
                         modifier = Modifier.width(cardWidth).aspectRatio(HERO_CARD_RATIO),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(14.dp),
                     )
                 }
             }
@@ -204,7 +204,7 @@ fun LazyListScope.recentlyPlayedSkeleton(listLayout: Boolean) {
                         items(2) {
                             ShimmerBox(
                                 modifier = Modifier.width(cardWidth).aspectRatio(HERO_CARD_RATIO),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(14.dp),
                             )
                         }
                     }
@@ -292,7 +292,7 @@ fun ReplayCardRowSkeleton(modifier: Modifier = Modifier) {
         items(2) {
             ShimmerBox(
                 modifier = Modifier.width(300.dp).aspectRatio(1.586f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
             )
         }
     }

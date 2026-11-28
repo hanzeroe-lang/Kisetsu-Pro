@@ -133,7 +133,7 @@ enum class ThemeMode(val label: String) {
  * Kisetsu keeps its own colours either way.
  */
 enum class AppUi(val label: String) {
-    BITCHORD("Kistify"),
+    BITCHORD("Nottify"),
     CLASSIPOD("Classipod"),
 }
 
@@ -277,7 +277,9 @@ object AppSettings {
      *
      * See [com.music.bitchord.playback.smart.TransitionPlanner].
      */
-    val smartFadeEnabled = MutableStateFlow(false)
+    val smartFadeEnabled = MutableStateFlow(true)
+    /** Show the Nottify Wrapped advert in place of some album covers. */
+    val wrappedCoverAds = MutableStateFlow(true)
 
     /** The CPU budget used by Beat This! and vocal analysis for Automix. */
     val automixPerformanceMode = MutableStateFlow(AutomixPerformanceMode.BALANCED)
@@ -513,7 +515,7 @@ object AppSettings {
     val spotifyPlayerSeekTransport = MutableStateFlow(false)
 
     /** Minimal Spotify player layout: centered art/title/artist with iOS controls and solid album-color background. */
-    val spotifySimplePlayer = MutableStateFlow(false)
+    val spotifySimplePlayer = MutableStateFlow(true)
 
     /** Insta Reels-style player: centred cover on dynamic background, info bottom-left, actions column on the right, iOS scrubber beneath cover. */
     val spotifyInstaReelsPlayer = MutableStateFlow(false)
@@ -754,7 +756,7 @@ object AppSettings {
     val reduceAnimation = MutableStateFlow(false)
 
     /** Requests a sustained high-refresh UI. Off keeps Android's automatic policy (better for battery). */
-    val highPerformanceMode = MutableStateFlow(false)
+    val highPerformanceMode = MutableStateFlow(true)
 
     /** Preferred UI refresh rate while [highPerformanceMode] is enabled. */
     val performanceRefreshRate = MutableStateFlow(DEFAULT_PERFORMANCE_REFRESH_RATE)
@@ -877,7 +879,7 @@ object AppSettings {
     val progressivePageBlur = MutableStateFlow(false)
 
     /** Shows the Premium page tab in the bottom navigation (between Library and Search). */
-    val showPremiumPage = MutableStateFlow(true)
+    val showPremiumPage = MutableStateFlow(false)
 
     /**
      * Player background: a very blurred, slowly spinning/twisting version of the album
@@ -1399,7 +1401,8 @@ object AppSettings {
         wifiOnlyDownloads.value = prefs.getBoolean(KEY_WIFI_ONLY_DOWNLOADS, true)
         exportDownloads.value = prefs.getBoolean(KEY_EXPORT_DOWNLOADS, false)
         crossfadeSeconds.value = prefs.getInt(KEY_CROSSFADE, 3)
-        smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, false)
+        smartFadeEnabled.value = prefs.getBoolean(KEY_SMART_FADE, true)
+        wrappedCoverAds.value = prefs.getBoolean(KEY_WRAPPED_COVER_ADS, true)
         automixPerformanceMode.value = runCatching {
             AutomixPerformanceMode.valueOf(
                 prefs.getString(KEY_AUTOMIX_PERFORMANCE_MODE, null) ?: AutomixPerformanceMode.BALANCED.name,
@@ -1550,7 +1553,8 @@ object AppSettings {
         libraryNetflixCinematic.value = prefs.getBoolean(KEY_LIBRARY_NETFLIX_CINEMATIC, false)
         discoverNetflixCinematic.value = prefs.getBoolean(KEY_DISCOVER_NETFLIX_CINEMATIC, false)
         searchNetflixCinematic.value = prefs.getBoolean(KEY_SEARCH_NETFLIX_CINEMATIC, false)
-        sloplessMode.value = prefs.getBoolean(KEY_SLOPLESS_MODE, false)
+        sloplessMode.value = false
+        prefs.edit().remove(KEY_SLOPLESS_MODE).apply()
         sloplessPromptSeenVersion.value = prefs.getInt(KEY_SLOPLESS_PROMPT_SEEN_VERSION, 0)
         val isExistingInstall = prefs.contains(KEY_SPOTIFY_IDENTICAL_WALKTHROUGH_SEEN) || prefs.contains(KEY_SLOPLESS_PROMPT_SEEN_VERSION) || prefs.contains(KEY_APP_FONT) || prefs.contains(KEY_ACCENT_PRESET)
         spotifyIdenticalWalkthroughSeen.value = if (prefs.contains(KEY_SPOTIFY_IDENTICAL_WALKTHROUGH_SEEN)) {
@@ -1587,7 +1591,7 @@ object AppSettings {
         repeatMode.value = prefs.getInt(KEY_REPEAT_MODE, Player.REPEAT_MODE_OFF)
         showNerdStats.value = prefs.getBoolean(KEY_NERD_STATS, false)
         reduceAnimation.value = prefs.getBoolean(KEY_REDUCE_ANIMATION, false)
-        highPerformanceMode.value = prefs.getBoolean(KEY_HIGH_PERFORMANCE_MODE, false)
+        highPerformanceMode.value = prefs.getBoolean(KEY_HIGH_PERFORMANCE_MODE, true)
         performanceRefreshRate.value = normalizePerformanceRefreshRate(
             prefs.getInt(KEY_PERFORMANCE_REFRESH_RATE, DEFAULT_PERFORMANCE_REFRESH_RATE),
         )
@@ -1619,7 +1623,7 @@ object AppSettings {
         smartVersionAlignment.value = prefs.getBoolean(KEY_SMART_VERSION_ALIGNMENT, true)
         reduceDynamicBlur.value = prefs.getBoolean(KEY_REDUCE_BLUR, false)
         progressivePageBlur.value = prefs.getBoolean(KEY_PROGRESSIVE_PAGE_BLUR, false)
-        showPremiumPage.value = prefs.getBoolean(KEY_SHOW_PREMIUM_PAGE, true)
+        showPremiumPage.value = prefs.getBoolean(KEY_SHOW_PREMIUM_PAGE, false)
         livePlayerBackground.value = prefs.getBoolean(KEY_LIVE_PLAYER_BACKGROUND, true)
         spotifyPlayerBackgroundMode.value = runCatching {
             SpotifyPlayerBackgroundMode.valueOf(prefs.getString(KEY_SPOTIFY_PLAYER_BACKGROUND_MODE, null) ?: "")
@@ -1912,6 +1916,7 @@ object AppSettings {
         prefs.edit().putInt(KEY_CROSSFADE, value).apply()
     }
 
+    fun setWrappedCoverAds(value: Boolean) { wrappedCoverAds.value = value; prefs.edit().putBoolean(KEY_WRAPPED_COVER_ADS, value).apply() }
     fun setSmartFadeEnabled(value: Boolean) {
         smartFadeEnabled.value = value
         prefs.edit().putBoolean(KEY_SMART_FADE, value).apply()
@@ -3241,6 +3246,7 @@ object AppSettings {
     private const val KEY_EXPORT_DOWNLOADS = "export_downloads"
     private const val KEY_LOSSLESS = "lossless_audio"
     private const val KEY_CROSSFADE = "crossfade_seconds"
+    private const val KEY_WRAPPED_COVER_ADS = "wrapped_cover_ads"
     private const val KEY_SMART_FADE = "smart_fade_enabled"
     private const val KEY_AUTOMIX_PERFORMANCE_MODE = "automix_performance_mode"
     private const val KEY_AUTOMIX_ENGINE = "automix_engine"

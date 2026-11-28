@@ -34,7 +34,7 @@ fun showsWrappedCoverAd(videoId: String): Boolean {
 }
 
 /**
- * The Kisetsu Wrapped advert that takes the playlist cover's place in the
+ * The Spotify Wrapped advert that takes the playlist cover's place in the
  * player every fifth track. Tapping it opens Wrapped - which is what the ad is
  * for - and it sits inside the sleeve's own square and corners, so it reads as
  * artwork that happens to be an invitation.
@@ -48,7 +48,7 @@ fun WrappedCoverAd(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF121212))
-            .border(1.dp, Color.White.copy(alpha = 0.14f), RoundedCornerShape(4.dp))
+            .border(1.dp, Color.White.copy(alpha = 0.14f), RoundedCornerShape(6.dp))
             .clickable(onClick = onOpen),
         contentAlignment = Alignment.Center,
     ) {
@@ -60,7 +60,7 @@ fun WrappedCoverAd(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "KISETSU",
+                text = "NOTTIFY",
                 color = Color.White.copy(alpha = 0.78f),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,

@@ -441,7 +441,7 @@ private fun SearchInputBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(12.dp)
-            .background(lcd.bar, RoundedCornerShape(8.dp))
+            .background(lcd.bar, RoundedCornerShape(10.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp)
             .focusRequester(focus),
         decorationBox = { inner ->

@@ -4,11 +4,11 @@ import java.util.Calendar
 import java.util.Date
 
 /**
- * Kisetsu's seasonal dressing.
+ * Spotify's seasonal dressing.
  *
  * The app wears one festival at a time, and the date is the whole switch. In
  * October the home screen runs a Halloween event — pumpkin instead of the
- * blossom, the heart replaced by a jack-o'-lantern, and a Kisetsu Picks shelf
+ * blossom, the heart replaced by a jack-o'-lantern, and a Spotify Picks shelf
  * of the classics. On 1 November the dressing comes off by itself and the
  * shelf turns to the rock and roll the event was always going to hand over to.
  *
@@ -17,7 +17,7 @@ import java.util.Date
  * anything left behind in preferences. [phaseAt] takes the date as a parameter
  * so the boundaries are testable.
  */
-object KisetsuEvent {
+object SpotifyEvent {
 
     /** The heading the picks shelf carries, whatever its season. */
     const val PICKS_TITLE = "Top Picks for You"
@@ -52,7 +52,7 @@ object KisetsuEvent {
     val emoji: String get() = phase.emoji
 
     /**
-     * What the Kisetsu Picks shelf searches for today.
+     * What the Spotify Picks shelf searches for today.
      *
      * The shelf is resolved at runtime — a query per card, best song hit taken
      * — rather than carrying video ids that rot. In October these are the

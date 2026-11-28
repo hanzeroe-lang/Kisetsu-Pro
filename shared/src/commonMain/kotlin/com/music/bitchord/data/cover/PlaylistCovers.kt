@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * Listener-chosen covers for playlists, keyed by browse id.
  *
  * A playlist's cover normally comes from whichever track YouTube picked for
- * it, which is rarely the picture the listener would choose. Kisetsu v7.2
+ * it, which is rarely the picture the listener would choose. Spotify v7.2
  * lets a playlist wear a local photo instead: the app persists the chosen
  * `content://` URI, and this store is the one place the shared UI reads it
  * from. Empty by default, so nothing changes for anyone who never picks one.

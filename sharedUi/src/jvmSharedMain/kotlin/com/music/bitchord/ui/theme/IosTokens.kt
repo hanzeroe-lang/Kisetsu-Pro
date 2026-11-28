@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.sp
 /**
  * The iOS 18 numbers, in one place.
  *
- * Kisetsu's screens had grown their own copies of the same greys and the same
+ * Spotify's screens had grown their own copies of the same greys and the same
  * 22sp bold heading, which is how a design system drifts: each screen is right
  * on its own and the app is wrong together. These are the reference values —
  * the ones Apple Music actually uses — so a new surface can be built from the

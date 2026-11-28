@@ -135,7 +135,7 @@ fun GoodArtistScreen(
 
         if (wrappedReady) {
             item {
-                com.music.bitchord.ui.wrapped.KisetsuWrappedEntry(
+                com.music.bitchord.ui.wrapped.SpotifyWrappedEntry(
                     onOpen = onOpenWrapped,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
@@ -264,7 +264,7 @@ private fun GoodArtistSection(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .pressScale(pressedScale = 1.015f)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
                             .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
                             .clickable { onPlaySongs(popularSongs, index, "Top Artists") }
                             .padding(horizontal = 10.dp, vertical = 8.dp),
@@ -275,7 +275,7 @@ private fun GoodArtistSection(
                             model = song.thumbnailUrl?.artworkAt(120),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)),
+                            modifier = Modifier.size(44.dp).clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)),
                         )
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
@@ -320,7 +320,7 @@ private fun ArtistShelfRow(
                     modifier = Modifier
                         .width(140.dp)
                         .pressScale(pressedScale = 1.03f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .clickable {
                             val browseId = item.browseId
                             if (browseId != null) {
@@ -345,7 +345,7 @@ private fun ArtistShelfRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
                             .background(Color(0xFF1E1E22)),
                     )
                     Spacer(Modifier.height(6.dp))

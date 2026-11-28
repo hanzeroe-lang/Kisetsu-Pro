@@ -1,13 +1,13 @@
 package com.music.bitchord.data.event
 
-import com.music.bitchord.data.event.KisetsuGreeting.Daypart
+import com.music.bitchord.data.event.SpotifyGreeting.Daypart
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.Calendar
 import java.util.Date
 
 /** The greeting switches on the hour, and the small hours get the moon. */
-class KisetsuGreetingTest {
+class SpotifyGreetingTest {
 
     private fun at(hour: Int): Date =
         Calendar.getInstance().apply {
@@ -17,29 +17,29 @@ class KisetsuGreetingTest {
 
     @Test
     fun morning() {
-        assertEquals(Daypart.MORNING, KisetsuGreeting.daypartAt(at(5)))
-        assertEquals(Daypart.MORNING, KisetsuGreeting.daypartAt(at(11)))
-        assertEquals("Good morning 🎃", KisetsuGreeting.lineAt(at(8), "🎃"))
+        assertEquals(Daypart.MORNING, SpotifyGreeting.daypartAt(at(5)))
+        assertEquals(Daypart.MORNING, SpotifyGreeting.daypartAt(at(11)))
+        assertEquals("Good morning 🎃", SpotifyGreeting.lineAt(at(8), "🎃"))
     }
 
     @Test
     fun afternoon() {
-        assertEquals(Daypart.AFTERNOON, KisetsuGreeting.daypartAt(at(12)))
-        assertEquals("Good afternoon 🎃", KisetsuGreeting.lineAt(at(16), "🎃"))
+        assertEquals(Daypart.AFTERNOON, SpotifyGreeting.daypartAt(at(12)))
+        assertEquals("Good afternoon 🎃", SpotifyGreeting.lineAt(at(16), "🎃"))
     }
 
     @Test
     fun night() {
-        assertEquals(Daypart.EVENING, KisetsuGreeting.daypartAt(at(18)))
-        assertEquals("Good night 🎃", KisetsuGreeting.lineAt(at(21), "🎃"))
+        assertEquals(Daypart.EVENING, SpotifyGreeting.daypartAt(at(18)))
+        assertEquals("Good night 🎃", SpotifyGreeting.lineAt(at(21), "🎃"))
     }
 
     @Test
     fun small_hours_offer_an_all_nighter_and_a_moon() {
-        assertEquals(Daypart.NIGHT, KisetsuGreeting.daypartAt(at(23)))
-        assertEquals(Daypart.NIGHT, KisetsuGreeting.daypartAt(at(0)))
-        assertEquals(Daypart.NIGHT, KisetsuGreeting.daypartAt(at(4)))
-        assertEquals("Fancy an all-nighter? 🌙", KisetsuGreeting.lineAt(at(3), "🎃"))
-        assertEquals("Fancy an all-nighter? 🌙", KisetsuGreeting.lineAt(at(3), "🌸"))
+        assertEquals(Daypart.NIGHT, SpotifyGreeting.daypartAt(at(23)))
+        assertEquals(Daypart.NIGHT, SpotifyGreeting.daypartAt(at(0)))
+        assertEquals(Daypart.NIGHT, SpotifyGreeting.daypartAt(at(4)))
+        assertEquals("Fancy an all-nighter? 🌙", SpotifyGreeting.lineAt(at(3), "🎃"))
+        assertEquals("Fancy an all-nighter? 🌙", SpotifyGreeting.lineAt(at(3), "🌸"))
     }
 }

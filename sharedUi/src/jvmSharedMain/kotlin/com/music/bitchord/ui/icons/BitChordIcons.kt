@@ -1,4 +1,4 @@
-﻿package com.music.bitchord.ui.icons
+package com.music.bitchord.ui.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
@@ -177,7 +177,7 @@ object BitChordIcons {
     }
 
     /**
-     * The Kisetsu v7.3 tab family ÔÇö Home, Create, Library, Account, Search ÔÇö
+     * The Spotify v7.3 tab family ÔÇö Home, Create, Library, Account, Search ÔÇö
      * redrawn from scratch against Apple Music's dock rather than resized from
      * the Cupertino font.
      *

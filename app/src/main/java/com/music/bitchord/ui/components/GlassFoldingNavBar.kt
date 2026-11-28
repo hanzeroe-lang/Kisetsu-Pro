@@ -90,7 +90,7 @@ import com.music.bitchord.ui.components.floatingtabbar.FloatingTabBarScrollConne
 import com.music.bitchord.ui.player.PlayerDock
 import kotlinx.coroutines.delay
 
-private val NavBarShape = RoundedCornerShape(12.dp)
+private val NavBarShape = RoundedCornerShape(14.dp)
 private val NavBarSearchBarHeight = 48.dp
 private val NavBarRowHeight = 68.dp
 private const val KeyboardOpenDelayMs = 220L

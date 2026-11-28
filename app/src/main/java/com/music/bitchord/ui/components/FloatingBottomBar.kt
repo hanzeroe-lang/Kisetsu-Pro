@@ -169,7 +169,7 @@ fun FloatingBottomBar(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
     /**
-     * Kisetsu v7.2: when false the bar docks flat to the bottom edge - no
+     * Spotify v7.2: when false the bar docks flat to the bottom edge - no
      * pill, no gutter, no glass - and keeps only the real navigation-bar
      * inset, so the tabs never sit under the system buttons.
      */

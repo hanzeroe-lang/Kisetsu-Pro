@@ -307,7 +307,7 @@ private fun FlowHero(
 ) {
     val ink = Color.White
     val dim = Color.White.copy(alpha = 0.6f)
-    val plate = RoundedCornerShape(14.dp)
+    val plate = RoundedCornerShape(16.dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()

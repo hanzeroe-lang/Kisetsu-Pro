@@ -150,14 +150,14 @@ fun DeepDiveScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(14.dp))
                                 .background(Color.White.copy(alpha = 0.05f))
                                 .clickable { onPlaySongs(popular, index, "Deep Dive: ${page?.name ?: target.name}") }
                                 .padding(horizontal = 10.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text("${index + 1}", color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp, modifier = Modifier.width(22.dp))
-                            AsyncImage(model = song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)))
+                            AsyncImage(model = song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)))
                             Spacer(Modifier.width(10.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(song.title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -196,7 +196,7 @@ private fun DeepDiveShelf(
                 Column(
                     modifier = Modifier
                         .width(140.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .clickable {
                             val browseId = item.browseId
                             if (browseId != null) {
@@ -213,7 +213,7 @@ private fun DeepDiveShelf(
                         model = item.thumbnailUrl?.artworkAt(400),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(12.dp)).background(Color(0xFF1E1E22)),
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(14.dp)).background(Color(0xFF1E1E22)),
                     )
                     Spacer(Modifier.height(6.dp))
                     Text(item.title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)

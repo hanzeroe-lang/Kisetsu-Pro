@@ -6,6 +6,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
@@ -26,6 +28,7 @@ import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
@@ -222,7 +225,7 @@ import androidx.compose.ui.unit.IntSize
 import com.music.bitchord.data.model.UiState
 import com.music.bitchord.data.model.artworkAt
 import com.music.bitchord.data.model.displayArtist
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.data.settings.DiscoverSaves
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.playback.AudioOutputStatus
@@ -516,7 +519,7 @@ fun SpotifyNavBar(
                             scaleX = pressScale
                             scaleY = pressScale
                         }
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(22.dp))
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null,
@@ -593,9 +596,9 @@ fun SpotifyMiniPlayer(
     modifier: Modifier = Modifier,
 ) {
     val haptics = rememberHaptics()
-    val kisetsuCover = song.needsKisetsuRadioCover()
+    val kisetsuCover = song.needsSpotifyRadioCover()
     val artwork = rememberRemoteArtworkUrl(song)
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(14.dp)
     val miniPlayerRich by AppSettings.miniPlayerRich.collectAsStateWithLifecycle()
     val miniPlayerArtworkTint by AppSettings.miniPlayerArtworkTint.collectAsStateWithLifecycle()
     val slopless by AppSettings.sloplessMode.collectAsStateWithLifecycle()
@@ -654,7 +657,7 @@ fun SpotifyMiniPlayer(
                 .padding(start = 8.dp, end = 4.dp, top = 8.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (song.needsKisetsuRadioCover()) {
+            if (song.needsSpotifyRadioCover()) {
                 KisetsuRadioFallback(
                     modifier = Modifier
                         .size(46.dp)
@@ -849,8 +852,8 @@ fun NetflixMiniPlayer(
 ) {
     val haptics = rememberHaptics()
     val artwork = rememberRemoteArtworkUrl(song)
-    val kisetsuCover = song.needsKisetsuRadioCover() || (artwork.isNullOrBlank() && song.videoId.startsWith("src:"))
-    val shape = RoundedCornerShape(14.dp)
+    val kisetsuCover = song.needsSpotifyRadioCover() || (artwork.isNullOrBlank() && song.videoId.startsWith("src:"))
+    val shape = RoundedCornerShape(18.dp)
     val progress = if (durationMs > 0L) (position.positionMs.toFloat() / durationMs.toFloat()).coerceIn(0f, 1f) else 0f
 
     Column(
@@ -877,7 +880,7 @@ fun NetflixMiniPlayer(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(if (kisetsuCover) Color(0xFFFA2D48) else Color.White.copy(alpha = 0.08f)),
                 contentAlignment = Alignment.Center,
             ) {
@@ -993,7 +996,7 @@ fun NetflixNavBar(
                     modifier = Modifier
                         .weight(1f)
                         .pressScale(pressedScale = 1.05f)
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -1143,7 +1146,7 @@ private fun LiveBlurredPlayerBackground(
             )
             if (!reduceAnimation) {
                 AsyncImage(
-                    model = artworkUrl.artworkAt(540),
+                    model = artworkUrl.artworkAt(420),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -1160,7 +1163,7 @@ private fun LiveBlurredPlayerBackground(
                         .blur(170.dp),
                 )
                 AsyncImage(
-                    model = artworkUrl.artworkAt(360),
+                    model = artworkUrl.artworkAt(300),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -1262,7 +1265,7 @@ fun SpotifyNowPlayingScreen(
     val haptics = rememberHaptics()
     val context = LocalContext.current
     val artwork = rememberRemoteArtworkUrl(song)
-    val kisetsuCover = song.needsKisetsuRadioCover()
+    val kisetsuCover = song.needsSpotifyRadioCover()
     val basePalette = rememberArtworkPalette(
         imageUrl = if (kisetsuCover) null else artwork,
         dark = true,
@@ -1799,7 +1802,7 @@ private fun SpotifyFullscreenCanvasPlayerPage(
                     )
                 }
                 IconButton(onClick = { haptics.play(Haptic.SkipPrevious); onPrevious() }, modifier = Modifier.size(52.dp)) {
-                    Icon(Icons.Rounded.SkipPrevious, contentDescription = "Previous", tint = SpotifyOnBg(), modifier = Modifier.size(34.dp))
+                    Icon(Icons.Rounded.SkipPrevious, contentDescription = "Previous", tint = Color.White, modifier = Modifier.size(34.dp))
                 }
                 Box(
                     modifier = Modifier
@@ -1832,7 +1835,7 @@ private fun SpotifyFullscreenCanvasPlayerPage(
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Rounded.SkipNext, contentDescription = "Next (long press to mix)", tint = SpotifyOnBg(), modifier = Modifier.size(34.dp))
+                    Icon(Icons.Rounded.SkipNext, contentDescription = "Next (long press to mix)", tint = Color.White, modifier = Modifier.size(34.dp))
                 }
                 IconButton(onClick = onShowQueue) {
                     Icon(Icons.Rounded.QueueMusic, contentDescription = "Queue", tint = SpotifyOnBg())
@@ -1989,7 +1992,7 @@ private fun SpotifyInstaReelsPlayerPage(
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val artShape = RoundedCornerShape(10.dp)
+            val artShape = RoundedCornerShape(14.dp)
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.78f)
@@ -2382,7 +2385,7 @@ private fun AppleMusicPlayerPage(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    val artShape = RoundedCornerShape(10.dp)
+                    val artShape = RoundedCornerShape(14.dp)
                     val sleeve = Modifier
                         .size(artSide)
                         .graphicsLayer {
@@ -2529,12 +2532,7 @@ private fun AppleMusicPlayerPage(
                             modifier = Modifier.size(72.dp).pressScale(interactionSource = playInteraction, pressedScale = 1.08f),
                             interactionSource = playInteraction,
                         ) {
-                            Icon(
-                                painter = (if (isPlaying) PlayerIcons.Pause else PlayerIcons.Play).painter(),
-                                contentDescription = if (isPlaying) "Pause" else "Play",
-                                tint = SpotifyOnBg(),
-                                modifier = Modifier.size(46.dp),
-                            )
+                            SpotifyPlayPauseGlyph(isPlaying = isPlaying, tint = SpotifyOnBg(), modifier = Modifier.size(46.dp))
                         }
                     }
                     val nextInteraction = remember { MutableInteractionSource() }
@@ -2664,7 +2662,7 @@ private fun AppleModeButton(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .pressScale(interactionSource = interactionSource, pressedScale = 1.08f)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -2871,7 +2869,7 @@ private fun SpotifySimplePlayerPage(
         verticalArrangement = Arrangement.Center,
     ) {
         Spacer(Modifier.weight(1f))
-        val artShape = RoundedCornerShape(12.dp)
+        val artShape = RoundedCornerShape(18.dp)
         AsyncImage(
             model = artwork?.artworkAt(PLAYER_ART_PX),
             contentDescription = null,
@@ -2934,12 +2932,7 @@ private fun SpotifySimplePlayerPage(
                     },
                     modifier = Modifier.size(76.dp),
                 ) {
-                    Icon(
-                        painter = (if (isPlaying) PlayerIcons.Pause else PlayerIcons.Play).painter(),
-                        contentDescription = if (isPlaying) "Pause" else "Play",
-                        tint = SpotifyOnBg(),
-                        modifier = Modifier.size(46.dp),
-                    )
+                    SpotifyPlayPauseGlyph(isPlaying = isPlaying, tint = SpotifyOnBg(), modifier = Modifier.size(46.dp))
                 }
             }
             IconButton(
@@ -3110,8 +3103,8 @@ private fun SpotifyPlayerPage(
                 targetState = song,
                 transitionSpec = {
                     val dir = if (coverDirection >= 0) 1 else -1
-                    (fadeIn(tween(260)) + slideInHorizontally(tween(260)) { dir * it / 10 }) togetherWith
-                        (fadeOut(tween(220)) + slideOutHorizontally(tween(220)) { -dir * it / 10 })
+                    (fadeIn(tween(420)) + scaleIn(initialScale = 0.90f, animationSpec = tween(420))) togetherWith
+                        (fadeOut(tween(300)) + scaleOut(targetScale = 1.08f, animationSpec = tween(300)))
                 },
                 label = "player-cover-transition",
                 contentKey = { it.videoId },
@@ -3129,8 +3122,8 @@ private fun SpotifyPlayerPage(
                                     scaleX = coverScale
                                     scaleY = coverScale
                                 }
-                                .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                                .clip(RoundedCornerShape(8.dp)),
+                                .shadow(24.dp, RoundedCornerShape(14.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                .clip(RoundedCornerShape(14.dp)),
                         )
                     } else {
                         Box(
@@ -3140,8 +3133,8 @@ private fun SpotifyPlayerPage(
                                     scaleX = coverScale
                                     scaleY = coverScale
                                 }
-                                .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                                .clip(RoundedCornerShape(8.dp))
+                                .shadow(24.dp, RoundedCornerShape(14.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                .clip(RoundedCornerShape(14.dp))
                                 .background(SpotifyFill(0.06f)),
                         ) {
                             AsyncImage(
@@ -3168,8 +3161,8 @@ private fun SpotifyPlayerPage(
                                         scaleX = coverScale
                                         scaleY = coverScale
                                     }
-                                    .shadow(24.dp, RoundedCornerShape(8.dp), ambientColor = Color.Black, spotColor = Color.Black)
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .shadow(24.dp, RoundedCornerShape(14.dp), ambientColor = Color.Black, spotColor = Color.Black)
+                                    .clip(RoundedCornerShape(14.dp)),
                             ) {
                                 ad()
                             }
@@ -3313,7 +3306,7 @@ private fun SpotifyPlayerPage(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .clickable(
                             enabled = seekEnabled,
                             interactionSource = remember { MutableInteractionSource() },
@@ -3447,7 +3440,7 @@ private fun SpotifyPlayerPage(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .clickable(
                             enabled = seekEnabled,
                             interactionSource = remember { MutableInteractionSource() },
@@ -3501,13 +3494,7 @@ private fun SpotifyPlayerPage(
                 .padding(horizontal = 0.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            SpotifyPipToggle(
-                enabled = pipOn,
-                onClick = {
-                    haptics.play(if (pipOn) Haptic.ToggleOff else Haptic.ToggleOn)
-                    AppSettings.setPipLyricPreview(!pipOn)
-                },
-            )
+            com.music.bitchord.ui.components.AutomixAnalysisAction()
             if (song.isPodcastEpisode) {
                 Spacer(Modifier.width(6.dp))
                 SpotifySpeedChip(
@@ -3697,7 +3684,7 @@ private fun LazyListScope.spotifyInfoItems(
                         KisetsuRadioFallback(
                             modifier = Modifier
                                 .size(58.dp)
-                                .clip(RoundedCornerShape(4.dp)),
+                                .clip(RoundedCornerShape(10.dp)),
                         )
                     } else {
                         AsyncImage(
@@ -3706,7 +3693,7 @@ private fun LazyListScope.spotifyInfoItems(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(58.dp)
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(SpotifyFill(0.08f)),
                         )
                     }
@@ -3758,7 +3745,7 @@ private fun LazyListScope.spotifyInfoItems(
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "Streaming live on Kisetsu. Use Discover to find more radio stations and podcasts, save favorites, and jump back in anytime.",
+                            text = "Streaming live on Nottify. Use Discover to find more radio stations and podcasts, save favorites, and jump back in anytime.",
                             color = SpotifyMuted(0.78f),
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
@@ -3855,7 +3842,7 @@ private fun LazyListScope.spotifyInfoItems(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(58.dp)
-                                    .clip(RoundedCornerShape(4.dp))
+                                    .clip(RoundedCornerShape(10.dp))
                                     .background(SpotifyFill(0.08f)),
                             )
                             Spacer(Modifier.width(12.dp))
@@ -3976,7 +3963,7 @@ private fun LazyListScope.spotifyInfoItems(
                             }
                         }
                         Spacer(Modifier.height(12.dp))
-                        SpotifyCreditRow("Kistify", "Player")
+                        SpotifyCreditRow("Nottify", "Player")
                     }
                 }
             }
@@ -4003,7 +3990,7 @@ private fun SpotifySectionCard(content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(SpotifyCard()),
     ) {
         content()
@@ -4026,7 +4013,7 @@ private fun SpotifyArtistCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(SpotifyCard()),
     ) {
         Box(
@@ -4035,7 +4022,7 @@ private fun SpotifyArtistCard(
                 .height(210.dp),
         ) {
             AsyncImage(
-                model = image?.artworkAt(600),
+                model = image?.artworkAt(480),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
@@ -4144,7 +4131,7 @@ private fun SpotifyExploreCard(
     Column(
         modifier = Modifier
             .width(142.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(SpotifyFill(0.05f))
             .clickable {
                 haptics.play(Haptic.Tap)
@@ -4152,7 +4139,7 @@ private fun SpotifyExploreCard(
             },
     ) {
         AsyncImage(
-            model = imageUrl?.artworkAt(360),
+            model = imageUrl?.artworkAt(300),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -4206,7 +4193,7 @@ private fun SpotifyLyricsPreview(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(
                 if (spotifyIsDark()) {
                     Brush.horizontalGradient(
@@ -4270,7 +4257,7 @@ private fun SpotifyVinylSpeedDial(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(SpotifyFill(if (compact) 0.06f else 0.08f))
             .padding(horizontal = 12.dp, vertical = if (compact) 8.dp else 10.dp),
     ) {
@@ -4647,7 +4634,7 @@ private fun SpotifyPipToggle(
     onClick: () -> Unit,
 ) {
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
-    val shape = if (antiCircle) RoundedCornerShape(8.dp) else CircleShape
+    val shape = if (antiCircle) RoundedCornerShape(14.dp) else CircleShape
     Box(
         modifier = Modifier
             .size(32.dp)
@@ -4710,7 +4697,7 @@ private fun SpotifySleepCountdown(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -4799,7 +4786,7 @@ private fun SpotifySpeedChip(
         fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -4903,7 +4890,7 @@ private fun SpotifyModeControl(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -4964,19 +4951,25 @@ private fun SpotifyPlayPauseGlyph(
                 blendMode = drawBlend,
             )
         } else {
-            val l = size.width * 0.20f
-            val r = size.width * 0.88f
-            val t = size.height * 0.10f
-            val b = size.height * 0.90f
-            val m = size.height * 0.5f
-            val cr = size.width * 0.09f
+            val sx = size.width / 32f
+            val sy = size.height / 32f
+            fun px(v: Float) = v * sx
+            fun py(v: Float) = v * sy
             val path = Path().apply {
-                moveTo(l + cr * 0.5f, t + cr)
-                quadraticTo(l, t + cr * 0.3f, l, t + cr * 1.3f)
-                lineTo(l, b - cr * 1.3f)
-                quadraticTo(l, b - cr * 0.3f, l + cr * 0.5f, b - cr)
-                lineTo(r - cr, m + cr * 0.7f)
-                quadraticTo(r, m, r - cr, m - cr * 0.7f)
+                moveTo(px(5.92f), py(24.096f))
+                quadraticTo(px(5.92f), py(25.184f), px(6.848f), py(25.824f))
+                quadraticTo(px(7.36f), py(26.112f), px(7.936f), py(26.112f))
+                quadraticTo(px(8.384f), py(26.112f), px(8.832f), py(25.888f))
+                lineTo(px(24.992f), py(17.824f))
+                quadraticTo(px(25.472f), py(17.568f), px(25.792f), py(17.088f))
+                quadraticTo(px(26.112f), py(16.608f), px(26.08f), py(16f))
+                quadraticTo(px(26.048f), py(15.392f), px(25.792f), py(14.944f))
+                quadraticTo(px(25.536f), py(14.496f), px(24.992f), py(14.208f))
+                lineTo(px(8.832f), py(6.144f))
+                quadraticTo(px(8.384f), py(5.92f), px(7.936f), py(5.92f))
+                quadraticTo(px(7.392f), py(5.92f), px(6.848f), py(6.208f))
+                quadraticTo(px(5.92f), py(6.816f), px(5.92f), py(7.936f))
+                lineTo(px(5.92f), py(24.096f))
                 close()
             }
             drawPath(path, tint, blendMode = drawBlend)
@@ -5111,8 +5104,8 @@ fun SpotifyPipOverlay(
                 modifier = Modifier
                     .fillMaxWidth(0.62f)
                     .aspectRatio(1f)
-                    .shadow(18.dp, RoundedCornerShape(10.dp), spotColor = Color.Black)
-                    .clip(RoundedCornerShape(10.dp))
+                    .shadow(18.dp, RoundedCornerShape(14.dp), spotColor = Color.Black)
+                    .clip(RoundedCornerShape(14.dp))
                     .background(SpotifyBg()),
             ) {
                 if (song != null) {
@@ -5192,7 +5185,7 @@ private fun SpotifyScrubber(
         label = "scrubberThumbSize",
     )
     val trackBg = if (isLiveRadio) SpotifyMuted(0.16f) else SpotifyMuted(0.22f)
-    val trackFg = if (isLiveRadio) SpotifyMuted(0.34f) else SpotifyGreen
+    val trackFg = if (isLiveRadio) SpotifyMuted(0.34f) else Color.White
 
     Box(
         modifier = modifier
@@ -5325,7 +5318,7 @@ private fun SpotifyHomeNowHub(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(Brush.linearGradient(if (spotifyIsDark()) listOf(Color(0xFF2A2A2A), Color(0xFF171717)) else listOf(SpotifySurfaceBg(), SpotifySurfaceAlt())))
             .padding(16.dp),
     ) {
@@ -5368,7 +5361,7 @@ private fun SpotifyHomeTimeline(
         LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             items(resumes.take(4), key = { "tlp_${it.videoId}" }) { bm ->
                 Column(
-                    modifier = Modifier.width(170.dp).clip(RoundedCornerShape(12.dp)).background(SpotifyFill(0.08f)).clickable { onPodcastResume(bm) }.padding(10.dp)
+                    modifier = Modifier.width(170.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onPodcastResume(bm) }.padding(10.dp)
                 ) {
                     Text("CONTINUE EPISODE", color = SpotifyGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
@@ -5380,7 +5373,7 @@ private fun SpotifyHomeTimeline(
                 val song = ranked.song
                 val item = ShelfItem(song.title, song.artist, resolvedSongArtwork(song.videoId, song.thumbnailUrl), song.videoId, null)
                 Column(
-                    modifier = Modifier.width(170.dp).clip(RoundedCornerShape(12.dp)).background(SpotifyFill(0.08f)).clickable { onItemClick(item, "Timeline") }.padding(10.dp)
+                    modifier = Modifier.width(170.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onItemClick(item, "Timeline") }.padding(10.dp)
                 ) {
                     Text("RECENT", color = SpotifyMuted(0.7f), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
@@ -5409,7 +5402,7 @@ private fun SpotifyHomeExploreBento(onSelectPill: (String) -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     row.forEach { (title, sub, pill) ->
                         Column(
-                            modifier = Modifier.weight(1f).height(92.dp).clip(RoundedCornerShape(14.dp))
+                            modifier = Modifier.weight(1f).height(92.dp).clip(RoundedCornerShape(18.dp))
                                 .background(SpotifyFill(0.08f)).clickable { onSelectPill(pill) }.padding(12.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
                         ) {
@@ -5422,7 +5415,7 @@ private fun SpotifyHomeExploreBento(onSelectPill: (String) -> Unit) {
             }
         }
         Box(
-            modifier = Modifier.padding(top = 8.dp).fillMaxWidth().clip(RoundedCornerShape(14.dp))
+            modifier = Modifier.padding(top = 8.dp).fillMaxWidth().clip(RoundedCornerShape(18.dp))
                 .background(
                     if (gradients) Brush.horizontalGradient(listOf(SpotifyGreen.copy(alpha = 0.35f), SpotifyGreen.copy(alpha = 0.12f)))
                     else Brush.horizontalGradient(listOf(SpotifyCard(), SpotifyCard()))
@@ -5447,7 +5440,7 @@ private fun SpotifyHomeMoodLaunchpad(onMood: (String) -> Unit) {
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(listOf("Focus", "Workout", "Chill", "Commute", "Sleep", "Party", "Study")) { mood ->
                 Box(
-                    modifier = Modifier.clip(RoundedCornerShape(16.dp))
+                    modifier = Modifier.clip(RoundedCornerShape(22.dp))
                         .background(
                             if (gradients) Brush.linearGradient(listOf(SpotifyGreen.copy(alpha = 0.35f), SpotifyFill(0.08f)))
                             else Brush.linearGradient(listOf(SpotifyCard(), SpotifyCard()))
@@ -5485,7 +5478,7 @@ private fun SpotifyHomeBentoStoryRail(shelves: List<HomeShelf>, onItemClick: (Sh
         Spacer(Modifier.height(10.dp))
         Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items.take(2).forEach { item ->
-                Box(Modifier.weight(1f).height(96.dp).clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)).clickable { onItemClick(item) }.padding(10.dp)) {
+                Box(Modifier.weight(1f).height(96.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onItemClick(item) }.padding(10.dp)) {
                     Text(item.title, color = SpotifyOnBg(), fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.align(Alignment.BottomStart))
                 }
             }
@@ -5508,7 +5501,7 @@ private fun SpotifyHomeNowLaterExplore(
             Triple("Explore", "Fresh mixes, radio and episodes", "Radio"),
         ).forEach { (zone, subtitle, target) ->
             Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.07f)).clickable { if (zone == "Now") onResume() else onSelect(target) }.padding(12.dp),
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.07f)).clickable { if (zone == "Now") onResume() else onSelect(target) }.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(Modifier.weight(1f)) {
@@ -5531,14 +5524,14 @@ private fun SpotifyHomeDailyDigest(
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Daily digest", color = SpotifyOnBg(), fontSize = 18.sp, fontWeight = FontWeight.Bold)
         if (resume != null) {
-            Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)).clickable { onResume() }.padding(12.dp)) {
+            Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onResume() }.padding(12.dp)) {
                 Text("Continue: ${resume.title} . ${resume.showName}", color = SpotifyOnBg(), fontSize = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
-        Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)).clickable { onOpenRadio() }.padding(12.dp)) {
+        Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onOpenRadio() }.padding(12.dp)) {
             Text("Radio picks ready . tap to explore live stations", color = SpotifyOnBg(), fontSize = 14.sp)
         }
-        Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)).padding(12.dp)) {
+        Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).padding(12.dp)) {
             Text("Downloaded & ready: $downloadedCount items", color = SpotifyOnBg(), fontSize = 14.sp)
         }
     }
@@ -5548,7 +5541,7 @@ private fun SpotifyHomeDailyDigest(
 private fun SpotifyHomeOfflineModeBanner(downloadedCount: Int) {
     val gradients by AppSettings.homeCardGradients.collectAsStateWithLifecycle()
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(14.dp))
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(18.dp))
             .background(
                 if (gradients) Brush.horizontalGradient(if (spotifyIsDark()) listOf(Color(0xFF0F5132), Color(0xFF123B4A)) else listOf(Color(0xFFDDF3E4), Color(0xFFE3F0F5)))
                 else Brush.horizontalGradient(listOf(SpotifyCard(), SpotifyCard()))
@@ -5574,7 +5567,7 @@ private fun SpotifyHomeShowsHub(
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             items(resumes) { r ->
-                Column(Modifier.width(160.dp).clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)).clickable { onResume(r) }.padding(10.dp)) {
+                Column(Modifier.width(160.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.08f)).clickable { onResume(r) }.padding(10.dp)) {
                     Text("EPISODE", color = SpotifyGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     Text(r.title, color = SpotifyOnBg(), fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(r.showName, color = SpotifyMuted(0.8f), fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -5586,7 +5579,7 @@ private fun SpotifyHomeShowsHub(
 
 @Composable
 private fun SpotifyHomeHighlightsRecap(summary: com.music.bitchord.data.stats.ReplaySummary?) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp)).background(SpotifyFill(0.07f)).padding(14.dp)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(22.dp)).background(SpotifyFill(0.07f)).padding(14.dp)) {
         Text("Listening highlights", color = SpotifyOnBg(), fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(6.dp))
         if (summary != null && !summary.isEmpty) {
@@ -5603,7 +5596,7 @@ private fun SpotifyHomeHighlightsRecap(summary: com.music.bitchord.data.stats.Re
 
 @Composable
 private fun SpotifyHomeCustomizableSectionsBlock() {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.06f)).padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.06f)).padding(12.dp)) {
         Text("Customize Home", color = SpotifyOnBg(), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(6.dp))
         Text("Presets: Minimal . Balanced . Discovery-heavy (toggle sections in Settings -’ UI updates)", color = SpotifyMuted(0.85f), fontSize = 12.sp)
@@ -5625,13 +5618,13 @@ private fun SpotifyHomeCommandCenter(
     onQuickAction: (String) -> Unit,
     timeOfDay: Boolean,
 ) {
-    val greeting = "Kisetsu Music"
+    val greeting = "Nottify Music"
     val gradients by AppSettings.homeCardGradients.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(
                 if (gradients) Brush.linearGradient(
                     if (spotifyIsDark()) listOf(Color(0xFF1E3264).copy(alpha = 0.85f), Color(0xFF121212), SpotifyCard().copy(alpha = 0.9f)) else listOf(Color(0xFFE4F3EA), SpotifyBg(), SpotifySurfaceBg())
@@ -5646,7 +5639,7 @@ private fun SpotifyHomeCommandCenter(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(18.dp))
                     .background(SpotifyFill(0.08f))
                     .clickable { onResume() }
                     .padding(12.dp),
@@ -5654,7 +5647,7 @@ private fun SpotifyHomeCommandCenter(
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.size(54.dp)) {
                     CircularProgressIndicator(progress = { progress }, strokeWidth = 4.dp, color = SpotifyGreen, trackColor = SpotifyMuted(0.15f), modifier = Modifier.fillMaxSize())
-                    Icon(Icons.Rounded.PlayArrow, contentDescription = "Resume", tint = SpotifyOnBg(), modifier = Modifier.size(22.dp))
+                    SpotifyPlayPauseGlyph(isPlaying = false, tint = SpotifyOnBg(), modifier = Modifier.size(22.dp))
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
@@ -5674,7 +5667,7 @@ private fun SpotifyHomeCommandCenter(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .background(SpotifyFill(0.10f))
                         .clickable { onQuickAction(key) }
                         .padding(vertical = 10.dp),
@@ -5696,11 +5689,11 @@ private fun SpotifyHomeEditorialSpotlight(
     val art = rememberRemoteArtworkUrl(Song(item.videoId ?: "", item.title, item.subtitle, item.thumbnailUrl))
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
-            .clip(RoundedCornerShape(16.dp)).background(SpotifyFill(0.07f)).clickable { onItemClick(item) }.padding(12.dp),
+            .clip(RoundedCornerShape(22.dp)).background(SpotifyFill(0.07f)).clickable { onItemClick(item) }.padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(model = art?.artworkAt(300) ?: item.thumbnailUrl?.artworkAt(300), contentDescription = null, contentScale = ContentScale.Crop,
-            modifier = Modifier.size(88.dp).clip(RoundedCornerShape(12.dp)).background(SpotifyCard()))
+        AsyncImage(model = art?.artworkAt(240) ?: item.thumbnailUrl?.artworkAt(240), contentDescription = null, contentScale = ContentScale.Crop,
+            modifier = Modifier.size(88.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyCard()))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text("EDITORIAL PICK", color = SpotifyGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
@@ -6042,7 +6035,7 @@ fun SpotifyHomeScreen(
                                     Modifier
                                         .width(if (row == 0) 160.dp else 130.dp)
                                         .height(20.dp)
-                                        .clip(RoundedCornerShape(6.dp))
+                                        .clip(RoundedCornerShape(12.dp))
                                         .background(SpotifyFill(0.10f))
                                 )
                                 Spacer(Modifier.height(14.dp))
@@ -6052,13 +6045,13 @@ fun SpotifyHomeScreen(
                                             Box(
                                                 Modifier
                                                     .size(140.dp)
-                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .clip(RoundedCornerShape(14.dp))
                                                     .background(SpotifyFill(0.08f))
                                             )
                                             Spacer(Modifier.height(8.dp))
-                                            Box(Modifier.width(110.dp).height(12.dp).clip(RoundedCornerShape(4.dp)).background(SpotifyFill(0.08f)))
+                                            Box(Modifier.width(110.dp).height(12.dp).clip(RoundedCornerShape(10.dp)).background(SpotifyFill(0.08f)))
                                             Spacer(Modifier.height(6.dp))
-                                            Box(Modifier.width(80.dp).height(10.dp).clip(RoundedCornerShape(4.dp)).background(SpotifyFill(0.06f)))
+                                            Box(Modifier.width(80.dp).height(10.dp).clip(RoundedCornerShape(10.dp)).background(SpotifyFill(0.06f)))
                                         }
                                     }
                                 }
@@ -6249,7 +6242,7 @@ private fun SpotifyQuickLaunch(
     val pins by com.music.bitchord.data.settings.HomePins.pins.collectAsStateWithLifecycle()
     var confirmPin by remember { mutableStateOf<com.music.bitchord.data.settings.HomePin?>(null) }
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
-    val pinShape = if (antiCircle) RoundedCornerShape(8.dp) else CircleShape
+    val pinShape = if (antiCircle) RoundedCornerShape(14.dp) else CircleShape
     if (pins.isEmpty()) return
 
     Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp)) {
@@ -6269,7 +6262,7 @@ private fun SpotifyQuickLaunch(
                 Column(
                     modifier = Modifier
                         .width(68.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .combinedClickable(
                             onClick = { onPinTap(pin) },
                             onLongClick = { confirmPin = pin },
@@ -6422,14 +6415,14 @@ private fun PodcastJumpCard(
         Column(
             modifier = Modifier
                 .width(118.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .combinedClickable(onClick = onClick, onLongClick = { menuOpen = true })
                 .padding(4.dp),
         ) {
             Box(
                 modifier = Modifier
                     .size(110.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(SpotifyCard()),
             ) {
                 if (bookmark.thumbnailUrl != null) {
@@ -6719,12 +6712,12 @@ private fun JumpCard(
     onLongClick: (() -> Unit)? = null,
     kisetsuFallback: Boolean = false,
 ) {
-    val shape = if (circular) CircleShape else RoundedCornerShape(8.dp)
+    val shape = if (circular) CircleShape else RoundedCornerShape(14.dp)
     val useKisetsu = kisetsuFallback || artwork.isNullOrBlank()
     Column(
         modifier = Modifier
             .width(118.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(4.dp),
     ) {
@@ -7094,7 +7087,7 @@ private fun SpotifyHomeCard(
     Column(
         modifier = Modifier
             .width(146.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable {
                 haptics.play(Haptic.Tap)
                 onClick()
@@ -7117,17 +7110,17 @@ private fun SpotifyHomeCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(14.dp)),
             )
         } else {
             AsyncImage(
-                model = thumb?.artworkAt(420),
+                model = thumb?.artworkAt(320),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(SpotifyFill(0.06f)),
             )
         }
@@ -7166,7 +7159,7 @@ private fun SpotifyHomeGridCard(
     val thumb = resolvedShelfThumbnail(item)
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(SpotifyCard())
             .clickable {
                 haptics.play(Haptic.Tap)
@@ -7179,7 +7172,7 @@ private fun SpotifyHomeGridCard(
             KisetsuRadioFallback(
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                    .clip(RoundedCornerShape(8.dp)),
             )
         } else {
             AsyncImage(
@@ -7188,7 +7181,7 @@ private fun SpotifyHomeGridCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(SpotifyFill(0.06f)),
             )
         }
@@ -7217,7 +7210,7 @@ private fun SpotifyHomeArtistCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(126.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable {
                 haptics.play(Haptic.Tap)
                 onClick()
@@ -7237,7 +7230,7 @@ private fun SpotifyHomeArtistCard(
             .padding(vertical = 2.dp),
     ) {
         AsyncImage(
-            model = thumb?.artworkAt(420),
+            model = thumb?.artworkAt(320),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -7455,13 +7448,13 @@ fun NetflixHomeScreen(
             when (state) {
                 is UiState.Loading -> item(key = "netflix-loading") {
                     Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                        Box(Modifier.fillMaxWidth().height(420.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.06f)))
+                        Box(Modifier.fillMaxWidth().height(420.dp).clip(RoundedCornerShape(24.dp)).background(SpotifyFill(0.06f)))
                         Spacer(Modifier.height(18.dp))
                         repeat(3) {
-                            Box(Modifier.width(160.dp).height(20.dp).clip(RoundedCornerShape(8.dp)).background(SpotifyFill(0.08f)))
+                            Box(Modifier.width(160.dp).height(20.dp).clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)))
                             Spacer(Modifier.height(10.dp))
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                repeat(3) { Box(Modifier.size(width = 140.dp, height = 210.dp).clip(RoundedCornerShape(12.dp)).background(SpotifyFill(0.06f))) }
+                                repeat(3) { Box(Modifier.size(width = 140.dp, height = 210.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.06f))) }
                             }
                             Spacer(Modifier.height(18.dp))
                         }
@@ -7580,9 +7573,9 @@ fun NetflixHomeScreen(
                         item(key = "netflix-tab-loading") {
                             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 repeat(2) {
-                                    Box(Modifier.width(180.dp).height(18.dp).clip(RoundedCornerShape(8.dp)).background(SpotifyFill(0.08f)))
+                                    Box(Modifier.width(180.dp).height(18.dp).clip(RoundedCornerShape(14.dp)).background(SpotifyFill(0.08f)))
                                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        repeat(3) { Box(Modifier.size(140.dp, 210.dp).clip(RoundedCornerShape(12.dp)).background(SpotifyFill(0.06f))) }
+                                        repeat(3) { Box(Modifier.size(140.dp, 210.dp).clip(RoundedCornerShape(18.dp)).background(SpotifyFill(0.06f))) }
                                     }
                                 }
                             }
@@ -7656,7 +7649,7 @@ private fun NetflixHeroBanner(
     onMore: () -> Unit,
 ) {
     val art = resolvedSongArtwork(item.videoId, item.thumbnailUrl) ?: item.thumbnailUrl
-    val kisetsu = item.needsKisetsuRadioCover() || (art.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
+    val kisetsu = item.needsSpotifyRadioCover() || (art.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -7673,7 +7666,7 @@ private fun NetflixHeroBanner(
             }
         } else {
             AsyncImage(
-                model = art?.artworkAt(900),
+                model = art?.artworkAt(600),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
@@ -7741,17 +7734,17 @@ private fun NetflixHeroBanner(
                     onClick = onPlay,
                     modifier = Modifier.pressScale(pressedScale = 1.03f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(14.dp),
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
                 ) {
-                    Icon(Icons.Rounded.PlayArrow, contentDescription = null)
+                    SpotifyPlayPauseGlyph(isPlaying = false, tint = Color.Black, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Play", fontWeight = FontWeight.Bold)
                 }
                 OutlinedButton(
                     onClick = onMore,
                     modifier = Modifier.pressScale(pressedScale = 1.03f),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.45f)),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
@@ -7787,12 +7780,12 @@ private fun NetflixShelfRow(
         ) {
             items(items, key = { (it.videoId ?: it.browseId ?: it.title) + "-" + it.subtitle.orEmpty() }) { item ->
                 val art = resolvedSongArtwork(item.videoId, item.thumbnailUrl) ?: item.thumbnailUrl
-                val kisetsu = item.needsKisetsuRadioCover() || (art.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
+                val kisetsu = item.needsSpotifyRadioCover() || (art.isNullOrBlank() && item.videoId?.startsWith("src:") == true)
                 Column(
                     modifier = Modifier
                         .width(148.dp)
                         .pressScale(pressedScale = 1.03f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .combinedClickable(
                             onClick = { onItemClick(item) },
                             onLongClick = { onItemLongPress?.invoke(item) },
@@ -7802,7 +7795,7 @@ private fun NetflixShelfRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(222.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(18.dp))
                             .background(if (kisetsu) Color(0xFFFA2D48) else SpotifyCard())
                     ) {
                         if (kisetsu) {
@@ -7813,7 +7806,7 @@ private fun NetflixShelfRow(
                             )
                         } else {
                             AsyncImage(
-                                model = art?.artworkAt(500),
+                                model = art?.artworkAt(400),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
@@ -7880,7 +7873,7 @@ private fun SpotifyNetflixPlayerPage(
     val haptics = rememberHaptics()
     val antiCircle by AppSettings.antiCircleCorners.collectAsStateWithLifecycle()
     val playShape = CircleShape
-    val kisetsuCover = song.needsKisetsuRadioCover()
+    val kisetsuCover = song.needsSpotifyRadioCover()
     val coverScale by animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0.90f,
         animationSpec = tween(durationMillis = 280, easing = FastOutSlowInEasing),
@@ -7899,7 +7892,7 @@ private fun SpotifyNetflixPlayerPage(
     ) {
         if (!kisetsuCover && artwork != null) {
             AsyncImage(
-                model = artwork.artworkAt(1200),
+                model = artwork.artworkAt(800),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -7962,7 +7955,7 @@ private fun SpotifyNetflixPlayerPage(
                     Text("NOW PLAYING", color = SpotifyMuted(0.75f), fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
                     Text("Cinematic mode", color = palette.accent.copy(alpha = 0.95f), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                 }
-                IconButton(onClick = onMore) {
+                IconButton(onClick = onMore, modifier = Modifier.padding(start = 6.dp)) {
                     Icon(Icons.Rounded.MoreVert, contentDescription = "More", tint = SpotifyOnBg())
                 }
             }
@@ -7975,7 +7968,7 @@ private fun SpotifyNetflixPlayerPage(
                     .weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                val heroShape = RoundedCornerShape(18.dp)
+                val heroShape = RoundedCornerShape(24.dp)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.88f)
@@ -8100,7 +8093,7 @@ private fun SpotifyNetflixPlayerPage(
                     Icon(if (liked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder, contentDescription = "Like", tint = if (liked) palette.accent else SpotifyOnBg(), modifier = Modifier.size(28.dp))
                 }
                 IconButton(onClick = { haptics.play(Haptic.SkipPrevious); onPrevious() }, modifier = Modifier.size(54.dp)) {
-                    Icon(painter = PlayerIcons.SkipPrevious.painter(), contentDescription = "Previous", tint = SpotifyOnBg(), modifier = Modifier.size(34.dp))
+                    Icon(painter = PlayerIcons.SkipPrevious.painter(), contentDescription = "Previous", tint = Color.White, modifier = Modifier.size(34.dp))
                 }
                 Box(
                     modifier = Modifier
@@ -8116,12 +8109,7 @@ private fun SpotifyNetflixPlayerPage(
                     if (isLoading) {
                         CircularProgressIndicator(color = SpotifyBg(), strokeWidth = 2.5.dp, modifier = Modifier.size(28.dp))
                     } else {
-                        Icon(
-                            painter = if (isPlaying) PlayerIcons.Pause.painter() else PlayerIcons.Play.painter(),
-                            contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = SpotifyBg(),
-                            modifier = Modifier.size(34.dp),
-                        )
+                        SpotifyPlayPauseGlyph(isPlaying = isPlaying, tint = SpotifyBg(), modifier = Modifier.size(34.dp))
                     }
                 }
                 Box(
@@ -8133,7 +8121,7 @@ private fun SpotifyNetflixPlayerPage(
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(painter = PlayerIcons.SkipNext.painter(), contentDescription = "Next", tint = SpotifyOnBg(), modifier = Modifier.size(34.dp))
+                    Icon(painter = PlayerIcons.SkipNext.painter(), contentDescription = "Next", tint = Color.White, modifier = Modifier.size(34.dp))
                 }
                 IconButton(onClick = { haptics.play(Haptic.Tick); onCycleRepeat() }) {
                     Icon(
@@ -8271,7 +8259,7 @@ private fun SpotifyVinylPlayerPage(
                 IconButton(onClick = { haptics.play(Haptic.Tap); onCast() }) {
                     Icon(PlayerIcons.AirPlay.painter(), contentDescription = "Output", tint = SpotifyMuted(0.9f), modifier = Modifier.size(22.dp))
                 }
-                IconButton(onClick = { haptics.play(Haptic.Tap); onMore() }) {
+                IconButton(onClick = { haptics.play(Haptic.Tap); onMore() }, modifier = Modifier.padding(start = 6.dp)) {
                     Icon(Icons.Rounded.MoreVert, contentDescription = "More", tint = SpotifyOnBg(), modifier = Modifier.size(24.dp))
                 }
             }
@@ -8411,12 +8399,7 @@ private fun SpotifyVinylPlayerPage(
                         modifier = Modifier.size(72.dp).pressScale(interactionSource = playInteraction, pressedScale = 1.08f),
                         interactionSource = playInteraction,
                     ) {
-                        Icon(
-                            painter = (if (isPlaying) PlayerIcons.Pause else PlayerIcons.Play).painter(),
-                            contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = SpotifyOnBg(),
-                            modifier = Modifier.size(46.dp),
-                        )
+                        SpotifyPlayPauseGlyph(isPlaying = isPlaying, tint = SpotifyOnBg(), modifier = Modifier.size(46.dp))
                     }
                 }
                 val nextInteraction = remember { MutableInteractionSource() }

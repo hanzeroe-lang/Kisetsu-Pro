@@ -105,7 +105,7 @@ fun DiscoveryCrateScreen(
                 }
             }
             crate.isEmpty() -> item {
-                Column(Modifier.padding(16.dp).clip(RoundedCornerShape(20.dp)).background(Color(0xFF121A14)).padding(20.dp)) {
+                Column(Modifier.padding(16.dp).clip(RoundedCornerShape(22.dp)).background(Color(0xFF121A14)).padding(20.dp)) {
                     Text("Crate's empty for now", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Text("Listen to a few artists so we know what to dig for, then check back.", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
@@ -117,7 +117,7 @@ fun DiscoveryCrateScreen(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(18.dp))
                             .background(Brush.linearGradient(listOf(Color(0xFF14532D), Color(0xFF052E16))))
                             .clickable { onPlaySongs(crate.map { it.song }, 0, "Discovery Crate") }
                             .padding(16.dp),
@@ -134,7 +134,7 @@ fun DiscoveryCrateScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(16.dp))
                             .background(Color(0xFF121A14))
                             .clickable { onPlaySongs(crate.map { it.song }, index, "Discovery Crate") }
                             .padding(10.dp),
@@ -144,7 +144,7 @@ fun DiscoveryCrateScreen(
                             model = pick.song.thumbnailUrl?.artworkAt(120),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(52.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
+                            modifier = Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.08f)),
                         )
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {

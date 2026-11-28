@@ -295,7 +295,7 @@ internal fun LyricsPickBar(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(Color(0xFF141414).copy(alpha = 0.92f))
             .padding(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -358,7 +358,7 @@ private fun RowScope.PickAction(
     }
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(background)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 18.dp, vertical = 15.dp),

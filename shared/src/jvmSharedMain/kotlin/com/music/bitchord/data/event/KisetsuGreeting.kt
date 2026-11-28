@@ -14,7 +14,7 @@ import java.util.Date
  * Boundaries are fixed and testable: 05:00–11:59 morning, 12:00–17:59
  * afternoon, 18:00–22:59 night, and 23:00–04:59 the all-nighter.
  */
-object KisetsuGreeting {
+object SpotifyGreeting {
 
     enum class Daypart(val text: String) {
         NIGHT("Fancy an all-nighter?"),

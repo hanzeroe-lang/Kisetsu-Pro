@@ -14,7 +14,7 @@ import org.json.JSONObject
  * choice small and lets the listener replace the picture in place.
  */
 object PlaylistCoverStore {
-    private const val PREFS = "kisetsu_playlist_covers"
+    private const val PREFS = "Spotify_playlist_covers"
     private const val KEY_COVERS = "covers_json"
 
     private lateinit var prefs: SharedPreferences

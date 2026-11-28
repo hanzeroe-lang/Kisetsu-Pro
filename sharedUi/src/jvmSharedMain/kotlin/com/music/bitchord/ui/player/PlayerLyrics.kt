@@ -1375,7 +1375,7 @@ internal fun SingMicButton(
         modifier = Modifier
             .size(36.dp)
             .scale(pressScale.value)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .background(
                 if (singActive) Color(0xFFFA2D48) else Color.White.copy(alpha = 0.18f),
             )
@@ -1547,7 +1547,7 @@ private fun LyricsSkeleton(modifier: Modifier = Modifier) {
                             Modifier
                                 .fillMaxWidth(fraction)
                                 .height(SKELETON_BAR)
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(RoundedCornerShape(6.dp))
                                 // Read in the draw block, not the body: a
                                 // pageful of these would otherwise recompose on
                                 // every frame, and all any of them needs per
@@ -1891,7 +1891,7 @@ internal fun LyricsPanel(
                 ) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(Color.White.copy(alpha = 0.14f))
                             .padding(horizontal = 11.dp, vertical = 4.dp),
                     ) {
@@ -1988,7 +1988,7 @@ internal fun LyricsPanel(
                 Box(
                     modifier = Modifier
                         .blur(blur, BlurredEdgeTreatment.Unbounded)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         // A gap is nothing to pick, so it only ever seeks — and
                         // not even that while a pick is open, where a stray tap
                         // in the silence would jump the song.
@@ -2130,7 +2130,7 @@ internal fun LyricsPanel(
                         }
                     }
                     .blur(blur, BlurredEdgeTreatment.Unbounded)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     // The chosen lines are marked on the row itself rather
                     // than with a mark beside it: a lane down the side would
                     // have to be reserved for every line whether or not
@@ -2588,7 +2588,7 @@ private fun CurrentLyricLine(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .clickable(onClick = onClick)
                 .padding(vertical = 4.dp),
         ) {
@@ -2653,7 +2653,7 @@ private fun CurrentLyricLine(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
     ) {

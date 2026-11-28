@@ -89,7 +89,7 @@ fun SpotifyHomeSection(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(18.dp))
                 .background(
                     Brush.linearGradient(listOf(Color(0xFF1DB954), Color(0xFF0B5A2A))),
                 )
@@ -170,7 +170,7 @@ fun SpotifyHomeSection(
                         Column(
                             modifier = Modifier
                                 .width(132.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(14.dp))
                                 .clickable { onOpenPlaylist(playlist) },
                         ) {
                             AsyncImage(
@@ -179,7 +179,7 @@ fun SpotifyHomeSection(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(132.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(14.dp))
                                     .background(MaterialTheme.colorScheme.surfaceVariant),
                             )
                             Spacer(Modifier.height(6.dp))
@@ -319,7 +319,7 @@ private fun LibraryRow(
             model = imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(52.dp).clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier.size(52.dp).clip(RoundedCornerShape(10.dp)),
         )
         Column(Modifier.weight(1f)) {
             Text(

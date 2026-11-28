@@ -102,7 +102,7 @@ fun PremiumScreen(
             )
             Spacer(Modifier.height(10.dp))
             Text(
-                text = "Your plan includes complimentary Premium access with unlimited listening features. Premium features are provided as part of your Kisetsu experience; availability may vary by region, device, catalog, and network conditions. This is not a paid subscription and no payment is required.",
+                text = "Your plan includes complimentary Premium access with unlimited listening features. Premium features are provided as part of your Spotify experience; availability may vary by region, device, catalog, and network conditions. This is not a paid subscription and no payment is required.",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.55f),
                 textAlign = TextAlign.Center,
@@ -124,9 +124,9 @@ fun PremiumScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(Color(0xFF2A2A2A))
-                        .border(1.dp, goldMid.copy(alpha = 0.45f), RoundedCornerShape(18.dp))
+                        .border(1.dp, goldMid.copy(alpha = 0.45f), RoundedCornerShape(20.dp))
                         .padding(18.dp),
                 ) {
                     Column {
@@ -162,9 +162,9 @@ fun PremiumScreen(
                             "Background play and seamless queue control",
                             "Offline downloads and library access features",
                             "Podcasts and radio in Discover",
-                            "Personalized mixes, stats, and Kisetsu Wrapped insights",
+                            "Personalized mixes, stats, and Spotify Wrapped insights",
                             "Cross-device listening experience and premium-style controls",
-                            "Priority access to new Kisetsu features as they roll out",
+                            "Priority access to new Spotify features as they roll out",
                         )
                         features.forEach { f ->
                             Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.Top) {

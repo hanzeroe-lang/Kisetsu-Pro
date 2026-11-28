@@ -885,7 +885,7 @@ fun ClassipodHost(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
-                            .background(Color.Black.copy(alpha = 0.78f), RoundedCornerShape(12.dp))
+                            .background(Color.Black.copy(alpha = 0.78f), RoundedCornerShape(14.dp))
                             .padding(horizontal = 12.dp, vertical = 7.dp),
                     )
                 }
@@ -1043,7 +1043,7 @@ private fun ClassipodPageContent(
                 onApply = { m, d, mem, ex -> viewModel.applyFlowConfig(m, d, mem, ex) },
                 onNewMix = { viewModel.newFlowMix() },
                 onSave = {
-                    val name = if (flowMood == FlowMood.FLOW) "Kistify Radio" else "Kistify Radio . ${flowMood.label}"
+                    val name = if (flowMood == FlowMood.FLOW) "Nottify Radio" else "Nottify Radio . ${flowMood.label}"
                     viewModel.saveFlow(name)
                 },
                 onBack = onPop,

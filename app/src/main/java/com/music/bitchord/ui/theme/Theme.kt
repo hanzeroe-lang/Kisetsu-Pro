@@ -41,11 +41,11 @@ import androidx.compose.ui.graphics.luminance
 // spots (Replay's rank badge) that want that specific red regardless of theme.
 val AccentRed = Color(0xFFFA2D48)
 
-/** Kisetsu's own cherry-blossom pink - the app's default accent from v7.2. */
-val KisetsuBlossom = Color(0xFFF06292)
+/** Spotify's own cherry-blossom pink - the app's default accent from v7.2. */
+val SpotifyBlossom = Color(0xFFF06292)
 
 /** A deeper blossom for light mode, where the pastel pink needs more weight. */
-val KisetsuBlossomDeep = Color(0xFFD81B60)
+val SpotifyBlossomDeep = Color(0xFFD81B60)
 
 /** Fruit Juce's old orange, kept as a preset. */
 val FruitJuceOrange = Color(0xFFFF9500)
@@ -104,7 +104,7 @@ fun accentForPreset(name: String, customArgb: Int): Color = when (name) {
     "apple" -> AccentRed
     "white" -> Color.White
     "custom" -> Color(customArgb)
-    "blossom" -> KisetsuBlossom
+    "blossom" -> SpotifyBlossom
     "youtube_red" -> YoutubeRed
     "youtube_dark_red" -> YoutubeDarkRed
     "youtube_crimson" -> YoutubeCrimson
@@ -119,7 +119,7 @@ fun accentForPreset(name: String, customArgb: Int): Color = when (name) {
 }
 
 private val DarkColors = darkColorScheme(
-    primary = KisetsuBlossom,
+    primary = SpotifyBlossom,
     onPrimary = Color.Black,
     background = Color(0xFF121212),
     onBackground = Color.White,
@@ -131,7 +131,7 @@ private val DarkColors = darkColorScheme(
 )
 
 private val LightColors = lightColorScheme(
-    primary = KisetsuBlossomDeep,
+    primary = SpotifyBlossomDeep,
     onPrimary = Color.White,
     background = Color.White,
     onBackground = Color.Black,
@@ -143,7 +143,7 @@ private val LightColors = lightColorScheme(
 )
 
 /**
- * The Kisetsu Apple-look geometry.
+ * The Spotify Apple-look geometry.
  *
  * v7.4 squared it off. v5's round-everything pass had drifted a few degrees
  * past the reference: Apple Music's album tiles and cards are distinctly
@@ -153,14 +153,14 @@ private val LightColors = lightColorScheme(
  */
 private val JuceShapes = Shapes(
     extraSmall = RoundedCornerShape(5.dp),
-    small = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(10.dp),
     medium = RoundedCornerShape(11.dp),
     large = RoundedCornerShape(15.dp),
-    extraLarge = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(22.dp),
 )
 
 /**
- * Kisetsu v7.2: Inter Tight for headings and Inter for text - the pair behind
+ * Spotify v7.2: Inter Tight for headings and Inter for text - the pair behind
  * the app's new typography, replacing SF Pro. Both ship regular + bold; the
  * intermediate weights Compose asks for resolve to the nearest of the two.
  */
@@ -226,10 +226,10 @@ val DeezerProductFamily = FontFamily(
     Font(R.font.deezer_product_extrabold, FontWeight.W800),
 )
 
-/** Rebranded Kisetsu theme palette (evolved from the Swiss bold-color style). */
-val KisetsuBrandBlue = Color(0xFF1565C0)
-val KisetsuBrandPink = Color(0xFFFF4FA3)
-val KisetsuBrandOrange = Color(0xFFFF9800)
+/** Rebranded Spotify theme palette (evolved from the Swiss bold-color style). */
+val SpotifyBrandBlue = Color(0xFF1565C0)
+val SpotifyBrandPink = Color(0xFFFF4FA3)
+val SpotifyBrandOrange = Color(0xFFFF9800)
 
 /**
  * Spotify Mix Extrabold - the old single heavy face. No longer the default:
@@ -255,7 +255,7 @@ val SFProDisplay = FontFamily(
     Font(R.font.sf_pro_display_heavy, FontWeight.W800),
 )
 
-// Heavy, tight typography - the backbone of the Apple Music look. Kisetsu v7.3
+// Heavy, tight typography - the backbone of the Apple Music look. Spotify v7.3
 // rides the platform sans (the same face the Spotify wardrobe uses) rather than
 // a bundled family: one font everywhere, no extra APK weight, and system
 // language coverage for free.
@@ -359,18 +359,18 @@ fun BitChordTheme(
     val resolvedPresetAccent = if (accentPreset == "white" && !darkTheme) Color(0xFF1C1C1E) else presetAccent
     val redAccentMode = isRedAccentPreset(accentPreset)
     val effectiveAccent = when {
-        welcomeToSwitzerland -> KisetsuBrandPink
+        welcomeToSwitzerland -> SpotifyBrandPink
         invincibleColor != null -> invincibleColor
         juceDroplet && dropletColor != null && !redAccentMode -> dropletColor!!
         else -> resolvedPresetAccent
     }
     val secondaryAccent = when {
-        welcomeToSwitzerland -> KisetsuBrandOrange
+        welcomeToSwitzerland -> SpotifyBrandOrange
         invincibleColor != null -> invincibleSecondary(invincibleSkin)
         else -> effectiveAccent
     }
     val globalGreen = when {
-        welcomeToSwitzerland -> KisetsuBrandPink
+        welcomeToSwitzerland -> SpotifyBrandPink
         redAccentMode || invincibleColor != null -> effectiveAccent
         else -> UiAccent.DefaultGreen
     }
@@ -378,7 +378,7 @@ fun BitChordTheme(
     SpotifyGreenDynamic = globalGreen
     val onAccent = if (effectiveAccent.luminance() > 0.55f) Color.Black else Color.White
     val skinBackground = when {
-        welcomeToSwitzerland -> KisetsuBrandBlue
+        welcomeToSwitzerland -> SpotifyBrandBlue
         invincibleColor == null || !darkTheme -> null
         invincibleSkin == "omni_man" -> Color(0xFF140406)
         invincibleSkin == "atom_eve" -> Color(0xFF14060F)
@@ -393,13 +393,13 @@ fun BitChordTheme(
     }
     val colorScheme = if (welcomeToSwitzerland) {
         baseColors.copy(
-            primary = KisetsuBrandPink,
+            primary = SpotifyBrandPink,
             onPrimary = Color.White,
-            secondary = KisetsuBrandOrange,
+            secondary = SpotifyBrandOrange,
             onSecondary = Color.White,
-            tertiary = KisetsuBrandBlue,
+            tertiary = SpotifyBrandBlue,
             onTertiary = Color.White,
-            background = KisetsuBrandBlue,
+            background = SpotifyBrandBlue,
             onBackground = Color.White,
             surface = Color(0xFF1E88E5),
             onSurface = Color.White,

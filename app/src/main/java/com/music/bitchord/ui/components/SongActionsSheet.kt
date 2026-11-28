@@ -315,6 +315,7 @@ fun SongActionsSheet(
         // and between them they are the whole of the choice, which is why they
         // sit in the same place under the same divider.
         if (onRollbackToOriginal != null || onUpgradeQuality != null || onToggleAudioVersion != null) {
+            SectionHeader("PLAYBACK")
             (onRollbackToOriginal ?: onUpgradeQuality)?.let {
                 ActionRow(
                     icon = if (onRollbackToOriginal != null) {
@@ -351,6 +352,7 @@ fun SongActionsSheet(
         }
 
         if (signedIn && !isOffline) {
+            SectionHeader("YOUR LIBRARY")
             ActionRow(
                 icon = if (liked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                 label = if (liked) stringResource(R.string.remove_from_liked) else stringResource(R.string.like),
@@ -382,6 +384,7 @@ fun SongActionsSheet(
             GroupSeparator(palette)
         }
 
+        SectionHeader("DOWNLOAD & QUEUE")
         if (!isRadio) {
             DownloadRow(song, palette, isOffline, onDownload)
         }
@@ -493,6 +496,12 @@ fun SongActionsSheet(
                 }
             }
         }
+        if (showSleepTimer || onLyricsOffset != null || onOpenSing != null || onOpenReplay != null ||
+            spatialAudioOn != null || showSeekTimes != null || showQualityLabel != null ||
+            onOpenListenTogether != null
+        ) {
+            SectionHeader("LISTENING")
+        }
         if (showSleepTimer) {
             ActionRow(
                 icon = Icons.Rounded.Bedtime,
@@ -574,6 +583,9 @@ fun SongActionsSheet(
                 accent = palette.accent,
                 onClick = it,
             )
+        }
+        if (!isOffline || song.thumbnailUrl != null || onCopyLog != null) {
+            SectionHeader("SHARE & MORE")
         }
         if (!isOffline) {
             onShare?.let {
@@ -704,6 +716,18 @@ private fun neutralMenuPalette(): ArtworkPalette {
  * the thicker band iOS-style context menus use - a hairline between rows that
  * are only 44dp apart reads as a row border rather than as a new group.
  */
+/** Header over a group of rows in the player's three-dot menu. */
+@Composable
+private fun SectionHeader(text: String) {
+    if (LocalActionRowStyle.current != ActionRowStyle.Card) return
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+        modifier = Modifier.fillMaxWidth().padding(start = 22.dp, end = 22.dp, top = 14.dp, bottom = 4.dp),
+    )
+}
+
 @Composable
 private fun GroupSeparator(palette: ArtworkPalette) {
     if (LocalActionRowStyle.current == ActionRowStyle.Menu) {
@@ -818,12 +842,11 @@ private fun JuceCardContent(
     onToggleDislike: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val maxHeight = LocalConfiguration.current.screenHeightDp.dp * 0.8f
+    val maxHeight = LocalConfiguration.current.screenHeightDp.dp * 0.92f
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp, bottom = 8.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
             .background(Color.Black),
     ) {
         Box(
@@ -849,8 +872,8 @@ private fun JuceCardContent(
                     Box(
                         modifier = Modifier
                             .size(62.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .thumbnailBorder(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
+                            .thumbnailBorder(RoundedCornerShape(14.dp))
                             .background(Color(0xFFFA2D48)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -866,8 +889,8 @@ private fun JuceCardContent(
                         contentDescription = null,
                         modifier = Modifier
                             .size(62.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .thumbnailBorder(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(14.dp))
+                            .thumbnailBorder(RoundedCornerShape(14.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                     )
                 }
@@ -1351,6 +1374,39 @@ private fun sleepTimerCountdown(): String? {
     }
 }
 
+/** Emoji stand-ins for the player's three-dot menu glyphs. */
+private fun emojiFor(icon: ImageVector): String = when (icon) {
+    Icons.Rounded.Favorite, Icons.Rounded.FavoriteBorder -> "❤️"
+    Icons.Rounded.ThumbDown, Icons.Rounded.ThumbDownOffAlt -> "👎"
+    Icons.AutoMirrored.Rounded.PlaylistAdd, Icons.Rounded.PlaylistRemove,
+    Icons.AutoMirrored.Rounded.QueueMusic -> "📝"
+    Icons.Rounded.Download, Icons.Rounded.Downloading, Icons.Rounded.DownloadDone -> "⬇️"
+    Icons.Rounded.FileUpload -> "⬆️"
+    Icons.Rounded.Radio -> "📻"
+    Icons.AutoMirrored.Rounded.PlaylistPlay -> "⏭️"
+    Icons.Rounded.PushPin -> "📌"
+    Icons.Rounded.History -> "📊"
+    Icons.Rounded.BookmarkAdd, Icons.Rounded.Bookmarks -> "🔖"
+    Icons.Rounded.Album -> "💿"
+    Icons.Rounded.Person -> "🎤"
+    Icons.Rounded.Bedtime -> "😴"
+    Icons.Rounded.Tune -> "⏱️"
+    Icons.Rounded.Mic -> "🎙️"
+    Icons.Rounded.SurroundSound -> "🔊"
+    Icons.Rounded.Timer -> "⏲️"
+    Icons.Rounded.HighQuality -> "🎚️"
+    Icons.Rounded.Groups -> "👥"
+    Icons.Rounded.Share, Icons.Rounded.ContentCopy -> "🔗"
+    Icons.Rounded.Image -> "🖼️"
+    Icons.Rounded.BugReport -> "🐛"
+    Icons.AutoMirrored.Rounded.Undo -> "↩️"
+    Icons.Rounded.Videocam -> "🎬"
+    Icons.Rounded.Check -> "✅"
+    Icons.Rounded.Close -> "❌"
+    BitChordIcons.MusicNote -> "🎵"
+    else -> "🎧"
+}
+
 /**
  * One line of a bottom sheet's menu. Shared with the playlist picker so the
  * two sheets read as the same control rather than as two lists that happen to
@@ -1379,12 +1435,22 @@ internal fun ActionRow(
     val foreground = if (menu) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
     val alpha = if (enabled) 1f else 0.4f
     val iconView: @Composable () -> Unit = {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = (tint ?: foreground).copy(alpha = alpha),
-            modifier = Modifier.size(if (menu) 20.dp else 22.dp),
-        )
+        if (card) {
+            // The player's three-dot menu wears emoji glyphs instead of the
+            // Material icon set — Spotify's menu reads as text + symbol.
+            Text(
+                text = emojiFor(icon),
+                style = MaterialTheme.typography.titleLarge,
+                color = (tint ?: foreground).copy(alpha = alpha),
+            )
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = (tint ?: foreground).copy(alpha = alpha),
+                modifier = Modifier.size(if (menu) 20.dp else 22.dp),
+            )
+        }
     }
     Row(
         modifier = Modifier
@@ -1441,6 +1507,7 @@ internal fun ActionRow(
 @Composable
 private fun LoadingActionRow(icon: ImageVector, label: String, palette: ArtworkPalette) {
     val menu = LocalActionRowStyle.current == ActionRowStyle.Menu
+    val card = LocalActionRowStyle.current == ActionRowStyle.Card
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1453,12 +1520,16 @@ private fun LoadingActionRow(icon: ImageVector, label: String, palette: ArtworkP
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = palette.onBackground.copy(alpha = 0.4f),
-            modifier = Modifier.size(22.dp),
-        )
+        if (card) {
+            Text(emojiFor(icon), style = MaterialTheme.typography.titleLarge, color = palette.onBackground.copy(alpha = 0.4f))
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = palette.onBackground.copy(alpha = 0.4f),
+                modifier = Modifier.size(22.dp),
+            )
+        }
         Spacer(Modifier.width(18.dp))
         Text(
             text = label,
@@ -1499,8 +1570,8 @@ internal fun SheetTrackHeader(
             Box(
                 modifier = Modifier
                     .size(52.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .thumbnailBorder(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .thumbnailBorder(RoundedCornerShape(10.dp))
                     .background(Color(0xFFFA2D48)),
                 contentAlignment = Alignment.Center,
             ) {
@@ -1516,8 +1587,8 @@ internal fun SheetTrackHeader(
                 contentDescription = null,
                 modifier = Modifier
                     .size(52.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .thumbnailBorder(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .thumbnailBorder(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             )
         }

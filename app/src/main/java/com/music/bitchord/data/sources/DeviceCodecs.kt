@@ -90,7 +90,7 @@ object DeviceCodecs {
     /**
      * Whether an E-AC-3 (JOC) stream would find a decoder on this device.
      *
-     * Kisetsu v7.2: always yes, by request. The old probe answered honestly
+     * Spotify v7.2: always yes, by request. The old probe answered honestly
      * about the hardware, but an unsupported phone then never got the track at
      * all, which is a worse outcome than handing it the stream and letting the
      * platform decode what it can. Decoding still depends on the device - an

@@ -132,7 +132,7 @@ private fun OnThisDayCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color(0xFF171720)),
     ) {
         Box(
@@ -191,7 +191,7 @@ private fun OnThisDayCard(
                             model = ranked.song.thumbnailUrl?.artworkAt(120),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(42.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)),
+                            modifier = Modifier.size(42.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
                         )
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
@@ -213,7 +213,7 @@ private fun OnThisDayCard(
                         Column(
                             modifier = Modifier
                                 .width(96.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(14.dp))
                                 .clickable { onOpenArtist(artist.browseId, artist.title) }
                                 .padding(4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -241,7 +241,7 @@ private fun EmptyMemoryCard(title: String, subtitle: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color(0xFF171720))
             .padding(20.dp),
     ) {

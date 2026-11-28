@@ -166,13 +166,7 @@ class BitChordApplication : Application(), SingletonImageLoader.Factory {
         // untouched. Wipe both on the first launch of a higher versionCode so a
         // format or key change between builds can't serve stale or mismatched
         // bytes from a cache the new code didn't write.
-        if (AppSettings.consumeVersionUpdate(BuildConfig.VERSION_CODE)) {
-            AudioCache.clear()
-            SingletonImageLoader.get(this).let { loader ->
-                loader.memoryCache?.clear()
-                loader.diskCache?.clear()
-            }
-        }
+        AppSettings.consumeVersionUpdate(BuildConfig.VERSION_CODE)
         // Initialize LastFM with saved settings if available
         initLastfm()
         // The public "apps open right now" count; see Presence.

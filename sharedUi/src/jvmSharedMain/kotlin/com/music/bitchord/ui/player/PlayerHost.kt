@@ -144,7 +144,7 @@ interface PlayerSettingsSource {
     val canvasOverCellular: StateFlow<Boolean>
     val fullBleedArtwork: StateFlow<Boolean>
     val hideSongStatus: StateFlow<Boolean>
-    /** Kisetsu v7.2: hides the small "Playing from …" line at the top of the sleeve. */
+    /** Spotify v7.2: hides the small "Playing from …" line at the top of the sleeve. */
     val hidePlayerTopLine: StateFlow<Boolean>
     /** Whether the two timestamps under the seek bar are drawn. */
     val showSeekPreviewTimes: StateFlow<Boolean>

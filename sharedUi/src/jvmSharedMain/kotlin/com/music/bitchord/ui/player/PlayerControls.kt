@@ -205,7 +205,7 @@ internal fun PlayerScrubber(
     // canvas needs.
     val mixBlend = PlayerSettings.smartMixBlend.collectAsStateWithLifecycle()
     val reduceAnimation by PlayerSettings.reduceAnimation.collectAsStateWithLifecycle()
-    // Kisetsu v7.2: timestamps under the bar are opt-in. With them gone the
+    // Spotify v7.2: timestamps under the bar are opt-in. With them gone the
     // bar itself grows a little, which is what Apple's player does when it
     // has no times to show.
     val showTimes by PlayerSettings.showSeekPreviewTimes.collectAsStateWithLifecycle()
@@ -225,7 +225,7 @@ internal fun PlayerScrubber(
             idleHeight = 8.dp,
             activeHeight = 13.dp,
             // The Apple wardrobe keeps the artwork-derived ink.
-            activeColor = ink.copy(alpha = 0.92f),
+            activeColor = Color.White,
             inactiveColor = ink.copy(alpha = 0.26f),
             markerColor = ink.copy(alpha = 0.5f),
         )
@@ -309,7 +309,7 @@ private const val MIXING_LABEL_REST = 0.5f
  * Apple Music draws it: just the name of what is playing, in a small
  * translucent grey box.
  *
- * Kisetsu v7.2 took the "Upgrading Quality" state out entirely. A badge that
+ * Spotify v7.2 took the "Upgrading Quality" state out entirely. A badge that
  * announces a search is a badge about the app rather than about the track,
  * and it flashed over music that was already playing fine. Nothing measured
  * means nothing drawn — the sleeve's nerd stats still carry the full picture
@@ -356,7 +356,7 @@ private fun QualityChip(text: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .background(
                 color = Color.Gray.copy(alpha = 0.20f),
-                shape = RoundedCornerShape(4.dp),
+                shape = RoundedCornerShape(6.dp),
             )
             .padding(horizontal = 6.dp, vertical = 2.dp),
     )
@@ -570,7 +570,7 @@ internal fun VolumeRow(
             // v7.8: the volume rail is the same 4dp hairline as the scrubber.
             idleHeight = 5.dp,
             activeHeight = 9.dp,
-            activeColor = ink.copy(alpha = 0.92f),
+            activeColor = Color.White,
             inactiveColor = ink.copy(alpha = 0.26f),
             markerColor = ink.copy(alpha = 0.5f),
             modifier = Modifier.weight(1f),
@@ -737,7 +737,7 @@ internal fun CircleGlyph(
     /** Optical size override for glyphs that sit small or large in their box. */
     glyphSize: Dp = 19.dp,
     /**
-     * Kisetsu v5.2: false draws the bare glyph and no disc behind it — the
+     * Spotify v5.2: false draws the bare glyph and no disc behind it — the
      * liked heart sits on the sleeve itself.
      */
     disc: Boolean = true,
@@ -1249,7 +1249,7 @@ internal fun Modifier.opensPage(browseId: String?, onOpen: (String) -> Unit): Mo
  * title row above it answer a finger the same way, rather than one drawing a
  * rounded ripple and the other a square one.
  */
-private val LinkPressShape = RoundedCornerShape(6.dp)
+private val LinkPressShape = RoundedCornerShape(8.dp)
 
 /** How fast the title/artist marquee crawls — unhurried, not a ticker. */
 private const val MARQUEE_DP_PER_SEC = 26f
@@ -1294,7 +1294,7 @@ fun MarqueeText(
     startDelayMillis: Long = 0L,
     leading: (@Composable () -> Unit)? = null,
     /**
-     * Drawn after the scrolling line and outside its clip. Kisetsu v7.2 moved
+     * Drawn after the scrolling line and outside its clip. Spotify v7.2 moved
      * the explicit badge here, to the right of the title, as Apple does.
      */
     trailing: (@Composable () -> Unit)? = null,

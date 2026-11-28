@@ -198,7 +198,7 @@ import com.music.bitchord.data.scrobbling.LastFM
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.data.settings.SleepTimer
 import com.music.bitchord.ui.components.SingSheet
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.ui.theme.rememberArtworkPalette
 import com.music.bitchord.ui.components.rememberRemoteArtworkUrl
 import com.music.bitchord.ui.components.CastDialog
@@ -214,7 +214,7 @@ import com.music.bitchord.ui.screens.EqualizerScreen
 import com.music.bitchord.ui.screens.HistoryScreen
 import com.music.bitchord.ui.screens.LibraryReplayEntry
 import com.music.bitchord.ui.screens.libraryDeviceItems
-import com.music.bitchord.ui.screens.KisetsuMomentsStrip
+import com.music.bitchord.ui.screens.SpotifyMomentsStrip
 import com.music.bitchord.ui.screens.SPOTIFY_BROWSE_ID
 import com.music.bitchord.ui.screens.libraryLinks
 import com.music.bitchord.ui.screens.CACHE_FOLDER_BROWSE_ID
@@ -397,8 +397,8 @@ import com.music.bitchord.ui.replay.ReplayScreen
 import com.music.bitchord.ui.replay.cards
 import com.music.bitchord.ui.replay.ReplayShareSheet
 import com.music.bitchord.ui.replay.ReplayStories
-import com.music.bitchord.ui.wrapped.KisetsuWrappedStories
-import com.music.bitchord.ui.wrapped.KisetsuWrappedEntry
+import com.music.bitchord.ui.wrapped.SpotifyWrappedStories
+import com.music.bitchord.ui.wrapped.SpotifyWrappedEntry
 import com.music.bitchord.ui.wrapped.MonthlyRecapEntry
 import com.music.bitchord.ui.wrapped.MonthlyRecapStories
 import com.music.bitchord.ui.wrapped.WrappedCoverAd
@@ -454,7 +454,7 @@ private fun juceRoomBackdrop(
     darkTheme: Boolean,
 ): Modifier {
     val immersiveImage = rememberFullArtworkBlurImage(imageUrl = imageUrl, prepare = true)
-    // Kisetsu v7.2: the dynamic background can be switched off. Sampling still
+    // Spotify v7.2: the dynamic background can be switched off. Sampling still
     // runs - the accent is a separate feature and should keep following the
     // cover even when the room behind the pages is plain.
     val dynamicBackground by AppSettings.dynamicBackground.collectAsStateWithLifecycle()
@@ -837,7 +837,7 @@ private fun BitChordApp(
     // takes part in the docking asks for [activeDock] / this, never for the
     // dock or the motion directly.
     val reducePlayerMotion by AppSettings.reduceAnimation.collectAsStateWithLifecycle()
-    // Kisetsu v7.2: the floating pill can be docked flat to the bottom edge.
+    // Spotify v7.2: the floating pill can be docked flat to the bottom edge.
     val haptics = rememberHaptics()
     val floatingNavBar by AppSettings.floatingNavBar.collectAsStateWithLifecycle()
 
@@ -847,10 +847,10 @@ private fun BitChordApp(
     LaunchedEffect(spotifyAppIcon) {
         try {
             val pm = context.packageManager
-            val kisetsu = ComponentName(context, "${context.packageName}.KisetsuLauncher")
+            val Spotify = ComponentName(context, "${context.packageName}.SpotifyLauncher")
             val spotify = ComponentName(context, "${context.packageName}.SpotifyLauncher")
-            val wanted = if (spotifyAppIcon) spotify else kisetsu
-            val other = if (spotifyAppIcon) kisetsu else spotify
+            val wanted = if (spotifyAppIcon) spotify else Spotify
+            val other = if (spotifyAppIcon) Spotify else spotify
             if (pm.getComponentEnabledSetting(wanted) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
                 pm.setComponentEnabledSetting(
                     wanted,
@@ -915,7 +915,7 @@ private fun BitChordApp(
     // category cards ask it to start at their matching ranked section.
     var replayLandingPage by rememberSaveable { mutableStateOf(ReplayStoryPage.INTRO) }
     var replayStory by rememberSaveable { mutableStateOf<ReplayStoryPage?>(null) }
-    var showKisetsuWrapped by remember { mutableStateOf(false) }
+    var showSpotifyWrapped by remember { mutableStateOf(false) }
     var showOnThisDay by rememberSaveable { mutableStateOf(false) }
     var showPersona by rememberSaveable { mutableStateOf(false) }
     var showDiscoveryCrate by rememberSaveable { mutableStateOf(false) }
@@ -1191,9 +1191,11 @@ private fun BitChordApp(
     // out or local track keeps the old picker behaviour - there is no rating
     // to record for either.
     val onLikeButtonTap: (Song) -> Unit = { song ->
-        if (signedIn && song.localUri == null &&
-            viewModel.likeStatusOf(song.videoId) != LikeStatus.LIKE
-        ) {
+        // Count the optimistic `addedSongIds` mark as liked too. Without it a
+        // fast second tap keeps re-liking instead of opening the picker,
+        // because the network like status has not caught up yet.
+        val isLiked = viewModel.likeStatusOf(song.videoId) == LikeStatus.LIKE || song.videoId in addedSongIds
+        if (signedIn && song.localUri == null && !isLiked) {
             viewModel.toggleLike(song.videoId)
             addedSongIds = addedSongIds + song.videoId
         } else {
@@ -1245,13 +1247,13 @@ private fun BitChordApp(
     // is playing, not a borrowed album, and a blank captioned tile is what
     // reads as broken. Empty queue, empty art, same tile as before.
     val flowArt = (flowQueueState as? UiState.Success)?.data?.firstOrNull()?.thumbnailUrl
-    // v7.6: the home feed no longer leads with the Flow card. Kisetsu Picks
+    // v7.6: the home feed no longer leads with the Flow card. Spotify Picks
     // takes the top slot - a seasonal row of songs, resolved by search - and
     // the station itself moved to the Create and Library banners.
-    val kisetsuPicks by viewModel.kisetsuPicks.collectAsStateWithLifecycle()
-val filteredPicks by remember(kisetsuPicks) {
+    val SpotifyPicks by viewModel.SpotifyPicks.collectAsStateWithLifecycle()
+val filteredPicks by remember(SpotifyPicks) {
     derivedStateOf {
-        kisetsuPicks.filter { !it.title.contains("I Want U Back", ignoreCase = true) }
+        SpotifyPicks.filter { !it.title.contains("I Want U Back", ignoreCase = true) }
             .sortedBy { if (it.title.contains("Thriller", ignoreCase = true)) 0 else 1 }
     }
 }
@@ -1260,7 +1262,7 @@ val filteredPicks by remember(kisetsuPicks) {
             val base = (homeState as? UiState.Success)?.data ?: return@derivedStateOf homeState
             if (filteredPicks.isEmpty()) return@derivedStateOf homeState
             val picksShelf = HomeShelf(
-                title = com.music.bitchord.data.event.KisetsuEvent.PICKS_TITLE,
+                title = com.music.bitchord.data.event.SpotifyEvent.PICKS_TITLE,
                 items = filteredPicks.map { song ->
                     ShelfItem(
                         title = song.title,
@@ -1272,14 +1274,14 @@ val filteredPicks by remember(kisetsuPicks) {
                 },
             )
 
-            // Reorder: Kisetsu Picks first, then Recently Played, then the rest.
+            // Reorder: Spotify Picks first, then Recently Played, then the rest.
             val recents = base.filter {
                 it.title.equals("Recents", ignoreCase = true) ||
                 it.title.equals("Recently played", ignoreCase = true) ||
                 it.title.equals("Recently Played", ignoreCase = true)
             }
             val rest = base.filter { shelf ->
-                shelf !in recents && !shelf.title.equals(com.music.bitchord.data.event.KisetsuEvent.PICKS_TITLE, ignoreCase = true)
+                shelf !in recents && !shelf.title.equals(com.music.bitchord.data.event.SpotifyEvent.PICKS_TITLE, ignoreCase = true)
             }
             val ordered = mutableListOf<HomeShelf>()
             ordered.add(picksShelf)
@@ -1290,7 +1292,7 @@ val filteredPicks by remember(kisetsuPicks) {
             else UiState.Success(ordered)
         }
     }
-    LaunchedEffect(Unit) { viewModel.loadKisetsuPicks() }
+    LaunchedEffect(Unit) { viewModel.loadSpotifyPicks() }
     val lyrics by viewModel.lyrics.collectAsStateWithLifecycle()
     val lyricsSource by viewModel.lyricsSource.collectAsStateWithLifecycle()
     val lyricsChecked by viewModel.lyricsChecked.collectAsStateWithLifecycle()
@@ -1448,7 +1450,14 @@ val filteredPicks by remember(kisetsuPicks) {
         }
     }
     val controller = rememberMediaController()
-    val player = rememberPlayerState(controller)
+    val player = rememberPlayerState(controller)
+    com.music.bitchord.ui.components.AutomixQueueSync(
+        song = player.song,
+        queue = player.queue,
+        index = player.queueIndex,
+        positionMs = player.position.positionMs,
+        durationMs = player.durationMs,
+    )
 
     // -".-". Juce Jar: the sleep timer -".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".-".
     // The jar's engine. One countdown at a time: the loop owns the end it was
@@ -3131,8 +3140,8 @@ val filteredPicks by remember(kisetsuPicks) {
                     Toast.makeText(context, "Bookmarked", Toast.LENGTH_SHORT).show()
                 } } else null,
                 hazeState = hazeState,
-                coverAd = if (showsWrappedCoverAd(displayedSong.videoId)) {
-                    { WrappedCoverAd(onOpen = { showKisetsuWrapped = true }) }
+                coverAd = if (AppSettings.wrappedCoverAds.value && showsWrappedCoverAd(displayedSong.videoId)) {
+                    { WrappedCoverAd(onOpen = { showSpotifyWrapped = true }) }
                 } else {
                     null
                 },
@@ -3144,8 +3153,8 @@ val filteredPicks by remember(kisetsuPicks) {
             accountName = account?.name,
             windowWidth = windowWidth,
             windowHeight = windowHeight,
-            artworkOverlay = if (showsWrappedCoverAd(displayedSong.videoId)) {
-                { WrappedCoverAd(onOpen = { showKisetsuWrapped = true }) }
+            artworkOverlay = if (AppSettings.wrappedCoverAds.value && showsWrappedCoverAd(displayedSong.videoId)) {
+                { WrappedCoverAd(onOpen = { showSpotifyWrapped = true }) }
             } else {
                 null
             },
@@ -3821,9 +3830,9 @@ val filteredPicks by remember(kisetsuPicks) {
                             } == true,
                             onSave = {
                                 flowSaveName = if (flowMood == com.music.bitchord.data.flow.FlowMood.FLOW) {
-                                    "Kistify Radio"
+                                    "Spotify Radio"
                                 } else {
-                                    "Kisetsu Radio . ${flowMood.label}"
+                                    "Spotify Radio . ${flowMood.label}"
                                 }
                                 showFlowSave = true
                             },
@@ -3902,7 +3911,7 @@ val filteredPicks by remember(kisetsuPicks) {
                             contentPadding = listPadding,
                             listState = replayListState,
                             landingPage = replayLandingPage,
-                            onOpenWrapped = { showKisetsuWrapped = true },
+                            onOpenWrapped = { showSpotifyWrapped = true },
                         )
                     } else if (key == "spotify") {
                         SpotifyLibraryScreen(
@@ -4170,7 +4179,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                         loadingMore = homeLoadingMore,
                                         recentlyPlayedLoading = homeRecentlyPlayedLoading,
                                         onSavePicks = {
-                                            viewModel.saveKisetsuPicksAsPlaylist { title, _ ->
+                                            viewModel.saveSpotifyPicksAsPlaylist { title, _ ->
                                                 showQueueNotice(context.getString(R.string.picks_saved, title))
                                             }
                                         },
@@ -4233,7 +4242,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                     )
                                 },
                                 onOpenDeepDive = { target -> deepDiveTarget = target },
-                                onOpenWrapped = { showKisetsuWrapped = true },
+                                onOpenWrapped = { showSpotifyWrapped = true },
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
@@ -4471,11 +4480,11 @@ val filteredPicks by remember(kisetsuPicks) {
                                     spotifyPlaylists = spotifyLibraryItems,
                                     replay = {
                                         if (!sloplessMode) {
-                                            KisetsuWrappedEntry(
-                                                onOpen = { showKisetsuWrapped = true },
+                                            SpotifyWrappedEntry(
+                                                onOpen = { showSpotifyWrapped = true },
                                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                             )
-                                            KisetsuMomentsStrip(
+                                            SpotifyMomentsStrip(
                                                 onOpenChronicle = { showChronicle = true },
                                                 onOpenOnThisDay = { showOnThisDay = true },
                                                 onOpenPersona = { showPersona = true },
@@ -4554,11 +4563,11 @@ val filteredPicks by remember(kisetsuPicks) {
                                     },
                                     replay = {
                                         if (!sloplessMode) {
-                                            KisetsuWrappedEntry(
-                                                onOpen = { showKisetsuWrapped = true },
+                                            SpotifyWrappedEntry(
+                                                onOpen = { showSpotifyWrapped = true },
                                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                             )
-                                            KisetsuMomentsStrip(
+                                            SpotifyMomentsStrip(
                                                 onOpenChronicle = { showChronicle = true },
                                                 onOpenOnThisDay = { showOnThisDay = true },
                                                 onOpenPersona = { showPersona = true },
@@ -4727,7 +4736,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                         contentPadding = listPadding,
                                         listState = replayListState,
                                         landingPage = replayLandingPage,
-                                        onOpenWrapped = { showKisetsuWrapped = true },
+                                        onOpenWrapped = { showSpotifyWrapped = true },
                                     )
                                 }
                             }
@@ -5282,7 +5291,7 @@ val filteredPicks by remember(kisetsuPicks) {
                         val netflixChrome = homeNetflixCinematic || libraryNetflixCinematic || discoverNetflixCinematic || searchNetflixCinematic || spotifyNetflixPlayer
                         val navSong = player.song
                         val navArtwork = navSong?.let { rememberRemoteArtworkUrl(it) }
-                        val navPalette = rememberArtworkPalette(if (navSong?.needsKisetsuRadioCover() == true) null else navArtwork)
+                        val navPalette = rememberArtworkPalette(if (navSong?.needsSpotifyRadioCover() == true) null else navArtwork)
                         navSong?.let { song ->
                             if (netflixChrome) {
                                 NetflixMiniPlayer(
@@ -5540,14 +5549,14 @@ val filteredPicks by remember(kisetsuPicks) {
             }
         }
 
-        // ---- Kisetsu Wrapped ----
+        // ---- Spotify Wrapped ----
         // Mounted at the root for the same reason as the Replay stories: a
         // story covers the whole window, not just the pane it was opened
         // from.
-        if (showKisetsuWrapped) {
-            BackHandler { showKisetsuWrapped = false }
-            KisetsuWrappedStories(
-                onClose = { showKisetsuWrapped = false },
+        if (showSpotifyWrapped) {
+            BackHandler { showSpotifyWrapped = false }
+            SpotifyWrappedStories(
+                onClose = { showSpotifyWrapped = false },
                 onPlaySong = { song, from ->
                     playRadio(song, QueueSource(from, PlaybackSourceType.BROWSE))
                 },
@@ -6194,8 +6203,13 @@ val filteredPicks by remember(kisetsuPicks) {
                     } ?: false,
                     onAddToLiked = {
                         target?.let { song ->
+                            // This row is the "already in Liked Songs" toggle:
+                            // tapping it must REMOVE the song, clear the
+                            // optimistic mark, close the sheet and let the
+                            // badge animate back to the outlined +.
+                            val wasLiked = likeStatuses[song.videoId] == LikeStatus.LIKE || song.videoId in addedSongIds
                             viewModel.toggleLike(song.videoId)
-                            addedSongIds = addedSongIds + song.videoId
+                            addedSongIds = if (wasLiked) addedSongIds - song.videoId else addedSongIds + song.videoId
                         }
                         dismiss()
                     },
@@ -6362,7 +6376,7 @@ val filteredPicks by remember(kisetsuPicks) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(14.dp))
+                                    .clip(RoundedCornerShape(16.dp))
                                     .background(Color.White.copy(alpha = 0.08f))
                                     .padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -6371,7 +6385,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                     model = now.thumbnailUrl?.artworkAt(120),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
-                                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)),
+                                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
@@ -6496,7 +6510,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                         Box(
                                             modifier = Modifier
                                                 .size(44.dp)
-                                                .clip(RoundedCornerShape(4.dp))
+                                                .clip(RoundedCornerShape(6.dp))
                                                 .background(Color(0xFFFA2D48)),
                                             contentAlignment = Alignment.Center,
                                         ) {
@@ -6513,7 +6527,7 @@ val filteredPicks by remember(kisetsuPicks) {
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
                                                 .size(44.dp)
-                                                .clip(RoundedCornerShape(4.dp))
+                                                .clip(RoundedCornerShape(6.dp))
                                                 .background(Color.White.copy(alpha = 0.08f)),
                                         )
                                     }
@@ -6704,29 +6718,6 @@ val filteredPicks by remember(kisetsuPicks) {
                                 )
                             },
                     )
-                }.takeIf { remote },
-                // The same link a share off YouTube Music's own overflow
-                // gives - built from the browse id rather than fetched,
-                // since nothing about it depends on the tracks or the
-                // account. Left off an artist card (Share there is a
-                // channel link, not a release, and nobody asked for it)
-                // and off anything with no real browse id behind it.
-                onShare = target.browseId
-                    ?.takeIf { remote && (target.type == BrowseType.ALBUM || target.type == BrowseType.PLAYLIST) }
-                    ?.let { id ->
-                        {
-                            val url = if (target.type == BrowseType.PLAYLIST) {
-                                "https://music.youtube.com/playlist?list=${id.removePrefix("VL")}"
-                            } else {
-                                "https://music.youtube.com/browse/$id"
-                            }
-                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, url)
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, target.title))
-                            browseActions = null
-                        }
                     },
                 isPinned = pinnableId != null && pinnableId in pinnedPlaylists,
                 isPinnedToHome = remote && homePins.any { it.key == homePinFor.key },
@@ -8237,7 +8228,7 @@ private fun SpotifyIdenticalWalkthroughDialog(
 ) {
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
-        title = { androidx.compose.material3.Text("Make Kisetsu look like Spotify") },
+        title = { androidx.compose.material3.Text("Make Spotify look like Spotify") },
         text = {
             androidx.compose.material3.Text(
                 "First-time setup: apply a clean Spotify-style layout.\n\n" +

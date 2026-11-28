@@ -55,7 +55,7 @@ import coil3.compose.AsyncImage
 import com.music.bitchord.data.model.ROW_ART_PX
 import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.artworkAt
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.sharedui.resources.Res as SharedRes
 import com.music.bitchord.sharedui.resources.apple_skip_next
@@ -359,7 +359,7 @@ fun MiniPlayer(
     /** Dragging the bar up into the player. */
     pull: MiniPlayerPull? = null,
     /**
-     * Kisetsu v7.3: docked to a docked nav bar - the flat white row the
+     * Spotify v7.3: docked to a docked nav bar - the flat white row the
      * reference shows, rather than a floating pill riding above it. No gutter,
      * no glass, no rounded corners: it is the top half of one white slab.
      */
@@ -457,7 +457,7 @@ fun MiniPlayer(
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (song.needsKisetsuRadioCover()) {
+            if (song.needsSpotifyRadioCover()) {
                 Box(
                     modifier = Modifier
                         .size(if (docked) 42.dp else 40.dp)
@@ -569,7 +569,7 @@ fun MiniPlayer(
 /**
  * The full player's skip-forward glyph, at the mini player's scale.
  *
- * Kisetsu v7.4 draws it from the same `apple_skip_next` drawable the transport
+ * Spotify v7.4 draws it from the same `apple_skip_next` drawable the transport
  * now uses, so the two players can never disagree about the shape.
  */
 @Composable

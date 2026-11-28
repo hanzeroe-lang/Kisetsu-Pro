@@ -161,7 +161,7 @@ private fun NewPlaylistTile(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .background(tone.surfaceContainerHigh, RoundedCornerShape(12.dp))
+            .background(tone.surfaceContainerHigh, RoundedCornerShape(14.dp))
             .clickable { onClick() }
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart,
@@ -185,19 +185,19 @@ private fun PlaylistRow(
     androidx.compose.foundation.layout.Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(tone.surfaceContainerHigh, RoundedCornerShape(12.dp))
+            .background(tone.surfaceContainerHigh, RoundedCornerShape(14.dp))
             .clickable { onClick() }
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
-            // Kisetsu v7.2: the listener's own photo, where they have picked
+            // Spotify v7.2: the listener's own photo, where they have picked
             // one, in place of the cover YouTube generated.
             model = coverUri ?: playlist.thumbnailUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(48.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(tone.surfaceContainerHighest),
         )
         Column(

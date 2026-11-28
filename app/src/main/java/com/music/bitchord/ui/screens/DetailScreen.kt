@@ -182,8 +182,8 @@ private const val SLEEVE_RATIO = 0.92f
 /** The sleeve on a release page, as a fraction of the page width. */
 private const val SLEEVE_FRACTION = 0.80f
 
-private val SLEEVE_SHAPE = RoundedCornerShape(12.dp)
-private val PILL_SHAPE = RoundedCornerShape(12.dp)
+private val SLEEVE_SHAPE = RoundedCornerShape(14.dp)
+private val PILL_SHAPE = RoundedCornerShape(14.dp)
 
 /**
  * Where the search field sits once it is open - directly under the header,
@@ -895,7 +895,7 @@ private fun ReleaseHeader(
                             if (id == null) {
                                 m
                             } else {
-                                m.clip(RoundedCornerShape(6.dp))
+                                m.clip(RoundedCornerShape(8.dp))
                                     .clickable { onArtistClick(id, artist.artist) }
                             }
                         },
@@ -1048,8 +1048,8 @@ private fun SpotifyAlbumHeader(
             Box(
                 modifier = Modifier
                     .size(maxWidth)
-                    .shadow(8.dp, RoundedCornerShape(4.dp), spotColor = Color.Black)
-                    .clip(RoundedCornerShape(4.dp))
+                    .shadow(8.dp, RoundedCornerShape(6.dp), spotColor = Color.Black)
+                    .clip(RoundedCornerShape(6.dp))
                     .background(Color.Black),
             ) {
                 AsyncImage(
@@ -1700,7 +1700,7 @@ private fun PageBackground(
     // freeze the bottom of the video into the wrong picture.
     val softenFoot = canvas == null && !reduceDynamicBlur &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    // Kisetsu v7.2: a playlist can wear a photo the listener picked instead of
+    // Spotify v7.2: a playlist can wear a photo the listener picked instead of
     // the still YouTube chose for it.
     val customCovers by PlaylistCovers.covers.collectAsStateWithLifecycle()
     val art = heroUrl ?: customCovers[page.browseId]
@@ -2288,8 +2288,8 @@ private fun SuggestedSongRow(
                 contentDescription = null,
                 modifier = Modifier
                     .size(52.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .thumbnailBorder(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
+                    .thumbnailBorder(RoundedCornerShape(10.dp))
                     .background(palette.elevated),
             )
             if (isCurrent && isPlaying) SearchPlayingBars(Modifier.align(Alignment.Center))
@@ -2384,8 +2384,8 @@ private fun TopReleaseCard(
     /** Null hides the button. */
     onToggleSaved: (() -> Unit)?,
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    val coverShape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(14.dp)
+    val coverShape = RoundedCornerShape(14.dp)
     val haptics = rememberHaptics()
     Row(
         modifier = Modifier
@@ -2487,8 +2487,8 @@ private fun SectionCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(10.dp))
-                .thumbnailBorder(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(12.dp))
+                .thumbnailBorder(RoundedCornerShape(12.dp))
                 .background(palette.elevated),
         )
         Spacer(Modifier.height(8.dp))

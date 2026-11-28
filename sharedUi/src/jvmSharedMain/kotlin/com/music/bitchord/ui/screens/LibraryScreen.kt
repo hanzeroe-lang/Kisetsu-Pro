@@ -82,7 +82,7 @@ import com.music.bitchord.data.settings.LibrarySort
 import com.music.bitchord.ui.AppUi
 import com.music.bitchord.ui.icons.BitChordIcons
 import com.music.bitchord.ui.components.LIBRARY_GRID_SPACING
-import com.music.bitchord.ui.components.KisetsuRadioBanner
+import com.music.bitchord.ui.components.SpotifyRadioBanner
 import com.music.bitchord.ui.components.MessageState
 import com.music.bitchord.ui.components.PAGE_GUTTER
 import com.music.bitchord.ui.components.PullToRefresh
@@ -148,7 +148,7 @@ fun LibraryScreen(
     /** The big "Library" heading; the desktop's pages carry none. */
     showTitle: Boolean = true,
     /**
-     * The Kisetsu Radio banner at the head of the page, where the station now
+     * The Spotify Radio banner at the head of the page, where the station now
      * lives instead of on the home feed. Null on the desktop, which does not
      * carry a Flow page.
      */
@@ -161,7 +161,7 @@ fun LibraryScreen(
     podcastListenLaterItems: List<ShelfItem> = emptyList(),
     recentlyPlayedItems: List<ShelfItem> = emptyList(),
     insightItems: List<ShelfItem> = emptyList(),
-    insightTitle: String = "Kisetsu picks",
+    insightTitle: String = "Nottify picks",
     downloadStatusText: String? = null,
     /**
      * The signed-in Spotify account's playlists, already shaped as shelf
@@ -639,7 +639,7 @@ private fun PlaylistShelf(
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -664,7 +664,7 @@ private fun PlaylistShelf(
                         Box(
                             modifier = Modifier
                                 .size(56.dp)
-                                .clip(RoundedCornerShape(6.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -705,7 +705,7 @@ private fun LibraryListRow(
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
             contentAlignment = Alignment.Center,
         ) {
@@ -715,7 +715,7 @@ private fun LibraryListRow(
                     model = thumb,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(6.dp)),
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                 )
             } else {
                 Icon(
@@ -783,7 +783,7 @@ internal fun LibraryGridShelf(
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
                         contentAlignment = Alignment.Center,
                     ) {

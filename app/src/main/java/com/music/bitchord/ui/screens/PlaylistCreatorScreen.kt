@@ -213,7 +213,7 @@ private fun CreatorResultRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(tone.surfaceContainerHigh, RoundedCornerShape(14.dp))
+            .background(tone.surfaceContainerHigh, RoundedCornerShape(16.dp))
             .clickable { onAdd() }
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -223,7 +223,7 @@ private fun CreatorResultRow(
             contentDescription = null,
             modifier = Modifier
                 .size(44.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(tone.surfaceContainerHighest),
         )
         Column(
@@ -270,7 +270,7 @@ private fun CreatorDraftRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(tone.surfaceContainerHigh, RoundedCornerShape(14.dp))
+            .background(tone.surfaceContainerHigh, RoundedCornerShape(16.dp))
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -279,7 +279,7 @@ private fun CreatorDraftRow(
             contentDescription = null,
             modifier = Modifier
                 .size(44.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(tone.surfaceContainerHighest),
         )
         Column(

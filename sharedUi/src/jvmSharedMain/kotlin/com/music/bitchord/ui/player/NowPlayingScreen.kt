@@ -154,7 +154,7 @@ import com.music.bitchord.ui.haptics.Haptic
 import com.music.bitchord.ui.haptics.rememberHaptics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.bitchord.data.canvas.CanvasSource
-import com.music.bitchord.data.event.KisetsuEvent
+import com.music.bitchord.data.event.SpotifyEvent
 import com.music.bitchord.data.lyrics.LyricLine
 import com.music.bitchord.data.lyrics.LyricsSource
 import com.music.bitchord.data.settings.LastPlayerScreen
@@ -556,7 +556,7 @@ private class DockFrame {
 private class LandscapeDockPose(val left: Float, val top: Float, val scale: Float)
 
 /** The placeholder tile's corners — one shape, not a new one every frame it moves. */
-private val TileShape = RoundedCornerShape(6.dp)
+private val TileShape = RoundedCornerShape(8.dp)
 
 /**
  * [content], for as long as [shown] says so.
@@ -861,7 +861,7 @@ fun NowPlayingScreen(
      */
     windowHeight: Dp,
     /**
-     * Drawn over the sleeve. The phone host puts the Kisetsu Wrapped invitation
+     * Drawn over the sleeve. The phone host puts the Spotify Wrapped invitation
      * here; the desktop passes nothing.
      */
     artworkOverlay: (@Composable () -> Unit)? = null,
@@ -926,7 +926,7 @@ fun NowPlayingScreen(
         onSeek(adjustedLyricsSeekTarget(lineTimeMs, lyricsOffsetMs))
     }
     val hideSongStatus by PlayerSettings.hideSongStatus.collectAsStateWithLifecycle()
-    // Kisetsu v7.2: the little line at the top of the sleeve has its own switch,
+    // Spotify v7.2: the little line at the top of the sleeve has its own switch,
     // separate from the output caption at the foot of the player.
     val hidePlayerTopLine by PlayerSettings.hidePlayerTopLine.collectAsStateWithLifecycle()
     val playerTextGlow by PlayerSettings.playerTextGlow.collectAsStateWithLifecycle()
@@ -1547,7 +1547,7 @@ fun NowPlayingScreen(
         }
     }
 
-    // Kisetsu v7.2: the cover hand-off is a crossfade, so the transport no
+    // Spotify v7.2: the cover hand-off is a crossfade, so the transport no
     // longer needs to know which way the artwork used to slide.
     val skipNext: () -> Unit = { onNext() }
     val skipPrevious: () -> Unit = { onPrevious() }
@@ -3198,7 +3198,7 @@ fun NowPlayingScreen(
                             )
                         }
                     }
-                    // Kisetsu v7.2: the cover hand-off is Apple's — a fast
+                    // Spotify v7.2: the cover hand-off is Apple's — a fast
                     // crossfade with a whisper of scale, not a slide. The
                     // outgoing sleeve drifts a touch larger as it fades; the
                     // incoming one comes up from slightly small, so the eye
@@ -3580,7 +3580,7 @@ fun NowPlayingScreen(
                             enter = fadeIn(animationSpec = tween(180)),
                             exit = fadeOut(animationSpec = tween(220)),
                         ) {
-                            if (KisetsuEvent.halloween && likeIconStyle == "heart") {
+                            if (SpotifyEvent.halloween && likeIconStyle == "heart") {
                                 PumpkinLikeButton(
                                     label = stringResource(
                                         if (liked) Res.string.remove_from_liked else Res.string.like,

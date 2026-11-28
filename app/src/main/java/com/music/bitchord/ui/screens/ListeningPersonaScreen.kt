@@ -171,7 +171,7 @@ fun ListeningPersonaScreen(
                         CircularProgressIndicator(color = Color.White)
                     }
                 } else {
-                    Column(Modifier.padding(16.dp).clip(RoundedCornerShape(20.dp)).background(Color(0xFF1A1026)).padding(20.dp)) {
+                    Column(Modifier.padding(16.dp).clip(RoundedCornerShape(22.dp)).background(Color(0xFF1A1026)).padding(20.dp)) {
                         Text("Not enough listening yet", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(6.dp))
                         Text("Play some music and your persona will show up here.", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
@@ -184,7 +184,7 @@ fun ListeningPersonaScreen(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(26.dp))
                         .background(Brush.linearGradient(listOf(Color(0xFF7A2AE6), Color(0xFFE1339B), Color(0xFFFF8A5B))))
                         .padding(20.dp),
                 ) {
@@ -199,7 +199,7 @@ fun ListeningPersonaScreen(
                 Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     persona.traits.forEach { trait ->
                         Box(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFF1A1026)).padding(horizontal = 14.dp, vertical = 12.dp),
+                            Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0xFF1A1026)).padding(horizontal = 14.dp, vertical = 12.dp),
                         ) {
                             Text(trait, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                         }
@@ -215,7 +215,7 @@ fun ListeningPersonaScreen(
                             bitmap = image.asImageBitmap(),
                             contentDescription = "Persona card",
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f).clip(RoundedCornerShape(16.dp)),
+                            modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f).clip(RoundedCornerShape(18.dp)),
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             ShareAction(
@@ -225,7 +225,7 @@ fun ListeningPersonaScreen(
                                 enabled = !saved,
                                 modifier = Modifier.weight(1f),
                             ) {
-                                scope.launch { saved = saveToGallery(context, image, "Persona", "kisetsu-persona") }
+                                scope.launch { saved = saveToGallery(context, image, "Persona", "Nottify-persona") }
                             }
                             ShareAction(
                                 label = "Share",
@@ -276,7 +276,7 @@ private suspend fun renderPersonaPoster(context: Context, persona: PersonaResult
             return "$s."
         }
 
-        text("KISETSU LISTENING PERSONA", 80f, 170f, 34f, 0xE6FFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
+        text("NOTTIFY LISTENING PERSONA", 80f, 170f, 34f, 0xE6FFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
         text("You are", 80f, 360f, 54f, 0xF2FFFFFF.toInt(), reg)
         text(fit(persona.name, 130f, 920f), 80f, 520f, 130f, 0xFFFFFFFF.toInt())
         text(fit(persona.tagline, 40f, 920f, reg), 80f, 610f, 40f, 0xEEFFFFFF.toInt(), reg)
@@ -288,6 +288,6 @@ private suspend fun renderPersonaPoster(context: Context, persona: PersonaResult
             text(fit(trait, 40f, 860f, reg), 120f, y, 40f, 0xFFFFFFFF.toInt(), reg)
             y += 110f
         }
-        text("KISETSU  .  YOUR SOUND", 80f, h - 110f, 34f, 0xCCFFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
+        text("NOTTIFY  .  YOUR SOUND", 80f, h - 110f, 34f, 0xCCFFFFFF.toInt(), Typeface.create("sans-serif", Typeface.BOLD))
         bitmap
     }

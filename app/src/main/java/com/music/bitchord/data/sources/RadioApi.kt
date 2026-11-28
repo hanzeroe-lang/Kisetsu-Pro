@@ -42,7 +42,7 @@ object RadioApi {
             .build()
     }
 
-    private const val UA = "Kisetsu/1.0 (radio-browser client; Android)"
+    private const val UA = "Spotify/1.0 (radio-browser client; Android)"
     const val USER_AGENT = UA
     private const val BASE = "https://de1.api.radio-browser.info"
 

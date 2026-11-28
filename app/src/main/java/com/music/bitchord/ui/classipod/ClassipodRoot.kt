@@ -121,10 +121,10 @@ fun ClassipodRoot(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(Color.Black)
                 .padding(3.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(lcd.bg),
         ) {
             // Push slides in from the right, pop from the left; reduced
@@ -541,7 +541,7 @@ fun ClassipodRow(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(22.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(6.dp))
                     .background(lcd.bar),
             )
             Spacer(Modifier.width(8.dp))

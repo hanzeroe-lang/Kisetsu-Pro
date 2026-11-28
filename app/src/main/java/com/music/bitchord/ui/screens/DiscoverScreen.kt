@@ -73,7 +73,7 @@ import com.music.bitchord.data.YtMusicRepository
 import com.music.bitchord.data.model.SearchResult
 import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.artworkAt
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.data.settings.DiscoverSave
 import com.music.bitchord.data.settings.AppSettings
 import com.music.bitchord.data.settings.DiscoverSaves
@@ -90,7 +90,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-private val KisetsuRed = Color(0xFFFA2D48)
+private val SpotifyRed = Color(0xFFFA2D48)
 
 private val DiscoverModes = listOf("For you", "Episodes", "Radio", "Podcasts")
 private val DiscoverMoods = listOf("Chill", "Focus", "Workout", "Comedy", "Sleep")
@@ -117,10 +117,10 @@ fun DiscoverScreen(
     modifier: Modifier = Modifier,
 ) {
     val art = rememberRemoteArtworkUrl(currentSong)
-    val kisetsu = currentSong?.needsKisetsuRadioCover() == true
-    val palette = rememberArtworkPalette(if (kisetsu) null else art, dark = true)
-    val bgTop = if (kisetsu) KisetsuRed else palette.wash
-    val bgMid = if (kisetsu) Color(0xFF5C1020) else palette.background
+    val Spotify = currentSong?.needsSpotifyRadioCover() == true
+    val palette = rememberArtworkPalette(if (Spotify) null else art, dark = true)
+    val bgTop = if (Spotify) SpotifyRed else palette.wash
+    val bgMid = if (Spotify) Color(0xFF5C1020) else palette.background
 
     var query by rememberSaveable { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<DiscoverSave>>(emptyList()) }
@@ -594,7 +594,7 @@ private fun DiscoverShimmerCard() {
         label = "shimmerAlpha",
     )
     Column(Modifier.width(118.dp)) {
-        Box(Modifier.size(118.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = alpha)))
+        Box(Modifier.size(118.dp).clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = alpha)))
         Spacer(Modifier.height(8.dp))
         Box(Modifier.fillMaxWidth(0.85f).height(10.dp).clip(RoundedCornerShape(5.dp)).background(Color.White.copy(alpha = alpha)))
         Spacer(Modifier.height(4.dp))
@@ -629,7 +629,7 @@ private fun ShelfCard(save: DiscoverSave, onClick: () -> Unit, onLongClick: () -
     val coverless = effectiveThumb.isNullOrBlank() || artFailed
     val palette = rememberArtworkPalette(effectiveThumb, dark = true)
     val cardBg = if (dynamicColor) palette.wash else Color.White.copy(alpha = 0.08f)
-    val shape = if (radio) CircleShape else RoundedCornerShape(10.dp)
+    val shape = if (radio) CircleShape else RoundedCornerShape(12.dp)
     val art: @Composable () -> Unit = {
         if (coverless) {
             Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.size(72.dp))
@@ -657,8 +657,8 @@ private fun ShelfCard(save: DiscoverSave, onClick: () -> Unit, onLongClick: () -
             Box(
                 modifier = Modifier
                     .size(140.dp)
-                    .clip(if (radio) CircleShape else RoundedCornerShape(12.dp))
-                    .background(if (coverless) KisetsuRed else cardBg),
+                    .clip(if (radio) CircleShape else RoundedCornerShape(14.dp))
+                    .background(if (coverless) SpotifyRed else cardBg),
                 contentAlignment = Alignment.Center,
             ) {
                 art()
@@ -688,7 +688,7 @@ private fun ShelfCard(save: DiscoverSave, onClick: () -> Unit, onLongClick: () -
                 modifier = Modifier
                     .size(118.dp)
                     .clip(shape)
-                    .background(if (coverless) KisetsuRed else cardBg),
+                    .background(if (coverless) SpotifyRed else cardBg),
                 contentAlignment = Alignment.Center,
             ) {
                 art()
@@ -789,7 +789,7 @@ private fun JumpBackInSection(onResumePodcast: (PodcastBookmark) -> Unit) {
             val save = DiscoverSave(key = bm.videoId, kind = DiscoverSave.KIND_PODCAST, title = bm.title, subtitle = bm.showName, thumbnailUrl = bmArt, videoId = bm.videoId, isPodcastEpisode = true)
             Box {
                 Column(Modifier.width(118.dp).combinedClickable(onClick = { onResumePodcast(bm) }, onLongClick = { menuOpen = true })) {
-                    Box(Modifier.size(118.dp).clip(RoundedCornerShape(10.dp)).background(if (bmArt.isNullOrBlank()) KisetsuRed else Color.White.copy(alpha = 0.08f))) {
+                    Box(Modifier.size(118.dp).clip(RoundedCornerShape(12.dp)).background(if (bmArt.isNullOrBlank()) SpotifyRed else Color.White.copy(alpha = 0.08f))) {
                         if (bmArt.isNullOrBlank()) {
                             Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.size(72.dp))
                         } else {
@@ -880,7 +880,7 @@ private fun DiscoverBento(onSelectMode: (Int) -> Unit) {
                             modifier = Modifier
                                 .weight(1f)
                                 .height(88.dp)
-                                .clip(RoundedCornerShape(14.dp))
+                                .clip(RoundedCornerShape(16.dp))
                                 .background(Color.White.copy(alpha = 0.08f))
                                 .clickable { onSelectMode(mode) }
                                 .padding(12.dp),
@@ -922,7 +922,7 @@ private fun SpotlightHeroSection(onPlaySong: (Song, String) -> Unit, onOpenPodca
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .height(190.dp)
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(Color.White.copy(alpha = 0.08f)),
             )
         }
@@ -935,7 +935,7 @@ private fun SpotlightHeroSection(onPlaySong: (Song, String) -> Unit, onOpenPodca
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(190.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(Color.White.copy(alpha = 0.08f))
             .clickable { playDiscover(hero, onPlaySong, onOpenPodcast) },
     ) {
@@ -945,7 +945,7 @@ private fun SpotlightHeroSection(onPlaySong: (Song, String) -> Unit, onOpenPodca
         }
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to Color.Transparent, 0.35f to Color.Black.copy(alpha = 0.25f), 1f to Color.Black.copy(alpha = 0.85f))))
         Column(Modifier.align(Alignment.BottomStart).padding(14.dp)) {
-            Text("SPOTLIGHT", color = KisetsuRed, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
+            Text("SPOTLIGHT", color = SpotifyRed, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
             Text(hero.title, color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(hero.subtitle.ifBlank { if (radio) "Radio" else "Podcast" }, color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
@@ -955,7 +955,7 @@ private fun SpotlightHeroSection(onPlaySong: (Song, String) -> Unit, onOpenPodca
                 .padding(12.dp)
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(KisetsuRed),
+                .background(SpotifyRed),
             contentAlignment = Alignment.Center,
         ) {
             Icon(Icons.Rounded.PlayArrow, null, tint = Color.White, modifier = Modifier.size(24.dp))
@@ -1059,7 +1059,7 @@ private fun StoriesCarouselSection(onPlaySong: (Song, String) -> Unit, onOpenPod
                     modifier = Modifier
                         .width(120.dp)
                         .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
                         .background(Color.White.copy(alpha = 0.08f))
                         .clickable { playDiscover(save, onPlaySong, onOpenPodcast) },
                 ) {
@@ -1129,7 +1129,7 @@ private fun DiscoverResultRow(
     val radio = save.kind == DiscoverSave.KIND_RADIO
     var artFailed by remember(save.thumbnailUrl) { mutableStateOf(false) }
     val coverless = save.thumbnailUrl.isNullOrBlank() || artFailed
-    val shape = if (radio) CircleShape else RoundedCornerShape(10.dp)
+    val shape = if (radio) CircleShape else RoundedCornerShape(12.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1141,7 +1141,7 @@ private fun DiscoverResultRow(
             modifier = Modifier
                 .size(56.dp)
                 .clip(shape)
-                .background(if (coverless) KisetsuRed else Color.White.copy(alpha = 0.08f)),
+                .background(if (coverless) SpotifyRed else Color.White.copy(alpha = 0.08f)),
             contentAlignment = Alignment.Center,
         ) {
             if (coverless) {

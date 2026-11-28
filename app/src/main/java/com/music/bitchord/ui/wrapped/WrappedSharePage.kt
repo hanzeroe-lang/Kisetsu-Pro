@@ -140,12 +140,12 @@ fun WrappedSharePage(
                 when {
                     image != null -> Image(
                         bitmap = image.asImageBitmap(),
-                        contentDescription = "Your Kisetsu Wrapped card",
+                        contentDescription = "Your Nottify Wrapped card",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(9f / 16f)
-                            .clip(RoundedCornerShape(16.dp)),
+                            .clip(RoundedCornerShape(18.dp)),
                     )
                     failed -> Text(
                         "Couldn't draw the card.",
@@ -166,7 +166,7 @@ fun WrappedSharePage(
                     modifier = Modifier.weight(1f),
                 ) {
                     val image = poster ?: return@ShareAction
-                    scope.launch { saved = saveToGallery(context, image, summary.label, "kisetsu-wrapped") }
+                    scope.launch { saved = saveToGallery(context, image, summary.label, "Nottify-wrapped") }
                 }
                 ShareAction(
                     label = "Share",
@@ -179,7 +179,7 @@ fun WrappedSharePage(
                     scope.launch {
                         val uri = cacheForSharing(context, image, "wrapped.png") ?: return@launch
                         context.startActivity(
-                            Intent.createChooser(sendIntent(uri), "Share your Kisetsu Wrapped"),
+                            Intent.createChooser(sendIntent(uri), "Share your Nottify Wrapped"),
                         )
                     }
                 }
@@ -255,7 +255,7 @@ private suspend fun renderWrappedAd(
     }
 
     var y = 190f
-    canvas.drawText("KISETSU WRAPPED", 80f, y, kicker)
+    canvas.drawText("NOTTIFY WRAPPED", 80f, y, kicker)
     y += 175f
     canvas.drawText("'${summary.label.takeLast(2)}", 80f, y, title)
     y += 70f
@@ -287,7 +287,7 @@ private suspend fun renderWrappedAd(
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
         letterSpacing = 0.12f
     }
-    canvas.drawText("KISETSU  .  YOUR YEAR IN MUSIC", 80f, h - 110f, footer)
+    canvas.drawText("NOTTIFY  .  YOUR YEAR IN MUSIC", 80f, h - 110f, footer)
 
     bitmap
 }

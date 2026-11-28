@@ -269,8 +269,10 @@ internal fun AndroidCanvasArtworkPlayer(
     // regardless of playback state, so coming back from background always has
     // a surface ready and `onRenderedFirstFrame()` fires naturally.
     val foreground = rememberIsForeground()
-    LaunchedEffect(foreground, pausedForTransition) {
-        player.playWhenReady = foreground && !pausedForTransition
+    LaunchedEffect(foreground, pausedForTransition, isPlaying) {
+        // Freeze the animated sleeve when the song pauses, too - not just when
+        // the app goes to the background or a transition holds it.
+        player.playWhenReady = foreground && isPlaying && !pausedForTransition
     }
 
     // Repaint onto a surface that has just been handed back. A TextureView's

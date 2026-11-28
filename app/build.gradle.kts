@@ -1,4 +1,4 @@
-﻿import java.util.Properties
+import java.util.Properties
 import java.io.FileInputStream
 
 plugins {
@@ -79,13 +79,13 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.horrockstom26.fruitjuce"
+        applicationId = "com.hanzeroe.kisetsupro"
         // 26 keeps reach wide; real-time blur (RenderEffect) kicks in on API 31+,
         // Haze falls back to a translucent scrim below that.
         minSdk = 26
         targetSdk = 36
-        versionCode = 253
-        versionName = "4.231"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -132,8 +132,8 @@ android {
     productFlavors {
         create("dev") {
             dimension = "env"
-            applicationId = "com.dev.fruitjuce"
-            resValue("string", "app_name", "Kistify Dev")
+            applicationId = "com.hanzeroe.kisetsupro.dev"
+            resValue("string", "app_name", "Kisetsu Pro Dev")
         }
         create("prod") {
             dimension = "env"
@@ -168,9 +168,9 @@ android {
             // Carried here too â€” see [betaSuffix]. A sideloaded beta is a
             // release build, and it is the one that most needs the marker.
             if (betaSuffix.isNotEmpty()) versionNameSuffix = "-$betaSuffix"
-            // Minify/shrink disabled for fast v4.198 publish after R8 hung in this environment.
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // Enabled for smaller APK / less runtime work (battery). See proguard-rules.pro.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

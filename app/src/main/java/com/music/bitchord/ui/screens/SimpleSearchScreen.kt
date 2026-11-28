@@ -49,7 +49,7 @@ import com.music.bitchord.data.model.SearchHistoryEntity
 import com.music.bitchord.data.model.SearchResult
 import com.music.bitchord.data.model.Song
 import com.music.bitchord.data.model.UiState
-import com.music.bitchord.data.model.needsKisetsuRadioCover
+import com.music.bitchord.data.model.needsSpotifyRadioCover
 import com.music.bitchord.ui.components.pressScale
 import com.music.bitchord.ui.components.rememberRemoteArtworkUrl
 import com.music.bitchord.ui.theme.rememberArtworkPalette
@@ -77,9 +77,9 @@ fun SimpleSearchContent(
     modifier: Modifier = Modifier,
 ) {
     val art = rememberRemoteArtworkUrl(currentSong)
-    val kisetsu = currentSong?.needsKisetsuRadioCover() == true
-    val palette = rememberArtworkPalette(if (kisetsu) null else art, dark = true)
-    val wash = if (kisetsu) Color(0xFF5C1020) else palette.wash
+    val Spotify = currentSong?.needsSpotifyRadioCover() == true
+    val palette = rememberArtworkPalette(if (Spotify) null else art, dark = true)
+    val wash = if (Spotify) Color(0xFF5C1020) else palette.wash
     val base = MaterialTheme.colorScheme.background
 
     val filters = listOf(
@@ -152,7 +152,7 @@ fun SimpleSearchContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 6.dp)
-                                    .clip(RoundedCornerShape(14.dp))
+                                    .clip(RoundedCornerShape(16.dp))
                                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f))
                                     .padding(horizontal = 14.dp, vertical = 12.dp),
                             ) {
@@ -286,7 +286,7 @@ private fun HistoryRow(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(44.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         )
         Spacer(Modifier.width(12.dp))
@@ -319,7 +319,7 @@ private fun SimpleSongRow(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(52.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         )
         Spacer(Modifier.width(12.dp))
@@ -363,7 +363,7 @@ private fun SimpleBrowseRow(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(52.dp)
-                .clip(if (circle) CircleShape else RoundedCornerShape(8.dp))
+                .clip(if (circle) CircleShape else RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         )
         Spacer(Modifier.width(12.dp))
@@ -407,8 +407,8 @@ fun NetflixSimpleSearchContent(
     modifier: Modifier = Modifier,
 ) {
     val art = rememberRemoteArtworkUrl(currentSong)
-    val kisetsu = currentSong?.needsKisetsuRadioCover() == true
-    val palette = rememberArtworkPalette(if (kisetsu) null else art, dark = true)
+    val Spotify = currentSong?.needsSpotifyRadioCover() == true
+    val palette = rememberArtworkPalette(if (Spotify) null else art, dark = true)
     val accent = palette.accent
     val filters = listOf(
         SearchFilter.ALL,
@@ -487,7 +487,7 @@ fun NetflixSimpleSearchContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .clip(RoundedCornerShape(16.dp))
+                                    .clip(RoundedCornerShape(18.dp))
                                     .background(Brush.linearGradient(listOf(accent.copy(alpha = 0.30f), Color.White.copy(alpha = 0.06f))))
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
                             ) {
@@ -569,21 +569,21 @@ private fun NetflixSimpleSongRow(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
-    val kisetsu = song.needsKisetsuRadioCover() || song.thumbnailUrl.isNullOrBlank() && song.videoId.startsWith("src:")
+    val Spotify = song.needsSpotifyRadioCover() || song.thumbnailUrl.isNullOrBlank() && song.videoId.startsWith("src:")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 5.dp)
             .pressScale(pressedScale = 1.015f)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(Color.White.copy(alpha = 0.05f))
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (kisetsu) {
+        if (Spotify) {
             Box(
-                modifier = Modifier.size(58.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFFFA2D48)),
+                modifier = Modifier.size(58.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFFFA2D48)),
                 contentAlignment = Alignment.Center,
             ) {
                 Image(
@@ -597,7 +597,7 @@ private fun NetflixSimpleSongRow(
                 model = song.thumbnailUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(58.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
+                modifier = Modifier.size(58.dp).clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.08f)),
             )
         }
         Spacer(Modifier.width(12.dp))
@@ -620,7 +620,7 @@ private fun NetflixSimpleBrowseRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 5.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(Color.White.copy(alpha = 0.05f))
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 10.dp, vertical = 8.dp),
@@ -630,7 +630,7 @@ private fun NetflixSimpleBrowseRow(
             model = item.thumbnailUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(58.dp).clip(if (circle) CircleShape else RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)),
+            modifier = Modifier.size(58.dp).clip(if (circle) CircleShape else RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.08f)),
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {

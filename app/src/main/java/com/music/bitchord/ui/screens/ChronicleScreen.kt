@@ -1,4 +1,4 @@
-﻿package com.music.bitchord.ui.screens
+package com.music.bitchord.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -217,7 +217,7 @@ fun ChronicleScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     val songs = data.forgottenFavorites.map { it.song }
                     Row(
-                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.08f)).clickable {
+                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color.White.copy(alpha = 0.08f)).clickable {
                             if (songs.isNotEmpty()) onPlaySongs(songs, 0, "Chronicle: Time Capsule")
                         }.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -269,7 +269,7 @@ private fun CoverSection(cover: CoverData, yp: YearProgress?) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .height(260.dp)
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(26.dp))
             .background(Color(0xFF111827)),
     ) {
         if (art != null) {
@@ -279,7 +279,7 @@ private fun CoverSection(cover: CoverData, yp: YearProgress?) {
         }
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xCC070814), Color(0xFF070814)))))
         Column(Modifier.align(Alignment.BottomStart).padding(18.dp)) {
-            Text("KISETSU CHRONICLE", color = Color.White.copy(alpha = 0.85f), fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+            Text("NOTTIFY CHRONICLE", color = Color.White.copy(alpha = 0.85f), fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
             Spacer(Modifier.height(4.dp))
             Text("The story of your sound", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Black)
             Spacer(Modifier.height(6.dp))
@@ -314,10 +314,10 @@ private fun YearProgressSection(yp: YearProgress, onPlaySong: (Song, String) -> 
             Text(line, color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp)
             yp.topSong?.let { song ->
                 Row(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.08f)).clickable { onPlaySong(song, "Chronicle") }.padding(10.dp),
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color.White.copy(alpha = 0.08f)).clickable { onPlaySong(song, "Chronicle") }.padding(10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AsyncImage(model = song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)))
+                    AsyncImage(model = song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)))
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Your #1 this year", color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp)
@@ -336,7 +336,7 @@ private fun SectionCard(title: String, icon: ImageVector, tint: Color, content: 
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color(0xFF101425))
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -388,7 +388,7 @@ private fun ComparisonRow(c: Comparison) {
 
 @Composable
 private fun CompareBox(label: String, s: ReplaySummary, modifier: Modifier = Modifier) {
-    Column(modifier.clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.06f)).padding(10.dp)) {
+    Column(modifier.clip(RoundedCornerShape(14.dp)).background(Color.White.copy(alpha = 0.06f)).padding(10.dp)) {
         Text(label, color = Color(0xFF93C5FD), fontSize = 12.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(4.dp))
         Text("${String.format(Locale.getDefault(), "%,d", s.minutes)} min", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
@@ -426,12 +426,12 @@ private fun DaypartContent(dp: DaypartInsight) {
 private fun AlbumHighlightRow(h: AlbumHighlight, onPlaySong: (Song, String) -> Unit) {
     val monthLabel = h.month.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + " ${h.month.year}"
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.05f)).clickable(enabled = h.song != null) {
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color.White.copy(alpha = 0.05f)).clickable(enabled = h.song != null) {
             h.song?.let { onPlaySong(it, "Chronicle") }
         }.padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(model = h.art?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)))
+        AsyncImage(model = h.art?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text("Album of $monthLabel", color = Color(0xFF6EE7B7), fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -445,10 +445,10 @@ private fun AlbumHighlightRow(h: AlbumHighlight, onPlaySong: (Song, String) -> U
 @Composable
 private fun MemoryRow(title: String, subtitle: String, art: String?, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.05f)).clickable(onClick = onClick).padding(10.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color.White.copy(alpha = 0.05f)).clickable(onClick = onClick).padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(model = art?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)))
+        AsyncImage(model = art?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -460,10 +460,10 @@ private fun MemoryRow(title: String, subtitle: String, art: String?, onClick: ()
 @Composable
 private fun SongPickRow(pick: SongPick, onPlaySong: (Song, String) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onPlaySong(pick.song, "Chronicle") }.padding(vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).clickable { onPlaySong(pick.song, "Chronicle") }.padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(model = pick.song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(42.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.08f)))
+        AsyncImage(model = pick.song.thumbnailUrl?.artworkAt(120), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(42.dp).clip(RoundedCornerShape(10.dp)).background(Color.White.copy(alpha = 0.08f)))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(pick.song.title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -486,7 +486,7 @@ private fun ChapterCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(Color(0xFF12162A)),
     ) {
         Box(Modifier.fillMaxWidth().height(140.dp)) {
