@@ -7246,7 +7246,11 @@ val filteredPicks by remember(SpotifyPicks) {
                 onDismiss = { answer(com.music.bitchord.data.webdav.WebDavUploads.Choice.SKIP) },
             )
         }
+        } // juceRootOverlays
 
+        // Second half, kept in its own lambda so neither method crosses the
+        // JVM's 64 KB bytecode ceiling.
+        val juceRootOverlaysTail: @Composable () -> Unit = {
         // ---- Discord sign-in (full screen WebView) ----
         DiscordLoginHost(
             visible = showDiscordLogin,
@@ -7330,8 +7334,9 @@ val filteredPicks by remember(SpotifyPicks) {
                 onDismiss = { showResetSettingsConfirm = false },
             )
         }
-        } // juceRootOverlays
+        } // juceRootOverlaysTail
         juceRootOverlays()
+        juceRootOverlaysTail()
 
     }
 }
