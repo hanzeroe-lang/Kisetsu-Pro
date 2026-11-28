@@ -248,6 +248,11 @@ kotlin {
     }
 }
 
+// Compose source-info strings are large; the app ships without them.
+composeCompiler {
+    includeSourceInformation.set(false)
+}
+
 /*
  * NewPipeExtractor ships its own org.schabi.newpipe.extractor.utils.Utils, and
  * app/src/main/java carries a patched copy at the same package path (see that
