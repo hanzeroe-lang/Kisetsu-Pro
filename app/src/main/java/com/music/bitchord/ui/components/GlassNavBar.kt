@@ -128,7 +128,7 @@ fun GlassNavBar(
     val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
     val neutralColor = if (isLight) Color.Black else Color.White
     val selectedColor = Color(0xFF007AFF)
-    val unselectedColor = neutralColor.copy(alpha = 0.65f)
+    val unselectedColor = if (isLight) Color(0xFF6C6C70) else Color(0xFF8E8E93)
     val contentColor = neutralColor
     val haptics = rememberHaptics()
 

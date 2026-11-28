@@ -255,7 +255,6 @@ fun SettingsScreen(
     val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
     val disableBlendEffects by AppSettings.disableBlendEffects.collectAsStateWithLifecycle()
     val liquidGlass by AppSettings.liquidGlass.collectAsStateWithLifecycle()
-    val convxNavBar by AppSettings.convxNavBar.collectAsStateWithLifecycle()
     val navBarMelt by AppSettings.navBarMeltTransition.collectAsStateWithLifecycle()
     val glassPerformance by AppSettings.glassPerformance.collectAsStateWithLifecycle()
     val glassFrost by AppSettings.glassFrost.collectAsStateWithLifecycle()
@@ -1218,32 +1217,20 @@ fun SettingsScreen(
                     onClick = { AppSettings.setLiquidGlass(!liquidGlass) },
                 )
             }
-            val convxNavBarTitle = "Convx navigation bar"
-            row(convxNavBarTitle, "nav bar", "convx", "bottom bar", "tabs") {
+            val meltTitle = "Melt transition"
+            row(meltTitle, "nav bar", "melt", "folding", "glass") {
                 SettingsRow(
                     icon = SfIcons.AutoAwesome,
-                    title = convxNavBarTitle,
-                    subtitle = if (convxNavBar) {
-                        "Convx's iOS-style glass capsule bar with a detached Search circle."
-                    } else {
-                        "Original Kisetsu navigation bar."
-                    },
+                    title = meltTitle,
+                    subtitle = "Soft gooey blur while the floating glass bar folds between compact and full size.",
                     trailing = {
                         IosSwitch(
-                            checked = convxNavBar,
-                            onCheckedChange = AppSettings::setConvxNavBar,
+                            checked = navBarMelt,
+                            onCheckedChange = AppSettings::setNavBarMeltTransition,
                         )
                     },
-                    onClick = { AppSettings.setConvxNavBar(!convxNavBar) },
+                    onClick = { AppSettings.setNavBarMeltTransition(!navBarMelt) },
                 )
-                if (convxNavBar) {
-                    SettingsSubRow(
-                        title = "Melt transition",
-                        subtitle = "Soft gooey blur while the bar folds between compact and full size.",
-                        checked = navBarMelt,
-                        onCheckedChange = AppSettings::setNavBarMeltTransition,
-                    )
-                }
             }
             row("Reset all UI settings", "reset", "default", "ui") {
                 SettingsRow(

@@ -294,7 +294,6 @@ import com.music.bitchord.ui.components.FloatingBarsTapGuard
 import com.music.bitchord.ui.components.BottomTab
 import com.music.bitchord.ui.components.FLOATING_BAR_MAX_WIDTH
 import com.music.bitchord.ui.components.FloatingBottomBar
-import com.music.bitchord.ui.components.convxfloating.ConvxNavBar
 import com.music.bitchord.ui.components.GlassNavBar
 import com.music.bitchord.ui.components.floatingtabbar.rememberFloatingTabBarScrollConnection
 import com.music.bitchord.ui.components.FrostedTopBar
@@ -607,7 +606,6 @@ private fun BitChordApp(
     // below goes with them, which is the part that costs a draw pass.
     val reduceDynamicBlur by AppSettings.reduceDynamicBlur.collectAsStateWithLifecycle()
     val progressiveBlur by AppSettings.progressiveBlur.collectAsStateWithLifecycle()
-    val convxNavBar by AppSettings.convxNavBar.collectAsStateWithLifecycle()
     val navBarMelt by AppSettings.navBarMeltTransition.collectAsStateWithLifecycle()
     val glassSamplesBackdrop = glassActive && !reduceDynamicBlur
     // What folds [GlassNavBar] between its expanded and inline shapes. Held here
@@ -4528,14 +4526,13 @@ private fun BitChordApp(
                     }
                     NavBarSwitch(
                         glassActive = glassActive,
-                        convxNavBar = convxNavBar,
                         navBarMelt = navBarMelt,
                         tabs = tabs,
                         selectedIndex = selectedTab,
                         onTabSelected = onTabSelected,
                         onActiveTabTap = onActiveTabTap,
                         scrollConnection = navBarScroll,
-                        song = if ((glassActive || convxNavBar) && !onSearchTab) player.song else null,
+                        song = if (glassActive && !onSearchTab) player.song else null,
                         isPlaying = player.isPlaying,
                         isLoading = playPauseBusy,
                         animationsActive = !showNowPlaying,
@@ -6700,7 +6697,6 @@ private object PlayerSheetShape : Shape {
 @Composable
 private fun NavBarSwitch(
     glassActive: Boolean,
-    convxNavBar: Boolean,
     navBarMelt: Boolean,
     tabs: List<com.music.bitchord.ui.components.BottomTab>,
     selectedIndex: Int,
@@ -6723,29 +6719,7 @@ private fun NavBarSwitch(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
-    if (convxNavBar) {
-        ConvxNavBar(
-            tabs = tabs,
-            selectedIndex = selectedIndex,
-            onTabSelected = onTabSelected,
-            scrollConnection = scrollConnection,
-            song = song,
-            isPlaying = isPlaying,
-            isLoading = isLoading,
-            animationsActive = animationsActive,
-            onPlayPause = onPlayPause,
-            onNext = onNext,
-            onPrevious = onPrevious,
-            onExpand = onExpand,
-            controlsLocked = controlsLocked,
-            onBlockedControl = onBlockedControl,
-            dock = dock,
-            pull = pull,
-            autoMixArtwork = autoMixArtwork,
-            hazeState = hazeState,
-            modifier = modifier,
-        )
-    } else if (glassActive) {
+    if (glassActive) {
         GlassNavBar(
             tabs = tabs,
             selectedIndex = selectedIndex,
