@@ -1490,6 +1490,24 @@ object AppSettings {
         prefs.edit().putBoolean(KEY_NAV_BAR_MELT, value).apply()
     }
 
+    /** Puts the player's look back to its defaults without touching library data. */
+    fun resetUiSettings() {
+        playerTheme.value = PlayerTheme.DEFAULT
+        liquidGlass.value = true
+        fullBleedArtwork.value = true
+        showAutomixAnalysisButton.value = false
+        convxNavBar.value = true
+        navBarMeltTransition.value = true
+        prefs.edit()
+            .putString(KEY_PLAYER_THEME, PlayerTheme.DEFAULT.name)
+            .putBoolean(KEY_LIQUID_GLASS, true)
+            .putBoolean(KEY_FULL_BLEED_ARTWORK, true)
+            .putBoolean(KEY_SHOW_AUTOMIX_ANALYSIS_BUTTON, false)
+            .putBoolean(KEY_CONVX_NAV_BAR, true)
+            .putBoolean(KEY_NAV_BAR_MELT, true)
+            .apply()
+    }
+
     fun setAutoMixArtTransition(value: Boolean) {
         val previous = _autoMixArtwork.value
         if (previous.artTransition == value) return

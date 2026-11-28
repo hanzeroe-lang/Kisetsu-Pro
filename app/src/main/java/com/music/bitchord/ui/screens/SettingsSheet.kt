@@ -1245,6 +1245,14 @@ fun SettingsScreen(
                     )
                 }
             }
+            row("Reset all UI settings", "reset", "default", "ui") {
+                SettingsRow(
+                    icon = SfIcons.DeleteSweep,
+                    title = "Reset all UI settings",
+                    subtitle = "Restores the player theme, glass, navigation bar and player buttons to defaults.",
+                    onClick = { AppSettings.resetUiSettings() },
+                )
+            }
             // One line each, like Direct Source Stream under Sources, and only
             // while Liquid Glass is on: they qualify the glass rather than standing
             // on their own. Progressive Blur has its own switch because it costs

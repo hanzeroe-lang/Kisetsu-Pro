@@ -323,6 +323,11 @@ object R {
 
 fun stringResource(id: Int): String = "Dismiss"
 
+/** Safe stand-in for Convx drawable resources: no real IDs are shipped here. */
+@Composable
+fun painterResource(id: Int): androidx.compose.ui.graphics.painter.Painter =
+    androidx.compose.ui.graphics.painter.ColorPainter(Color.White)
+
 /** Convx's Screens, mapped onto Kisetsu's tab routes. */
 sealed class Screens(val titleId: Int, val route: String, val icon: Int, val iosIcon: Int = icon) {
     object Home : Screens(1, "home", 1)
